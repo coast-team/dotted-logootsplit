@@ -35,7 +35,7 @@ Coming soon...
 ## Usage
 
 ```
-npm install dotted-logootsplit
+npm install dotted-logoot-split
 ```
 
 ```ts
@@ -101,6 +101,6 @@ https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
 https://img.shields.io/travis/Conaclos/dotted-logootsplit/master.svg
 [travis-url]: https://travis-ci.org/Conaclos/dotted-logootsplit
 [npm-image]:
-https://img.shields.io/npm/v/dotted-logootsplit.svg?style=flat-square
+https://img.shields.io/npm/v/dotted-logoot-split.svg?style=flat-square
 [npm-url]:
-https://www.npmjs.com/package/dotted-logootsplit
+https://www.npmjs.com/package/dotted-logoot-split
