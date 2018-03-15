@@ -42,7 +42,7 @@ npm install dotted-logoot-split
 import {
     ReplicableLinkedList,
     SimpleBlockFactory
-} from "dotted-logootsplit"
+} from "dotted-logoot-split"
 
 const replicaA = 0
 const strategyA = SimpleBlockFactory.from(replicaA)
