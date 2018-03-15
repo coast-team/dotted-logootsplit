@@ -52,54 +52,54 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
 
     /**
      * [Mutation]
-     * Insert the parts of {@link iblock } which are not already inserted.
+     * Insert the parts of {@link iBlock } which are not already inserted.
      *
-     * @param iblock block to insert.
+     * @param iBlock block to insert.
      * @param index 0-based index
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert (iblock: Block<P, E>, index: uint32): Insertion<E>[] {
+    insert (iBlock: Block<P, E>, index: uint32): Insertion<E>[] {
         assert(() => isUint32(index), "index ∈ uint32")
 
         if (this.right === undefined) {
-            this.insertRight(iblock)
-            return [new Insertion(index, iblock.items)]
+            this.insertRight(iBlock)
+            return [new Insertion(index, iBlock.items)]
         } else {
             const rBlock = this.right.block
-            switch (rBlock.compare(iblock)) {
+            switch (rBlock.compare(iBlock)) {
                 case BlockOrdering.BEFORE:
-                    return this.right.insert(iblock, index + rBlock.length)
+                    return this.right.insert(iBlock, index + rBlock.length)
                 case BlockOrdering.PREPENDABLE: {
-                    const insertions = this.right.insert(iblock, index + rBlock.length)
+                    const insertions = this.right.insert(iBlock, index + rBlock.length)
                     // The right block of rBlock could be a splitting block
                     this.right = this.right.right
                     this.insert(rBlock, 0) // handle prepend
                     return insertions
                 }
                 case BlockOrdering.AFTER:
-                    this.insertRight(iblock)
-                    return [new Insertion(index, iblock.items)]
+                    this.insertRight(iBlock)
+                    return [new Insertion(index, iBlock.items)]
                 case BlockOrdering.APPENDABLE:
                     this.right = this.right.right
-                    this.insertRight(iblock.append(rBlock))
-                    return [new Insertion(index, iblock.items)]
+                    this.insertRight(iBlock.append(rBlock))
+                    return [new Insertion(index, iBlock.items)]
                 case BlockOrdering.SPLITTING: {
-                    const [lSplit, rSplit] = iblock.splitWith(rBlock)
+                    const [lSplit, rSplit] = iBlock.splitWith(rBlock)
                     const rInsertions = this.right.insert(rSplit, index + lSplit.length + rBlock.length)
                     this.insertRight(lSplit)
                     return [new Insertion(index, lSplit.items), ...rInsertions]
                 }
                 case BlockOrdering.SPLITTED_BY: {
-                    const [lSplit, rSplit] = rBlock.splitWith(iblock)
+                    const [lSplit, rSplit] = rBlock.splitWith(iBlock)
                     this.right = this.right.right
                     this.insertRight(lSplit)
-                        .insertRight(iblock)
+                        .insertRight(iBlock)
                         .insertRight(rSplit)
-                    return [new Insertion(index + lSplit.length, iblock.items)]
+                    return [new Insertion(index + lSplit.length, iBlock.items)]
                 }
                 case BlockOrdering.INCLUDED_BY: {
-                    const [lRemaning, rRemaining] = iblock.remove(rBlock)
+                    const [lRemaning, rRemaining] = iBlock.remove(rBlock)
                     let insertions: Insertion<E>[] = []
                     if (lRemaning !== undefined) {
                         this.right = this.right.right
@@ -115,11 +115,11 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
                     return insertions
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE: {
-                    const appendable = iblock.appendable(rBlock)
+                    const appendable = iBlock.appendable(rBlock)
                     return this.insert(appendable, index) // Tail recursion
                 }
                 case BlockOrdering.OVERLAPPING_AFTER: {
-                    const prependable = iblock.prependable(rBlock)
+                    const prependable = iBlock.prependable(rBlock)
                     this.right = this.right.right
                     this.insertRight(prependable.append(rBlock))
                     return [new Insertion(index, prependable.items)]
@@ -230,21 +230,21 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
 
     /**
      * [Mutation]
-     * Remove {@link dblock }.
-     * @param dblock block to remove.
+     * Remove {@link dBlock }.
+     * @param dBlock block to remove.
      * @param index index of the current block in the chain.
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove (dblock: LengthBlock<P> | Block<P, E>, index: uint32): Deletion[] {
+    remove (dBlock: LengthBlock<P> | Block<P, E>, index: uint32): Deletion[] {
         assert(() => isUint32(index), "index ∈ uint32")
 
         if (this.right !== undefined) {
             const rBlock = this.right.block
-            switch (rBlock.compare(dblock)) {
+            switch (rBlock.compare(dBlock)) {
                 case BlockOrdering.SPLITTING: // fall-through
                 case BlockOrdering.BEFORE: {
-                    const removals = this.right.remove(dblock, index + rBlock.length)
+                    const removals = this.right.remove(dBlock, index + rBlock.length)
                     const rIndex = index + rBlock.length
                     if (removals.length > 0 && removals[0].index === rIndex) {
                         this.right = this.right.right
@@ -253,10 +253,10 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
                     return removals
                 }
                 case BlockOrdering.PREPENDABLE:
-                    return this.right.remove(dblock, index + rBlock.length) // tail recursion
+                    return this.right.remove(dBlock, index + rBlock.length) // tail recursion
                 case BlockOrdering.INCLUDING: {
-                    const removed = rBlock.intersection(dblock)
-                    const [lRemaning, rRemaning] = rBlock.remove(dblock)
+                    const removed = rBlock.intersection(dBlock)
+                    const [lRemaning, rRemaning] = rBlock.remove(dBlock)
                     this.right = this.right.right
                     if (rRemaning !== undefined) {
                         this.insertRight(rRemaning)
@@ -266,7 +266,7 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
                         this.insertRight(lRemaning)
                         removalIndex = removalIndex + lRemaning.length
                     }
-                    return [new Deletion(removalIndex, dblock.length)]
+                    return [new Deletion(removalIndex, dBlock.length)]
                 }
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right
@@ -274,22 +274,22 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
                 case BlockOrdering.INCLUDED_BY: {
                     // Append of the current block is handled in the first switch-case
                     this.right = this.right.right
-                    const rRemovals = this.remove(dblock, index)
+                    const rRemovals = this.remove(dBlock, index)
                     return [new Deletion(index, rBlock.length), ...rRemovals]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE: {
-                    const removed = rBlock.intersection(dblock)
-                    const remaining = rBlock.prependable(dblock)
+                    const removed = rBlock.intersection(dBlock)
+                    const remaining = rBlock.prependable(dBlock)
                     //const [remaining, ] = rBlock.remove(block) as [undefined, Block<P, E>]
                     //remaining = remaining as Block<P, E>
                     this.right = this.right.right
                     this.insertRight(remaining)
-                    const removals = this.remove(dblock, index + remaining.length)
+                    const removals = this.remove(dBlock, index + remaining.length)
                     return [new Deletion(index + remaining.length, removed.length)]
                 }
                 case BlockOrdering.OVERLAPPING_AFTER: {
-                    const removed = rBlock.intersection(dblock)
-                    const remaining = rBlock.appendable(dblock)
+                    const removed = rBlock.intersection(dBlock)
+                    const remaining = rBlock.appendable(dBlock)
                     //const [, remaining] = rBlock.remove(block) as [undefined, Block<P, E>]
                     this.right = this.right.right
                     this.insertRight(remaining)
