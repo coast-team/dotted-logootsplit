@@ -218,18 +218,18 @@ export class Block <P extends Position<P>, E extends Concatenable<E>> {
                 const intervalCmp = thisInterval.compare(otherInterval)
                 return intervalOrderingAsBlockOrdering[intervalCmp]
             } else if (baseCmp === BaseOrdering.PREFIXING) {
-                if (order === Ordering.AFTER && dist >= this.length) {
+                if (order === Ordering.AFTER) {
                     return BlockOrdering.AFTER
-                } else if (order !== Ordering.AFTER && dist >= (this.length - 1)) {
+                } else if (dist >= (this.length - 1)) {
                     return BlockOrdering.BEFORE
                 } else {
                     return BlockOrdering.SPLITTED_BY
                 }
             } else {
-                if (order !== Ordering.BEFORE && dist >= (other.length - 1)) {
-                    return BlockOrdering.AFTER
-                } else if (order === Ordering.BEFORE && dist >= other.length) {
+                if (order === Ordering.BEFORE) {
                     return BlockOrdering.BEFORE
+                } else if (dist >= (other.length - 1)) {
+                    return BlockOrdering.AFTER
                 } else {
                     return BlockOrdering.SPLITTING
                 }
