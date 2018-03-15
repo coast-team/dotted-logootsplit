@@ -30,13 +30,24 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
      * @param seq {@link SimpleBlockFactory#seq }
      */
     constructor (replica: uint32, seq: uint32) {
+        assert(() => isUint32(replica), "replica ∈ uint32")
         assert(() => replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
         super(SimplePosition)
-        assert(() => isUint32(replica) && replica !== 0, "replica ∈ uint32")
         assert(() => isUint32(seq), "seq ∈ uint32")
         this.replica = replica
         this.seq = seq
+    }
+
+    /**
+     * @param replica {@link SimpleBlockFactory#replica }.
+     * @return New factory with 0 as {@link SimpleBlockFactory#seq }.
+     */
+    static from (replica: uint32): SimpleBlockFactory {
+        assert(() => isUint32(replica), "replica ∈ uint32")
+        assert(() => replica !== UINT32_TOP,
+            "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
+        return new SimpleBlockFactory(replica, 0)
     }
 
 // Access
