@@ -104,7 +104,7 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
             } else if (deltaSeqs.upper <= lastSeq) {
                 return []
             } else {
-                const remaining = delta.rightSplitAt(lastSeq)
+                const remaining = delta.rightSplitAt(lastSeq + 1 - deltaSeqs.lower)
                 this.versionVector.set(delta.replica, deltaSeqs.upper)
                 return this.insert(remaining)
             }
@@ -118,10 +118,14 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
 
     /**
      * @param factory strategy of block generation.
+     * @param items items to insert.
      */
-    constructor(factory: BlockFactory<P>) {
+    constructor(factory: BlockFactory<P>, items: E) {
         super()
         this.factory = factory
+        if (items.length > 0) {
+            this.insertAt(0, items)
+        }
     }
 
 // Access
