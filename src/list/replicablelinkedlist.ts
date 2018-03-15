@@ -138,8 +138,9 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
     /** @Override */
     insertAt (index: uint32, items: E): Block<P, E> {
         assert(() => isUint32(index), "index ∈ uint32")
-        assert(() => isUint32(this.length + items.length), "(items.length + this.length) ∈ uint32")
         assert(() => index <= this.length, "valid index")
+        assert(() => items.length > 0, "items is not empty")
+        assert(() => isUint32(this.length + items.length), "(items.length + this.length) ∈ uint32")
         const [result, newFactory] = this.sentinel.insertAt(index, items, this.factory)
         this.factory = newFactory
         this.length = this.length + items.length
