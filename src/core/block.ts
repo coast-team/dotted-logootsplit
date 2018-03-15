@@ -26,11 +26,11 @@ export const enum BlockOrdering {
     BEFORE = -5, // <
     PREPENDABLE = -4, // <:
     OVERLAPPING_BEFORE = -3, // <∩
-    SPLITTED_BY = 2, // |⊂
-    INCLUDED_BY = 1, // ⊂
+    SPLITTED_BY = -2, // |⊂
+    INCLUDED_BY = -1, // ⊂
     EQUAL = 0, // =
-    INCLUDING = -1, // ⊃
-    SPLITTING = -2, // ⊃|
+    INCLUDING = 1, // ⊃
+    SPLITTING = 2, // ⊃|
     OVERLAPPING_AFTER = 3, // >∩
     APPENDABLE = 4, // :>
     AFTER = 5 // >
