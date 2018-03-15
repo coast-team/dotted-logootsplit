@@ -187,7 +187,7 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt (index: uint32, length: uint32): Block<P, E>[] {
+    removeAt (index: uint32, length: uint32): LengthBlock<P>[] {
         assert(() => isUint32(index), "index ∈ uint32")
         assert(() => isUint32(length), "length ∈ uint32")
         assert(() => length > 0, "length > 0")
@@ -211,16 +211,16 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
             } else {
                 if (rBlock.length === length) {
                     this.right = this.right.right
-                    return [rBlock]
+                    return [rBlock.toLengthBlock()]
                 } else if (rBlock.length < length) {
                     this.right = this.right.right
                     const removeds = this.removeAt(index, length - rBlock.length)
-                    return [rBlock, ...removeds]
+                    return [rBlock.toLengthBlock(), ...removeds]
                 } else {
                     const [lSplit, rSplit] = rBlock.splitAt(length)
                     this.right = this.right.right
                     this.insertRight(rSplit)
-                    return [lSplit]
+                    return [lSplit.toLengthBlock()]
                 }
             }
         } else {

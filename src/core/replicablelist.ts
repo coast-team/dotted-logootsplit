@@ -72,5 +72,5 @@ export interface ReplicatableList <P extends Position<P>, E extends Concatenable
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt: (index: uint32, length: uint32) => Block<P, E>[]
+    removeAt: (index: uint32, length: uint32) => LengthBlock<P>[]
 }

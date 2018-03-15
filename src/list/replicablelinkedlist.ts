@@ -147,7 +147,7 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
     }
 
     /** @Override */
-    removeAt (index: uint32, length: uint32): Block<P, E>[] {
+    removeAt (index: uint32, length: uint32): LengthBlock<P>[] {
         assert(() => isUint32(index), "index ∈ uint32")
         assert(() => isUint32(length), "length ∈ uint32")
         assert(() => isUint32(index + length), "(index + length) ∈ uint32")
