@@ -6,7 +6,7 @@ import { SimplePosition } from "../../src/position/simpleposition"
 import { Insertion, Deletion } from "../../src/core/localoperation"
 
 function newSeq (factory: SimpleBlockFactory): ReplicableLinkedList<SimplePosition, string> {
-    return new ReplicableLinkedList(factory)
+    return new ReplicableLinkedList(factory, "")
 }
 
 const factoryA = new SimpleBlockFactory(1, 0)
@@ -287,6 +287,22 @@ test("insert_equal", (t) => {
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "ab")
     t.deepEqual(abLocal, [])
+})
+
+test("insert_insert-split-append", (t) => {
+    const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
+
+    const ab = seqA.insertAt(0, "abcdef")
+    const cd = seqA.insertAt(6, "mnopqr")
+
+    seqB.insert(ab)
+    const x = seqB.insertAt(2, "_")
+    seqB.insert(cd)
+
+    seqA.insert(x)
+
+    t.deepEqual(seqA.sentinel, seqB.sentinel)
+    t.is(seqA.concatenated(""), "ab_cdefmnopqr")
 })
 
 // removeAt
