@@ -85,7 +85,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
 
         const factory = this.increasedSeq(length)
         const lastLIndex = l.depth - 1
-        if (l.replica === this.replica && l.seq === this.seq) {
+        if (l.replica === this.replica && (l.seq + 1) === this.seq) {
             // Appendable
             return [l.intSuccessor(1), factory]
         } else {
@@ -109,7 +109,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
             const priority = nextRandomUint32(partL.priority + 1, partU.priority)
                 // priority ∈ ]tuple1.priority, tuple2.priority[
                 // tuple1.priority exclusion ensures a dense set
-            parts.push(SimplePositionPart.from(priority, this.replica, this.seq + 1))
+            parts.push(SimplePositionPart.from(priority, this.replica, this.seq))
 
             return [SimplePosition.from(parts), factory]
         }
