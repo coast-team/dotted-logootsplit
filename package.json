@@ -21,7 +21,8 @@
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
     "test": "rm -rf .built && tsc && ava",
-    "release": "standard-version --sign",
+    "release:pre": "npm run test && npm run lint && npm run build",
+    "release": "npm run release:pre && standard-version --sign --no-verify",
     "commitmsg": "commitlint  -e  $GIT_PARAMS",
     "prepush": "npm test && npm run lint"
   },
