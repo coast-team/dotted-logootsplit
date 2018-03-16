@@ -25,11 +25,14 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
     constructor() {
         this.sentinel = new Sentinel()
         this.length = 0
-        this.versionVector = new Map()
+        this.versionVector = {} //Object.create(null) is unsafe in TS
     }
 
 // Access
-    protected readonly versionVector: Map<uint32, uint32>
+    /**
+     * Map replica to their last observed seq.
+     */
+    protected readonly versionVector: {[replica: string]: uint32 | undefined}
 
     /**
      * Chain entry.
@@ -85,18 +88,19 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
     applyDelta(delta: Block<P, E>): Insertion<E>[]
     applyDelta (delta: LengthBlock<P> | Block<P, E>): Deletion[] | Insertion<E>[] {
         const deltaSeqs = delta.seqs
-        const lastSeq = this.versionVector.get(delta.replica)
+        //const lastSeq = this.versionVector.get(delta.replica)
+        const lastSeq = this.versionVector[delta.replica]
 
         if (delta.isLengthBlock()) {
             if (lastSeq !== undefined) {
-                this.versionVector.set(delta.replica, Math.max(lastSeq, deltaSeqs.upper))
+                this.versionVector[delta.replica] = Math.max(lastSeq, deltaSeqs.upper)
             } else {
-                this.versionVector.set(delta.replica, deltaSeqs.upper)
+                this.versionVector[delta.replica] = deltaSeqs.upper
             }
             return this.remove(delta)
         } else {
             if (lastSeq === undefined) {
-                this.versionVector.set(delta.replica, deltaSeqs.upper)
+                this.versionVector[delta.replica] = deltaSeqs.upper
                 return this.insert(delta)
             } else if (deltaSeqs.lower > (lastSeq + 1)) {
                 assert(() => false, "FIFO violation")
@@ -105,7 +109,7 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
                 return []
             } else {
                 const remaining = delta.rightSplitAt(lastSeq + 1 - deltaSeqs.lower)
-                this.versionVector.set(delta.replica, deltaSeqs.upper)
+                this.versionVector[delta.replica] = deltaSeqs.upper
                 return this.insert(remaining)
             }
         }
@@ -126,7 +130,7 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
         if (items.length > 0) {
             this.insertAt(0, items)
         } else if (factory.seq > 0) {
-            this.versionVector.set(factory.replica, factory.seq - 1)
+            this.versionVector[factory.replica] = factory.seq - 1
         }
     }
 
@@ -140,7 +144,7 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
         const [result, newFactory] = this.sentinel.insertAt(index, items, this.factory)
         this.factory = newFactory
         this.length = this.length + items.length
-        this.versionVector.set(result.replica, result.seqs.upper)
+        this.versionVector[result.replica] = result.seqs.upper
         return result
     }
 
