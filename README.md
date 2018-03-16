@@ -42,7 +42,7 @@ npm install dotted-logoot-split
 import {
     ReplicableLinkedList,
     SimpleBlockFactory
-} from "dotted-logoot-split"
+} from "dotted-logootsplit"
 
 const replicaA = 0
 const strategyA = SimpleBlockFactory.from(replicaA)
@@ -101,6 +101,6 @@ https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
 https://img.shields.io/travis/Conaclos/dotted-logootsplit/master.svg
 [travis-url]: https://travis-ci.org/Conaclos/dotted-logootsplit
 [npm-image]:
-https://img.shields.io/npm/v/dotted-logoot-split.svg?style=flat-square
+https://img.shields.io/npm/v/dotted-logootsplit.svg?style=flat-square
 [npm-url]:
-https://www.npmjs.com/package/dotted-logoot-split
+https://www.npmjs.com/package/dotted-logootsplit
