@@ -32,6 +32,19 @@ export abstract class BlockFactory <P extends Position<P>> {
     readonly topAnchor: Anchor<P>
 
     /**
+     * Globally unique identifier of the author of the generated blocks
+     * by this factory.
+     */
+    readonly abstract replica: uint32
+
+    /**
+     * Monotically increasing sequence number.
+     * It is locally unique.
+     * Seq use in the next generation.
+     */
+    readonly abstract seq: uint32
+
+    /**
      * @param items
      * @return New block with {@link items } as {@link Block#items }.
      */

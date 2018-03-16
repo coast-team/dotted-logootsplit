@@ -51,16 +51,10 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
     }
 
 // Access
-    /**
-     * Globally unique identifier of the author of the generated blocks
-     * by this factory.
-     */
+    /** @Override */
     readonly replica: uint32
 
-    /**
-     * Monotically increasing sequence number.
-     * It is locally unique.
-     */
+    /** @Override */
     readonly seq: uint32
 
 // Derivation

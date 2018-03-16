@@ -553,3 +553,22 @@ test("applyDelta_remove-partial-then-insert", (t) => {
     t.is(seqA.concatenated(""), "c")
     t.deepEqual(abcLocalInsertion, [new Insertion(0, "c")])
 })
+
+test("insert_apply-its-own-deltas", (t) => {
+    const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
+
+    const abcd = seqA.insertAt(0, "abcd")
+    const cdRemoval = seqA.removeAt(2, 2)
+    seqA.applyDelta(abcd)
+    for (const d of cdRemoval) {
+        seqA.applyDelta(d)
+    }
+
+    seqB.applyDelta(abcd)
+    for (const d of cdRemoval) {
+        seqB.applyDelta(d)
+    }
+
+    t.deepEqual(seqA.sentinel, seqB.sentinel)
+    t.is(seqA.concatenated(""), "ab")
+})

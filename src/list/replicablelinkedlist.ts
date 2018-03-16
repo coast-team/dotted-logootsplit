@@ -120,19 +120,15 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
      * @param factory strategy of block generation.
      * @param items items to insert.
      */
-    constructor(factory: BlockFactory<P>, items: E) {
+    constructor(protected factory: BlockFactory<P>, items: E) {
         super()
         this.factory = factory
         if (items.length > 0) {
             this.insertAt(0, items)
+        } else if (factory.seq > 0) {
+            this.versionVector.set(factory.replica, factory.seq - 1)
         }
     }
-
-// Access
-    /**
-     * Strategy of block generation.
-     */
-    private factory: BlockFactory<P>
 
 // Modification
     /** @Override */
@@ -144,6 +140,7 @@ export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable
         const [result, newFactory] = this.sentinel.insertAt(index, items, this.factory)
         this.factory = newFactory
         this.length = this.length + items.length
+        this.versionVector.set(result.replica, result.seqs.upper)
         return result
     }
 
