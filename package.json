@@ -15,12 +15,12 @@
   "bugs": {
     "url": "https://github.com/Conaclos/dotted-logootsplit/issues"
   },
-  "main": "./dist/node/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "dist/node/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "files": [
-    "./dist",
-    "./src"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "rm -rf dist/ && tsc -p tsconfig.node.json && tsc -p tsconfig.esm.json",
