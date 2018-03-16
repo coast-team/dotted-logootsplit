@@ -8,6 +8,13 @@
   ],
   "author": "Victorien Elvinger (victorien.elvinger.fr)",
   "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Conaclos/dotted-logootsplit"
+  },
+  "bugs": {
+    "url": "https://github.com/Conaclos/dotted-logootsplit/issues"
+  },
   "main": "./dist/node/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
