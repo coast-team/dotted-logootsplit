@@ -98,8 +98,8 @@ console.log(stateA.concatenated(""))
 https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
 
 [travis-image]:
-https://img.shields.io/travis/Conaclos/dotted-logootsplit/master.svg
-[travis-url]: https://travis-ci.org/Conaclos/dotted-logootsplit
+https://travis-ci.org/coast-team/dotted-logootsplit.svg
+[travis-url]: https://travis-ci.org/coast-team/dotted-logootsplit
 [npm-image]:
 https://img.shields.io/npm/v/dotted-logootsplit.svg?style=flat-square
 [npm-url]:
