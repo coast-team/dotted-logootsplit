@@ -10,10 +10,10 @@
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Conaclos/dotted-logootsplit"
+    "url": "https://github.com/coast-team/dotted-logootsplit"
   },
   "bugs": {
-    "url": "https://github.com/Conaclos/dotted-logootsplit/issues"
+    "url": "https://github.com/coast-team/dotted-logootsplit/issues"
   },
   "main": "dist/node/index.js",
   "module": "dist/esm/index.js",
