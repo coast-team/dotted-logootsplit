@@ -12,7 +12,7 @@ LogootSplit is an operation-based CRDT. Hence, it is necessary to use a network 
 
 Delta-based CRDT [[2]](#ref-2) have less assumptions. Most of delta-based CRDT simply assume a FIFO delivery (deltas from a same replica, are merged in-order). They also enable to merge two states. This is particularly interesting for intensive collaborative sessions with long periods of disconnection.
 
-Dotted LogootSplit offers a delta-based version of LogootSplit. Furthermore, the generated metadata is smaller. The current implementation is based on a linked list. This is suitable for small list and strings.
+Dotted LogootSplit offers a delta-based version of LogootSplit. Furthermore, the generated metadata is smaller. The current implementation is based on a linked list. This is suitable for small lists and strings.
 
 ## Publication
 
@@ -35,7 +35,7 @@ Coming soon...
 ## Usage
 
 ```
-npm install dotted-logoot-split
+npm install dotted-logootsplit
 ```
 
 ```ts
@@ -86,11 +86,11 @@ console.log(stateA.concatenated(""))
 - [x] Implement local editing
 - [x] Implement delta merging (remote editing)
 - [x] Enforce structural convergence
-    Regardless the order of integration, two particiapnts which merge the same
+    Regardless the order of integration, two participants which merge the same
     set of delta, must have the same structure.
 - [ ] Implement state merging.
 - [ ] Implement anchors (a participant cursor is an anchor).
-- [ ] Simplify interfaces
+- [ ] Simplify interfaces.
     - Remove Position abstraction?
 
 
