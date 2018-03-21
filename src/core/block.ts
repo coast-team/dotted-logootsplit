@@ -168,7 +168,7 @@ export class Block <P extends Position<P>, E extends Concatenable<E>> {
      * Hash code.
      * Note that the content is not take into account.
      */
-    get digest (): uint32 {
+    get structuralDigest (): uint32 {
         return digestOf([this.lowerPosition.digest, this.length])
     }
 

@@ -22,7 +22,7 @@ export interface ReadonlyReplicatableList <P extends Position<P>, E extends Conc
 
     /**
      * @param prefix
-     * @return Cocnatenated version prefixed by {@link prefix }.
+     * @return Concatenated version prefixed by {@link prefix }.
      */
     readonly concatenated: (prefix: E) => E
 
@@ -30,7 +30,7 @@ export interface ReadonlyReplicatableList <P extends Position<P>, E extends Conc
      * Hash code.
      * Note that the content is not take into account.
      */
-    readonly digest: uint32
+    readonly structuralDigest: uint32
 
 // Modification
     /**

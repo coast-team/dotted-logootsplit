@@ -48,8 +48,9 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
     }
 
     /** @Override */
-    get digest (): uint32 {
-        return this.sentinel.reduceBlock((acc, b) => digestOf([acc, b.digest]), 0)
+    get structuralDigest (): uint32 {
+        return this.sentinel.reduceBlock(
+            (acc, b) => digestOf([acc, b.structuralDigest]), 0)
     }
 
 // Modification
