@@ -1,6 +1,6 @@
 {
   "name": "dotted-logootsplit",
-  "version": "0.0.1-3",
+  "version": "0.0.1",
   "description": "Dotted version of LogootSplit",
   "keywords": [
     "crdt",

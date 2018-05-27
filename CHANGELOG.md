@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.0.1"></a>
+## [0.0.1](https://github.com/coast-team/dotted-logootsplit/compare/v0.0.1-3...v0.0.1) (2018-05-27)
+
+
+### Bug Fixes
+
+* **type:** export uint32 ([43cc13b](https://github.com/coast-team/dotted-logootsplit/commit/43cc13b))
+
+
+
 <a name="0.0.1-3"></a>
 ## [0.0.1-3](https://github.com/coast-team/dotted-logootsplit/compare/v0.0.1-2...v0.0.1-3) (2018-03-19)
 
