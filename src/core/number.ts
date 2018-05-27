@@ -11,6 +11,8 @@ import { ReadonlyTypeableArray } from "typeable-array"
 import { assert } from "./assert"
 import { Ordering } from "./ordering"
 
+export type uint32 = number
+
 export const UINT32_BOTTOM = 0
 export const UINT32_TOP = 0xFFFF_FFFF // 2^32 - 1
 

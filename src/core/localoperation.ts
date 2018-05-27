@@ -8,7 +8,7 @@
 
 import { assert } from "./assert"
 import { Concatenable } from "./concatenable"
-import { isUint32 } from "./number"
+import { isUint32, uint32 } from "./number"
 
 /**
  * Model an insertion in a single-user list.

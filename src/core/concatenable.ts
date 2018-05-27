@@ -7,7 +7,7 @@
 */
 
 import { assert } from "./assert"
-import { isUint32 } from "./number"
+import { isUint32, uint32 } from "./number"
 
 /**
  * Concatenable and sliceable types.

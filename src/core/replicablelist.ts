@@ -10,6 +10,7 @@ import { Block, LengthBlock } from "../core/block"
 import { Concatenable } from "../core/concatenable"
 import { Position } from "../core/position"
 import { Insertion, Deletion } from "../core/localoperation"
+import { uint32 } from "../core/number"
 
 /**
  * List which can only be remotely updated using deltas.

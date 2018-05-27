@@ -7,7 +7,7 @@
 */
 
 import { assert, heavyAssert, readonly } from "./assert"
-import { isUint32, digestOf } from "./number"
+import { digestOf, isUint32, uint32 } from "./number"
 import { Anchor } from "./anchor"
 import { Position, BaseOrdering } from "./position"
 import { Concatenable, ConcatenableLength } from "./concatenable"

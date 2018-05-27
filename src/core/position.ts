@@ -7,7 +7,7 @@
 */
 
 import { readonly } from "./assert"
-import { compareUint32 } from "./number"
+import { compareUint32, uint32 } from "./number"
 import { Ordering, orderingInversion } from "./ordering"
 
 /**

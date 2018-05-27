@@ -1,6 +1,4 @@
 
-type uint32 = number
-
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/console
  */

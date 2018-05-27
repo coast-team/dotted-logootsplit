@@ -17,6 +17,8 @@ export * from "./core/localoperation"
 export * from "./core/ordering"
 export * from "./core/position"
 
+export { uint32 } from "./core/number"
+
 export * from "./position/simpleblockfactory"
 export * from "./position/simpleposition"
 export * from "./position/simplepositionpart"

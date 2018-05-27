@@ -12,7 +12,7 @@ import { BlockFactory } from "../core/blockfactory"
 import { Concatenable } from "../core/concatenable"
 import { Position } from "../core/position"
 import { Insertion, Deletion } from "../core/localoperation"
-import { isUint32 } from "../core/number"
+import { isUint32, uint32 } from "../core/number"
 
 export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>> {
     /**

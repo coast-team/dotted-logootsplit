@@ -12,6 +12,7 @@ import {
     compareUint32,
     digestOf,
     isUint32,
+    uint32,
     UINT32_BOTTOM,
     UINT32_TOP,
 } from "../core/number"
