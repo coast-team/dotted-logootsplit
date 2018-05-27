@@ -27,7 +27,7 @@ export const isUint32 = (n: number): n is uint32 =>
  * @param n
  * @return cast {@link n } as an uint32 (potential overflow).
  */
-export const uint32 = (n: number): uint32 => n >>> 0
+const asUint32 = (n: number): uint32 => n >>> 0
 
 /**
  * @param l lower bound
@@ -72,7 +72,7 @@ export function compareUint32 (n1: uint32, n2: uint32): Ordering {
  * @return hash code of {@link values }.
  */
 export const digestOf = (values: ReadonlyTypeableArray<uint32>): uint32 =>
-    values.reduce((acc, v) => uint32(uint32(acc * 17) + v))
+    values.reduce((acc, v) => asUint32(asUint32(acc * 17) + v))
 
 export const absoluteSubstraction = (a: uint32, b: uint32): uint32 =>
     (a < b) ? (b - a) : (a - b)
