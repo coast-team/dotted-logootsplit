@@ -6,8 +6,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { ReadonlyTypeableArray } from "typeable-array"
-
 import { assert, heavyAssert } from "../core/assert"
 import { Block } from "../core/block"
 import { Concatenable } from "../core/concatenable"
@@ -116,7 +114,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
  * @return Infinite stream of values.
  */
 function *infiniteSequence <T>
-   (values: ReadonlyTypeableArray<T>, defaultValue: T): IterableIterator<T> {
+   (values: ReadonlyArray<T>, defaultValue: T): IterableIterator<T> {
 
     for (const v of values) {
         yield v

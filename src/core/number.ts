@@ -6,8 +6,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { ReadonlyTypeableArray } from "typeable-array"
-
 import { assert } from "./assert"
 import { Ordering } from "./ordering"
 
@@ -71,7 +69,7 @@ export function compareUint32 (n1: uint32, n2: uint32): Ordering {
  * @param values
  * @return hash code of {@link values }.
  */
-export const digestOf = (values: ReadonlyTypeableArray<uint32>): uint32 =>
+export const digestOf = (values: ReadonlyArray<uint32>): uint32 =>
     values.reduce((acc, v) => asUint32(asUint32(acc * 17) + v))
 
 export const absoluteSubstraction = (a: uint32, b: uint32): uint32 =>
