@@ -42,6 +42,9 @@
     "tslint": "~5.10",
     "typescript": "^3.0.1"
   },
+  "dependencies": {
+    "tslib": "^1.9.3"
+  },
   "ava": {
     "files": [
       ".built/**/*.test.js"
