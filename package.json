@@ -17,6 +17,7 @@
   },
   "main": "dist/node/index.js",
   "module": "dist/esm/index.js",
+  "es2015": "dist/es2015/index.js",
   "types": "dist/esm/index.d.ts",
   "files": [
     "dist",
