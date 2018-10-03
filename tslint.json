@@ -67,7 +67,6 @@
     "indent": [true, "spaces", 4],
     "linebreak-style": [true, "LF"],
     "no-default-export": true,
-    "no-duplicate-imports": true,
     "no-require-imports": true,
     "prefer-const": true,
     "prefer-readonly": true,

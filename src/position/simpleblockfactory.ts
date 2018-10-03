@@ -49,7 +49,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
         assert(() => isUint32(replica), "replica ∈ uint32")
         assert(() => replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
-        const seed = globalSeed + replica
+        const seed = `${globalSeed}${replica}`
         const randState = alea.from(seed)
         return new SimpleBlockFactory(replica, 0, randState)
     }
