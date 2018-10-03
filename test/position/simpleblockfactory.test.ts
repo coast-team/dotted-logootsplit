@@ -4,8 +4,10 @@ import { BlockOrdering, Block } from "../../src/core/block"
 import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
 import { SimplePosition, SimplePositionPart } from "../../src"
 
-const [firstA, factoryA] = new SimpleBlockFactory(1, 0).from("ab")
-const [firstB, factoryB] = new SimpleBlockFactory(2, 0).after(firstA, "rs")
+const seed = "dotted-logootsplit"
+
+const [firstA, factoryA] = SimpleBlockFactory.from(1, seed).from("ab")
+const [firstB, factoryB] = SimpleBlockFactory.from(2, seed).after(firstA, "rs")
 
 test("after_appendable-block", (t) => {
     const [appendable, _] = factoryA.after(firstA, "cd")

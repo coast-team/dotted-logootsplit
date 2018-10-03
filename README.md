@@ -45,11 +45,11 @@ import {
 } from "dotted-logootsplit"
 
 const replicaA = 0
-const strategyA = SimpleBlockFactory.from(replicaA)
+const strategyA = SimpleBlockFactory.from(replicaA, "app-seed")
 const stateA = new ReplicableLinkedList(strategyA, "")
 
 const replicaB = 1
-const strategyB = SimpleBlockFactory.from(replicaB)
+const strategyB = SimpleBlockFactory.from(replicaB, "app-seed")
 const stateB = new ReplicableLinkedList(strategyB, "")
 
 const deltaA1 = stateA.insertAt(0, "Helo  ")

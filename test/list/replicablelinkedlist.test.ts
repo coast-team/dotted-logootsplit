@@ -9,9 +9,11 @@ function newSeq (factory: SimpleBlockFactory): ReplicableLinkedList<SimplePositi
     return new ReplicableLinkedList(factory, "")
 }
 
-const factoryA = new SimpleBlockFactory(1, 0)
-const factoryB = new SimpleBlockFactory(2, 0)
-const factoryC = new SimpleBlockFactory(3, 0)
+const seed = "dotted-logootsplit"
+
+const factoryA = SimpleBlockFactory.from(1, "dotted-logootsplit")
+const factoryB = SimpleBlockFactory.from(2, "dotted-logootsplit")
+const factoryC = SimpleBlockFactory.from(3, "dotted-logootsplit")
 
 // insertAt
 

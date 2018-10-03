@@ -6,13 +6,15 @@ import {
     SimpleBlockFactory
 } from "../src/"
 
+const seed = "dotted-logootsplit"
+
 test("readme-example", (t) => {
     const replicaA = 0
-    const strategyA = SimpleBlockFactory.from(replicaA)
+    const strategyA = SimpleBlockFactory.from(replicaA, seed)
     const stateA = new ReplicableLinkedList(strategyA, "")
 
     const replicaB = 1
-    const strategyB = SimpleBlockFactory.from(replicaB)
+    const strategyB = SimpleBlockFactory.from(replicaB, seed)
     const stateB = new ReplicableLinkedList(strategyB, "")
 
     const deltaA1 = stateA.insertAt(0, "Helo  ")
