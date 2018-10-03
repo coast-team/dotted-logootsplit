@@ -23,7 +23,7 @@
     "src"
   ],
   "scripts": {
-    "build": "rm -rf dist/ && tsc -p tsconfig.node.json && tsc -p tsconfig.esm.json",
+    "build": "rm -rf dist/ && tsc -p tsconfig.node.json && tsc -p tsconfig.esm.json && tsc -p tsconfig.es2015.json",
     "check": "tsc --noEmit",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
@@ -40,7 +40,7 @@
     "husky": "^0.14.3",
     "standard-version": "^4.4",
     "tslint": "~5.10",
-    "typescript": "~2.7"
+    "typescript": "^3.0.1"
   },
   "ava": {
     "files": [
