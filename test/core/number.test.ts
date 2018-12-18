@@ -4,7 +4,6 @@ import {
     UINT32_BOTTOM,
     UINT32_TOP,
     isUint32,
-    nextRandomUint32,
     compareUint32
 } from "../../src/core/number"
 import { Ordering } from "../../src/core/ordering"
@@ -26,21 +25,6 @@ test("float-are-not-uint32", (t) => {
     t.false(isUint32(-1.2))
     t.false(isUint32(0.1))
     t.false(isUint32(1.2))
-})
-
-test("randomUint32-upper-bound-is-excluded", (t) => {
-    // WARNING: No deterministric test (no seeded radom function)
-    for (let i = 0; i < 100; i++) {
-        t.is(nextRandomUint32(0, 1), 0)
-    }
-})
-
-test("randomUint32-in-interval", (t) => {
-    // WARNING: No deterministric test (no seeded radom function)
-    for (let i = 0; i < 100; i++) {
-        const r = nextRandomUint32(UINT32_BOTTOM, UINT32_TOP)
-        t.true(isUint32(r) && r !== UINT32_TOP)
-    }
 })
 
 test("compareInt", (t) => {

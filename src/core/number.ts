@@ -23,32 +23,6 @@ export const isUint32 = (n: unknown): n is uint32 =>
     Number.isSafeInteger(n) && UINT32_BOTTOM <= n && n <= UINT32_TOP
 
 /**
- * @param n
- * @return cast {@link n } as an uint32 (potential overflow).
- */
-const asUint32 = (n: number): uint32 => n >>> 0
-
-/**
- * @param l lower bound
- * @param excludedU excluded upper bound.
- * @return Random uint32 in [{@link l}, {@link excludedU}[
- *  Note that UINT32_TOP cannot be generated.
- */
-export function nextRandomUint32 (l: uint32, excludedU: uint32): uint32 {
-    assert(() => isUint32(l), "l ∈ uint32")
-    assert(() => isUint32(excludedU), "excludedU ∈ uint32")
-    assert(() => l < excludedU, "l < excludedU")
-
-    const randomPositiveFloat = (Math.random() * (excludedU - l)) + l
-        // Generate a random float number in [b1, b2[
-    const result: uint32 = randomPositiveFloat >>> 0
-        // Truncate the float in order to get an uint32
-
-    assert(() => l <= result && result < excludedU, "result ∈ [l, excludedU[")
-    return result
-}
-
-/**
  * @param n1
  * @param n2
  * @return Order relation between {@link n1} and {@link n2}.
@@ -71,7 +45,7 @@ export function compareUint32 (n1: uint32, n2: uint32): Ordering {
  * @return hash code of {@link values }.
  */
 export const digestOf = (values: ReadonlyArray<uint32>): uint32 =>
-    values.reduce((acc, v) => asUint32(asUint32(acc * 17) + v))
+    values.reduce((acc, v) => (acc * 17 >>> 0) + v >>> 0)
 
 export const absoluteSubstraction = (a: uint32, b: uint32): uint32 =>
     (a < b) ? (b - a) : (a - b)
