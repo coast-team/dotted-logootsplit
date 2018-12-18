@@ -60,7 +60,7 @@
     "radix": true,
     "restrict-plus-operands": true,
     "strict-boolean-expressions": true,
-    "strict-type-predicates": true,
+    "strict-type-predicates": false,
     "triple-equals": [true, "allow-null-check"],
     "use-isnan": true,
 
