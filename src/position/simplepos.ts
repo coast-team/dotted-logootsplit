@@ -17,8 +17,8 @@ import {
     UINT32_BOTTOM,
     UINT32_TOP,
 } from "../core/number"
-import { Position, BaseOrdering, baseOrderingInversion } from "../core/position"
-import { SimplePositionPart } from "./simplepositionpart"
+import { Pos, BaseOrdering, baseOrderingInversion } from "../core/pos"
+import { SimplePosPart } from "./simplepospart"
 import { Ordering, orderingInversion } from "../core/ordering"
 
 /**
@@ -31,14 +31,14 @@ import { Ordering, orderingInversion } from "../core/ordering"
  *
  * The set of positions is dense, hence you can always author a new position
  * between two distinct positions. A position can be generated between two
- * int-successive positions (see {@link Position}) by suffixing a new triplet
+ * int-successive positions (see {@link Pos}) by suffixing a new triplet
  * to the lower position.
  */
-export class SimplePosition implements Position<SimplePosition> {
+export class SimplePos implements Pos<SimplePos> {
     /**
      * @param parts {@link SimplePosition#parts }
      */
-    protected constructor (parts: ReadonlyArray<SimplePositionPart>) {
+    protected constructor (parts: ReadonlyArray<SimplePosPart>) {
         assert(() => parts.length > 0, "parts must not be empty")
         this.parts = parts
     }
@@ -49,29 +49,29 @@ export class SimplePosition implements Position<SimplePosition> {
      *  SimplePositionPart.TOP.
      * @return Position with {@link parts } as {@link SimplePosition#parts }.
      */
-    static from (parts: ReadonlyArray<SimplePositionPart>): SimplePosition {
+    static from (parts: ReadonlyArray<SimplePosPart>): SimplePos {
         const lastPart = parts[parts.length - 1]
         assert(() => lastPart.priority !== UINT32_BOTTOM && lastPart.priority !== UINT32_TOP,
             "priority ∉ {UINT32_BOTTOM, UINT32_TOP}")
         assert(() => lastPart.replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP.")
-        return new SimplePosition(parts)
+        return new SimplePos(parts)
     }
 
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain (x: unknown): SimplePosition | undefined {
-        if (isObject<SimplePosition>(x) && Array.isArray(x.parts)) {
-            const parts = fromArray(x.parts, SimplePositionPart.fromPlain)
+    static fromPlain (x: unknown): SimplePos | undefined {
+        if (isObject<SimplePos>(x) && Array.isArray(x.parts)) {
+            const parts = fromArray(x.parts, SimplePosPart.fromPlain)
             if (parts !== undefined) {
                 const lastPart = parts[parts.length - 1]
                 if (lastPart.priority !== UINT32_BOTTOM &&
                     lastPart.priority !== UINT32_TOP &&
                     lastPart.replica !== UINT32_TOP) {
 
-                    return SimplePosition.from(parts)
+                    return SimplePos.from(parts)
                 }
             }
         }
@@ -81,12 +81,12 @@ export class SimplePosition implements Position<SimplePosition> {
     /**
      * Lowest position.
      */
-    static readonly BOTTOM = new SimplePosition([SimplePositionPart.BOTTOM])
+    static readonly BOTTOM = new SimplePos([SimplePosPart.BOTTOM])
 
     /**
      * Greatest position.
      */
-    static readonly TOP = new SimplePosition([SimplePositionPart.TOP])
+    static readonly TOP = new SimplePos([SimplePosPart.TOP])
 
 // Derivation
     /**
@@ -94,16 +94,16 @@ export class SimplePosition implements Position<SimplePosition> {
      * @return Position with the same base as this,
      *  but with a different seq
      */
-    withSeq (seq: uint32): SimplePosition {
+    withSeq (seq: uint32): SimplePos {
         assert(() => isUint32(seq), "offset ∈ uint32")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
         parts[lastIndex] = parts[lastIndex].withSeq(seq)
-        return new SimplePosition(parts)
+        return new SimplePos(parts)
     }
 
     /** @override */
-    intSuccessor (n: uint32): SimplePosition {
+    intSuccessor (n: uint32): SimplePos {
         assert(() => isUint32(n), "n ∈ uint32")
         assert(() => this.hasIntSuccessor(n), "this has a n-th successor")
         return this.withSeq(this.seq + n)
@@ -113,12 +113,12 @@ export class SimplePosition implements Position<SimplePosition> {
     /**
      * Parts of this position.
      */
-    readonly parts: ReadonlyArray<SimplePositionPart>
+    readonly parts: ReadonlyArray<SimplePosPart>
 
     /**
      * Last part of {@link SimplePositionPart#parts }.
      */
-    get lastPart (): SimplePositionPart {
+    get lastPart (): SimplePosPart {
         return this.parts[this.parts.length - 1]
     }
 
@@ -150,7 +150,7 @@ export class SimplePosition implements Position<SimplePosition> {
     }
 
     /** @override */
-    intDistance (other: SimplePosition): [uint32, Ordering] {
+    intDistance (other: SimplePos): [uint32, Ordering] {
         if (this.depth > other.depth) {
             const [dist, order] = other.intDistance(this)
             return [dist, orderingInversion[order]]
@@ -183,7 +183,7 @@ export class SimplePosition implements Position<SimplePosition> {
     }
 
     /** @override */
-    compareBase (other: SimplePosition): BaseOrdering {
+    compareBase (other: SimplePos): BaseOrdering {
         if (this.depth > other.depth) {
             return baseOrderingInversion[other.compareBase(this)]
         } else if (this.replica === other.replica && this.seq === other.seq) {
@@ -216,12 +216,12 @@ export class SimplePosition implements Position<SimplePosition> {
     }
 
     /** @override */
-    isBaseEqual (other: SimplePosition): boolean {
+    isBaseEqual (other: SimplePos): boolean {
         return this.compareBase(other) === BaseOrdering.EQUAL
     }
 
     /** @override */
-    compare (other: SimplePosition): Ordering {
+    compare (other: SimplePos): Ordering {
         if (this.depth > other.depth) {
             return orderingInversion[other.compare(this)]
         } else if (this.isEqual(other)) {
@@ -243,7 +243,7 @@ export class SimplePosition implements Position<SimplePosition> {
     }
 
     /** @override */
-    isEqual (other: SimplePosition): boolean {
+    isEqual (other: SimplePos): boolean {
         return this.replica === other.replica && this.seq === other.seq
     }
 }

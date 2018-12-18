@@ -24,7 +24,7 @@ import { lexCompareOrdering, Ordering } from "../core/ordering"
  * A part if a lexicographic triplet (priority, replica, seq).
  * The dot (replica, seq) uniquely identifies.
  */
-export class SimplePositionPart {
+export class SimplePosPart {
     /**
      * @param priority {@link SimplePositionPart#priority }
      * @param replica {@link SimplePositionPart#replica }
@@ -45,23 +45,23 @@ export class SimplePositionPart {
      * @param replica {@link SimplePositionPart#replica }
      * @param seq {@link SimplePositionPart#seq }
      */
-    static from (priority: uint32, replica: uint32, seq: uint32): SimplePositionPart {
+    static from (priority: uint32, replica: uint32, seq: uint32): SimplePosPart {
         assert(() => priority !== UINT32_BOTTOM && priority !== UINT32_TOP,
             "priority ∉ {UINT32_BOTTOM, UINT32_TOP}")
         assert(() => replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP.")
-        return new SimplePositionPart(priority, replica, seq)
+        return new SimplePosPart(priority, replica, seq)
     }
 
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain (x: unknown): SimplePositionPart | undefined {
-        if (isObject<SimplePositionPart>(x) && isUint32(x.priority) &&
+    static fromPlain (x: unknown): SimplePosPart | undefined {
+        if (isObject<SimplePosPart>(x) && isUint32(x.priority) &&
             isUint32(x.replica) && isUint32(x.seq)) {
 
-            return new SimplePositionPart(x.priority, x.replica, x.seq)
+            return new SimplePosPart(x.priority, x.replica, x.seq)
         }
         return undefined
     }
@@ -70,23 +70,23 @@ export class SimplePositionPart {
      * Lowest part.
      * Here the pair (replica, seq) has no meaning.
      */
-    static readonly BOTTOM = new SimplePositionPart(UINT32_BOTTOM, UINT32_TOP, 0)
+    static readonly BOTTOM = new SimplePosPart(UINT32_BOTTOM, UINT32_TOP, 0)
 
     /**
      * Greatest part.
      * Here the pair (replica, seq) has no meaning.
      */
-    static readonly TOP = new SimplePositionPart(UINT32_TOP, UINT32_TOP, 1)
+    static readonly TOP = new SimplePosPart(UINT32_TOP, UINT32_TOP, 1)
 
 // Derivation
     /**
      * @param {uint32} seq The seq of the new PositionPart
-     * @return {SimplePositionPart} with the same base,
+     * @return {SimplePosPart} with the same base,
      *  but with a different seq
      */
-    withSeq (seq: uint32): SimplePositionPart {
+    withSeq (seq: uint32): SimplePosPart {
         assert(() => isUint32(seq), "seq ∈ uint32")
-        return SimplePositionPart.from(this.priority, this.replica, seq)
+        return SimplePosPart.from(this.priority, this.replica, seq)
     }
 
 // Access
@@ -137,7 +137,7 @@ export class SimplePositionPart {
      * @return Compare this and {@link other } regardless their sequence
      *  {@link SimplePositionPart#seq}
      */
-    compareBase (other: SimplePositionPart): Ordering {
+    compareBase (other: SimplePosPart): Ordering {
         return lexCompareOrdering(
             compareUint32(this.priority, other.priority),
             compareUint32(this.replica, other.replica)
@@ -155,7 +155,7 @@ export class SimplePositionPart {
      * @param other
      * @return this [Order relation] {@link other}.
      */
-    compare (other: SimplePositionPart): Ordering {
+    compare (other: SimplePosPart): Ordering {
         return (this === other)
             ? Ordering.EQUAL
             : lexCompareOrdering(

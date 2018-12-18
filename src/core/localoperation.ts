@@ -7,13 +7,13 @@
 */
 
 import { assert } from "./assert"
-import { Concatenable } from "./concatenable"
+import { Concat } from "./concat"
 import { isUint32, uint32 } from "./number"
 
 /**
  * Model an insertion in a single-user list.
  */
-export class Insertion <E extends Concatenable<E>> {
+export class Insertion <E extends Concat<E>> {
     /**
      * @param index {@link Insertion#index}
      * @param items {@link Insertion#items}

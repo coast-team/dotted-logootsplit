@@ -8,8 +8,8 @@
 
 import { assert, heavyAssert } from "./assert"
 import { Block, BlockOrdering } from "./block"
-import { Concatenable } from "./concatenable"
-import { Position } from "./position"
+import { Concat } from "./concat"
+import { Pos } from "./pos"
 import { uint32 } from "../core/number"
 import { Anchor } from "./anchor"
 
@@ -17,7 +17,7 @@ import { Anchor } from "./anchor"
  * Factory of blocks.
  * Implementations can implement different strategies of generation.
  */
-export abstract class BlockFactory <P extends Position<P>> {
+export abstract class BlockFactory <P extends Pos<P>> {
     /**
      * @param posBounds bottom and top positions.
      */
@@ -48,7 +48,7 @@ export abstract class BlockFactory <P extends Position<P>> {
      * @param items
      * @return New block with {@link items } as {@link Block#items }.
      */
-    from <E extends Concatenable<E>> (items: E): [Block<P, E>, BlockFactory<P>] {
+    from <E extends Concat<E>> (items: E): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         const [pos, factory] =
             this.posBetween(this.posBounds.BOTTOM, items.length, this.posBounds.TOP)
@@ -61,10 +61,10 @@ export abstract class BlockFactory <P extends Position<P>> {
      * @return New block after {@link l } with {@link items } as
      *  {@link Block#items }.
      */
-    after <E extends Concatenable<E>> (l: Block<P, E>, items: E): [Block<P, E>, BlockFactory<P>] {
+    after <E extends Concat<E>> (l: Block<P, E>, items: E): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         const [pos, factory] =
-            this.posBetween(l.upperPosition, items.length, this.posBounds.TOP)
+            this.posBetween(l.upperPos, items.length, this.posBounds.TOP)
         return [new Block(pos, items), factory]
     }
 
@@ -74,7 +74,7 @@ export abstract class BlockFactory <P extends Position<P>> {
      * @return New block before {@link u } with {@link items } as
      *  {@link Block#items }.
      */
-    before <E extends Concatenable<E>> (items: E, u: Block<P, E>): [Block<P, E>, BlockFactory<P>] {
+    before <E extends Concat<E>> (items: E, u: Block<P, E>): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         const [pos, factory] =
             this.posBetween(this.posBounds.BOTTOM, items.length, u.lowerPosition)
@@ -88,11 +88,11 @@ export abstract class BlockFactory <P extends Position<P>> {
      * @return New block after {@link l } and before {@link u }
      *  with {@link items } as {@link Block#items }.
      */
-    between <E extends Concatenable<E>> (l: Block<P, E>, items: E, u: Block<P, E>): [Block<P, E>, BlockFactory<P>] {
+    between <E extends Concat<E>> (l: Block<P, E>, items: E, u: Block<P, E>): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         heavyAssert(() => l.compare(u) <= BlockOrdering.PREPENDABLE, "l < u")
         const [pos, factory] =
-            this.posBetween(l.upperPosition, items.length, u.lowerPosition)
+            this.posBetween(l.upperPos, items.length, u.lowerPosition)
         return [new Block(pos, items), factory]
     }
 

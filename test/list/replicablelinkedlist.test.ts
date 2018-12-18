@@ -2,10 +2,10 @@ import test from "ava"
 
 import { ReplicableLinkedList } from "../../src/list/replicablelinkedlist"
 import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
-import { SimplePosition } from "../../src/position/simpleposition"
+import { SimplePos } from "../../src/position/simplepos"
 import { Insertion, Deletion } from "../../src/core/localoperation"
 
-function newSeq (factory: SimpleBlockFactory): ReplicableLinkedList<SimplePosition, string> {
+function newSeq (factory: SimpleBlockFactory): ReplicableLinkedList<SimplePos, string> {
     return new ReplicableLinkedList(factory, "")
 }
 

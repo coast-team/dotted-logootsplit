@@ -9,12 +9,12 @@
 import { assert, heavyAssert } from "../core/assert"
 import { Block, LengthBlock, BlockOrdering } from "../core/block"
 import { BlockFactory } from "../core/blockfactory"
-import { Concatenable } from "../core/concatenable"
-import { Position } from "../core/position"
+import { Concat } from "../core/concat"
+import { Pos } from "../core/pos"
 import { Insertion, Deletion } from "../core/localoperation"
 import { isUint32, uint32 } from "../core/number"
 
-export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>> {
+export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
     /**
      * @param right {@link Linkable#right }
      */
@@ -305,9 +305,9 @@ export abstract class Linkable <P extends Position<P>, E extends Concatenable<E>
     }
 }
 
-export class Sentinel <P extends Position<P>, E extends Concatenable<E>> extends Linkable<P, E> {}
+export class Sentinel <P extends Pos<P>, E extends Concat<E>> extends Linkable<P, E> {}
 
-export class Cell <P extends Position<P>, E extends Concatenable<E>> extends Linkable<P, E> {
+export class Cell <P extends Pos<P>, E extends Concat<E>> extends Linkable<P, E> {
     /**
      * @param block {@link Cell#block }
      * @param right {@link Linkable#right }

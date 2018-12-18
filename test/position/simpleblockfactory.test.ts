@@ -2,7 +2,7 @@ import test from "ava"
 
 import { BlockOrdering, Block } from "../../src/core/block"
 import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
-import { SimplePosition, SimplePositionPart } from "../../src"
+import { SimplePos, SimplePosPart } from "../../src"
 
 const seed = "dotted-logootsplit"
 
@@ -41,8 +41,8 @@ test("between_surrounded-block", (t) => {
 test("between_dense-set-appendable", (t) => {
     const B = 2
     const priority = firstA.lowerPosition.parts[0].priority
-    const pos2 = SimplePositionPart.from(priority + 1, B, 0)
-    const block2 = new Block(SimplePosition.from([pos2]), "x")
+    const pos2 = SimplePosPart.from(priority + 1, B, 0)
+    const block2 = new Block(SimplePos.from([pos2]), "x")
 
     const [surrounded, ] = factoryB.between(firstA, "1", block2)
     const [appendable, ] = factoryA.between(firstA, "c", surrounded)

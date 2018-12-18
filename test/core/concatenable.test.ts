@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { ConcatenableLength } from "../../src/core/concatenable"
+import { ConcatenableLength } from "../../src/core/concat"
 
 const length0 = new ConcatenableLength(0)
 const length1 = new ConcatenableLength(1)

@@ -13,7 +13,7 @@ import { isUint32, uint32 } from "./number"
  * Concatenable and sliceable types.
  * Native types Array and String implements this interface.
  */
-export interface Concatenable <E extends Concatenable<E>> {
+export interface Concat <E extends Concat<E>> {
     /**
      * Number of elements.
      */
@@ -43,7 +43,7 @@ export interface Concatenable <E extends Concatenable<E>> {
  * For instance ConcatenableLength(3) can represent "abc", [1, 2, 3], or any
  * 3-elements list.
  */
-export class ConcatenableLength implements Concatenable<ConcatenableLength> {
+export class ConcatenableLength implements Concat<ConcatenableLength> {
     /** Nominal typing */
     private readonly brandConcatenableLength: undefined
 

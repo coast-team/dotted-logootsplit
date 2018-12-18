@@ -58,7 +58,7 @@ export const baseOrderingInversion = readonly({
  *
  * In documentation p.intSuccessor(n) can be shorten by p+n.
  */
-export interface Position <P extends Position<P>> {
+export interface Pos <P extends Pos<P>> {
 // Derivation
     /**
      * @param n 0-based index.
@@ -100,7 +100,7 @@ export interface Position <P extends Position<P>> {
     /**
      * hasIntSuccessor(0) is always true.
      *
-     * See also {@link Position#intSuccessor }.
+     * See also {@link Pos#intSuccessor }.
      *
      * @param n 0-based index.
      * @return is there a {@link n } -th integer successor?

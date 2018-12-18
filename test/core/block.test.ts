@@ -3,15 +3,15 @@ import test from "ava"
 import { twinBlock } from "../position/position.testutil"
 
 import { Block, BlockOrdering } from "../../src/core/block"
-import { SimplePosition } from "../../src/position/simpleposition"
-import { SimplePositionPart } from "../../src/position/simplepositionpart"
+import { SimplePos } from "../../src/position/simplepos"
+import { SimplePosPart } from "../../src/position/simplepospart"
 
-const part0 = SimplePositionPart.from(1, 0, 0)
-const part3 = SimplePositionPart.from(1, 0, 3)
-const prefixingPart1 = SimplePositionPart.from(1, 1, 1)
+const part0 = SimplePosPart.from(1, 0, 0)
+const part3 = SimplePosPart.from(1, 0, 3)
+const prefixingPart1 = SimplePosPart.from(1, 1, 1)
 
-const pos1 = SimplePosition.from([prefixingPart1, part0])
-const pos10 = SimplePosition.from([prefixingPart1, part0, part3])
+const pos1 = SimplePos.from([prefixingPart1, part0])
+const pos10 = SimplePos.from([prefixingPart1, part0, part3])
 
 const b1abc = new Block(pos1, "abc")
 const b1ab = new Block(pos1, "ab")
@@ -27,12 +27,12 @@ test("length", (t) => {
 
 test("nthPosition", (t) => {
     for (let i = 0; i < b1abc.length; i++) {
-        t.deepEqual(b1abc.nthPosition(i), b1abc.lowerPosition.intSuccessor(i))
+        t.deepEqual(b1abc.nthPos(i), b1abc.lowerPosition.intSuccessor(i))
     }
 })
 
 test("upperPosition", (t) => {
-    t.deepEqual(b1abc.upperPosition, b1abc.nthPosition(b1abc.length - 1))
+    t.deepEqual(b1abc.upperPos, b1abc.nthPos(b1abc.length - 1))
 })
 
 test("compare", (t) => {

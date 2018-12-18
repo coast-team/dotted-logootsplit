@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { Position } from "./position"
+import { Pos } from "./pos"
 import { Ordering } from "./ordering"
 
 /**
@@ -15,7 +15,7 @@ import { Ordering } from "./ordering"
  *
  * An anchor is always just before a given {@link Position }.
  */
-export class Anchor <P extends Position<P>> {
+export class Anchor <P extends Pos<P>> {
     /**
      * @example
      * Anchor(p) is just before p

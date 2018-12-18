@@ -4,24 +4,24 @@ import { twinPosition } from "./position.testutil"
 
 //import {INT32_TOP} from '../../src/core/number'
 import { UINT32_TOP } from "../../src/core/number"
-import { BaseOrdering } from "../../src/core/position"
+import { BaseOrdering } from "../../src/core/pos"
 import { Ordering } from "../../src/core/ordering"
-import { SimplePositionPart } from "../../src/position/simplepositionpart"
-import { SimplePosition } from "../../src/position/simpleposition"
+import { SimplePosPart } from "../../src/position/simplepospart"
+import { SimplePos } from "../../src/position/simplepos"
 
-const part0 = SimplePositionPart.from(1, 0, 0)
-const part1 = SimplePositionPart.from(1, 0, 1)
-const part2 = SimplePositionPart.from(1, 0, 2)
-const part3 = SimplePositionPart.from(1, 0, 3)
-const part4 = SimplePositionPart.from(1, 0, 4)
-const part5 = SimplePositionPart.from(1, 0, 5)
+const part0 = SimplePosPart.from(1, 0, 0)
+const part1 = SimplePosPart.from(1, 0, 1)
+const part2 = SimplePosPart.from(1, 0, 2)
+const part3 = SimplePosPart.from(1, 0, 3)
+const part4 = SimplePosPart.from(1, 0, 4)
+const part5 = SimplePosPart.from(1, 0, 5)
 
-const pos0 = SimplePosition.from([part0])
-const pos1 = SimplePosition.from([part1])
-const pos02 = SimplePosition.from([part0, part2])
-const pos03 = SimplePosition.from([part0, part3])
-const pos14 = SimplePosition.from([part1, part4])
-const pos15 = SimplePosition.from([part1, part5])
+const pos0 = SimplePos.from([part0])
+const pos1 = SimplePos.from([part1])
+const pos02 = SimplePos.from([part0, part2])
+const pos03 = SimplePos.from([part0, part3])
+const pos14 = SimplePos.from([part1, part4])
+const pos15 = SimplePos.from([part1, part5])
 
 test("hasIntSuccessor", (t) => {
     t.true(pos0.hasIntSuccessor(1))

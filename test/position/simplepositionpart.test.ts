@@ -3,11 +3,11 @@ import test from "ava"
 import { twinPositionPart } from "./position.testutil"
 
 import { Ordering } from "../../src/core/ordering"
-import { SimplePositionPart } from "../../src/position/simplepositionpart"
+import { SimplePosPart } from "../../src/position/simplepospart"
 
-const part001 = SimplePositionPart.from(1, 0, 1)
-const part010 = SimplePositionPart.from(1, 1, 0)
-const part100 = SimplePositionPart.from(2, 0, 0)
+const part001 = SimplePosPart.from(1, 0, 1)
+const part010 = SimplePosPart.from(1, 1, 0)
+const part100 = SimplePosPart.from(2, 0, 0)
 
 test("compare", (t) => {
     // reflexivity
@@ -39,5 +39,5 @@ test("asTuple", (t) => {
     const a = 1
     const b = 2
     const c = 3
-    t.deepEqual(SimplePositionPart.from(a, b, c).asTuple(), [a, b, c])
+    t.deepEqual(SimplePosPart.from(a, b, c).asTuple(), [a, b, c])
 })

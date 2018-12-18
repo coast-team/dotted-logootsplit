@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { BaseOrdering, baseOrderingInversion } from "../../src/core/position"
+import { BaseOrdering, baseOrderingInversion } from "../../src/core/pos"
 
 const BASE_ORDERING_VALUES = [
     BaseOrdering.BEFORE,

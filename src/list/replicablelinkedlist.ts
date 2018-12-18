@@ -9,14 +9,14 @@
 import { assert } from "../core/assert"
 import { Block, LengthBlock } from "../core/block"
 import { BlockFactory } from "../core/blockfactory"
-import { Concatenable } from "../core/concatenable"
-import { Position } from "../core/position"
+import { Concat } from "../core/concat"
+import { Pos } from "../core/pos"
 import { Insertion, Deletion } from "../core/localoperation"
 import { digestOf, isUint32, uint32 } from "../core/number"
 import { ReadonlyReplicatableList, ReplicatableList } from "../core/replicablelist"
 import { Sentinel } from "./replicablelinkedlistcell"
 
-export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Concatenable<E>>
+export class ReadonlyReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
     implements ReadonlyReplicatableList<P, E> {
     /**
      * New empty list.
@@ -116,7 +116,7 @@ export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Conc
     }
 }
 
-export class ReplicableLinkedList <P extends Position<P>, E extends Concatenable<E>>
+export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
     extends ReadonlyReplicableLinkedList<P, E>
     implements ReplicatableList<P, E> {
 

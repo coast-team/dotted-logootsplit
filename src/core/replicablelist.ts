@@ -7,15 +7,15 @@
 */
 
 import { Block, LengthBlock } from "../core/block"
-import { Concatenable } from "../core/concatenable"
-import { Position } from "../core/position"
+import { Concat } from "./concat"
+import { Pos } from "./pos"
 import { Insertion, Deletion } from "../core/localoperation"
 import { uint32 } from "../core/number"
 
 /**
  * List which can only be remotely updated using deltas.
  */
-export interface ReadonlyReplicatableList <P extends Position<P>, E extends Concatenable<E>> {
+export interface ReadonlyReplicatableList <P extends Pos<P>, E extends Concat<E>> {
     /**
      * Number of inserted items.
      */
@@ -52,7 +52,7 @@ export interface ReadonlyReplicatableList <P extends Position<P>, E extends Conc
 /**
  * List which can be remotely and locally updated.
  */
-export interface ReplicatableList <P extends Position<P>, E extends Concatenable<E>>
+export interface ReplicatableList <P extends Pos<P>, E extends Concat<E>>
     extends ReadonlyReplicatableList<P, E> {
 
     /**

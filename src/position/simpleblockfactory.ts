@@ -10,19 +10,19 @@ import { alea, AleaState } from "replayable-random"
 
 import { assert, heavyAssert } from "../core/assert"
 import { isObject } from "../core/data-validation"
-import { SimplePosition } from "./simpleposition"
-import { SimplePositionPart } from "./simplepositionpart"
+import { SimplePos } from "./simplepos"
+import { SimplePosPart } from "./simplepospart"
 import { isUint32, uint32, UINT32_TOP } from "../core/number"
 import { Ordering } from "../core/ordering"
 import { BlockFactory } from "../core/blockfactory"
 
 /**
- * Factory of block with {@link SimplePosition } as implementation of
- * {@link Position}.
+ * Factory of block with {@link SimplePos } as implementation of
+ * {@link Pos}.
  * The strategy of generation is to genearte random positions between two
  * defined positions.
  */
-export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
+export class SimpleBlockFactory extends BlockFactory<SimplePos> {
     /**
      * @param posBounds {@link SimpleBlockFactory#replica }
      * @param seq {@link SimpleBlockFactory#seq }
@@ -32,7 +32,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
         assert(() => isUint32(replica), "replica ∈ uint32")
         assert(() => replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
-        super(SimplePosition)
+        super(SimplePos)
         assert(() => isUint32(seq), "seq ∈ uint32")
         this.replica = replica
         this.seq = seq
@@ -106,7 +106,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
 
 // Impl
     /** @override */
-    posBetween (l: SimplePosition, length: uint32, u: SimplePosition): [SimplePosition, SimpleBlockFactory] {
+    posBetween (l: SimplePos, length: uint32, u: SimplePos): [SimplePos, SimpleBlockFactory] {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
         assert(() => isUint32(length), "length ∈ uint32")
         assert(() => length > 0, "length is strictly positive")
@@ -116,9 +116,9 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
             // Appendable
             return [l.intSuccessor(1), this.increasedSeq(length)]
         } else {
-            const seqL = infiniteSequence(l.parts, SimplePositionPart.BOTTOM)
-            const seqU = infiniteSequence(u.parts, SimplePositionPart.TOP)
-            const parts: SimplePositionPart[] = []
+            const seqL = infiniteSequence(l.parts, SimplePosPart.BOTTOM)
+            const seqU = infiniteSequence(u.parts, SimplePosPart.TOP)
+            const parts: SimplePosPart[] = []
 
             let partL = seqL.next().value
             let partU = seqU.next().value
@@ -137,9 +137,9 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
                 alea.u32Between(partL.priority + 1, partU.priority)(this.randState)
                 // priority ∈ ]tuple1.priority, tuple2.priority[
                 // tuple1.priority exclusion ensures a dense set
-            parts.push(SimplePositionPart.from(priority, this.replica, this.seq))
+            parts.push(SimplePosPart.from(priority, this.replica, this.seq))
 
-            return [SimplePosition.from(parts), this.evolve(length, s)]
+            return [SimplePos.from(parts), this.evolve(length, s)]
         }
     }
 }
