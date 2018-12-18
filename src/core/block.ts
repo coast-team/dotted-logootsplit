@@ -12,7 +12,7 @@ import { digestOf, isU32, u32 } from "./number"
 import { Anchor } from "./anchor"
 import { Pos, BaseOrdering } from "./pos"
 import { Concat, ConcatLength } from "./concat"
-import { IntervalOrdering, IntInterval } from "./intinterval"
+import { IntervalOrdering, IntInterval } from "./int-interval"
 import { Ordering } from "./ordering"
 
 /**

@@ -1,8 +1,8 @@
 
 import { Concat } from "../../../src/core/concat"
 import { Block } from "../../../src/core/block"
-import { SimplePos } from "../../../src/pos/simple/simplepos"
-import { SimplePosPart } from "../../../src/pos/simple/simplepospart"
+import { SimplePos } from "../../../src/pos/simple/simple-pos"
+import { SimplePosPart } from "../../../src/pos/simple/simple-pos-part"
 
 export function twinPositionPart (ref: SimplePosPart): SimplePosPart {
     return SimplePosPart.from(ref.priority, ref.replica, ref.seq)

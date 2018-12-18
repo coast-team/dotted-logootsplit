@@ -18,7 +18,7 @@ import {
     U32_TOP,
 } from "../../core/number"
 import { Pos, BaseOrdering, baseOrderingInversion } from "../../core/pos"
-import { SimplePosPart } from "./simplepospart"
+import { SimplePosPart } from "./simple-pos-part"
 import { Ordering, orderingInversion } from "../../core/ordering"
 
 /**

@@ -3,8 +3,8 @@ import test from "ava"
 import { twinBlock } from "../pos/simple/pos.testutil"
 
 import { Block, BlockOrdering } from "../../src/core/block"
-import { SimplePos } from "../../src/pos/simple/simplepos"
-import { SimplePosPart } from "../../src/pos/simple/simplepospart"
+import { SimplePos } from "../../src/pos/simple/simple-pos"
+import { SimplePosPart } from "../../src/pos/simple/simple-pos-part"
 
 const part0 = SimplePosPart.from(1, 0, 0)
 const part3 = SimplePosPart.from(1, 0, 3)

@@ -8,13 +8,13 @@
 
 import { assert } from "../../core/assert"
 import { Block, LengthBlock } from "../../core/block"
-import { BlockFactory } from "../../core/blockfactory"
+import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Insertion, Deletion } from "../../core/localoperation"
+import { Insertion, Deletion } from "../../core/local-operation"
 import { digestOf, isU32, u32 } from "../../core/number"
-import { ReadonlyReplicatedList, ReplicatedList } from "../../core/replicatedlist"
-import { Sentinel } from "./replicatedlinkedlistcell"
+import { ReadonlyReplicatedList, ReplicatedList } from "../../core/replicated-list"
+import { Sentinel } from "./replicated-linked-list-cell"
 
 export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>
     implements ReadonlyReplicatedList<P, E> {

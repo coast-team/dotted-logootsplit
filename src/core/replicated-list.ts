@@ -9,7 +9,7 @@
 import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { Insertion, Deletion } from "./localoperation"
+import { Insertion, Deletion } from "./local-operation"
 import { u32 } from "./number"
 
 /**

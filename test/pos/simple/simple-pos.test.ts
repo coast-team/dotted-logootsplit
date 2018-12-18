@@ -6,8 +6,8 @@ import { twinPosition } from "./pos.testutil"
 import { U32_TOP } from "../../../src/core/number"
 import { BaseOrdering } from "../../../src/core/pos"
 import { Ordering } from "../../../src/core/ordering"
-import { SimplePosPart } from "../../../src/pos/simple/simplepospart"
-import { SimplePos } from "../../../src/pos/simple/simplepos"
+import { SimplePosPart } from "../../../src/pos/simple/simple-pos-part"
+import { SimplePos } from "../../../src/pos/simple/simple-pos"
 
 const part0 = SimplePosPart.from(1, 0, 0)
 const part1 = SimplePosPart.from(1, 0, 1)

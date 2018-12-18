@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { IntervalOrdering, IntInterval } from "../../src/core/intinterval"
+import { IntervalOrdering, IntInterval } from "../../src/core/int-interval"
 
 function twiInterval (ref: IntInterval): IntInterval {
     return IntInterval.fromLength(ref.lower, ref.length)

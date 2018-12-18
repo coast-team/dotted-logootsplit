@@ -8,10 +8,10 @@
 
 import { assert, heavyAssert } from "../../core/assert"
 import { Block, LengthBlock, BlockOrdering } from "../../core/block"
-import { BlockFactory } from "../../core/blockfactory"
+import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Insertion, Deletion } from "../../core/localoperation"
+import { Insertion, Deletion } from "../../core/local-operation"
 import { isU32, u32 } from "../../core/number"
 
 export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {

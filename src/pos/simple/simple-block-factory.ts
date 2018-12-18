@@ -10,11 +10,11 @@ import { alea, AleaState } from "replayable-random"
 
 import { assert, heavyAssert } from "../../core/assert"
 import { isObject } from "../../core/data-validation"
-import { SimplePos } from "./simplepos"
-import { SimplePosPart } from "./simplepospart"
+import { SimplePos } from "./simple-pos"
+import { SimplePosPart } from "./simple-pos-part"
 import { isU32, u32, U32_TOP } from "../../core/number"
 import { Ordering } from "../../core/ordering"
-import { BlockFactory } from "../../core/blockfactory"
+import { BlockFactory } from "../../core/block-factory"
 
 /**
  * Factory of block with {@link SimplePos } as implementation of
