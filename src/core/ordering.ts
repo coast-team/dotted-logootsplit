@@ -7,7 +7,6 @@
 */
 
 import { readonly } from "./assert"
-import { compareUint32 } from "./number"
 
 /**
  * Possible relation between two elements in a totally ordered set.

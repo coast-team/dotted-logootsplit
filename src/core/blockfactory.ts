@@ -10,7 +10,7 @@ import { assert, heavyAssert } from "./assert"
 import { Block, BlockOrdering } from "./block"
 import { Concatenable } from "./concatenable"
 import { Position } from "./position"
-import { isUint32, uint32 } from "../core/number"
+import { uint32 } from "../core/number"
 import { Anchor } from "./anchor"
 
 /**

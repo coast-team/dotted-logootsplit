@@ -12,7 +12,7 @@ import { assert, heavyAssert } from "../core/assert"
 import { isObject } from "../core/data-validation"
 import { SimplePosition } from "./simpleposition"
 import { SimplePositionPart } from "./simplepositionpart"
-import { isUint32, nextRandomUint32, uint32, UINT32_TOP } from "../core/number"
+import { isUint32, uint32, UINT32_TOP } from "../core/number"
 import { Ordering } from "../core/ordering"
 import { BlockFactory } from "../core/blockfactory"
 

@@ -7,8 +7,8 @@
 */
 
 import { readonly } from "./assert"
-import { compareUint32, uint32 } from "./number"
-import { Ordering, orderingInversion } from "./ordering"
+import { uint32 } from "./number"
+import { Ordering } from "./ordering"
 
 /**
  * Possible relation between two position bases.

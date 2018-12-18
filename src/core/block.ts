@@ -7,7 +7,7 @@
 */
 
 import { assert, heavyAssert, readonly } from "./assert"
-import { isObject, fromArray, FromPlain, NonFunctionNames } from "../core/data-validation"
+import { isObject, FromPlain } from "../core/data-validation"
 import { digestOf, isUint32, uint32 } from "./number"
 import { Anchor } from "./anchor"
 import { Position, BaseOrdering } from "./position"

@@ -7,8 +7,7 @@
 */
 
 import { assert } from "./assert"
-import { compareUint32, isUint32, uint32 } from "./number"
-import { Ordering } from "./ordering"
+import { isUint32, uint32 } from "./number"
 
 /**
  * Possible order relation between two intervals.

@@ -19,7 +19,7 @@ import {
 } from "../core/number"
 import { Position, BaseOrdering, baseOrderingInversion } from "../core/position"
 import { SimplePositionPart } from "./simplepositionpart"
-import { Ordering, orderingInversion, lexCompareOrdering } from "../core/ordering"
+import { Ordering, orderingInversion } from "../core/ordering"
 
 /**
  * A position can be represented as a lexicographic list of
