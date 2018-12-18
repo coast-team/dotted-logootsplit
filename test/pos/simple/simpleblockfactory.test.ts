@@ -1,8 +1,8 @@
 import test from "ava"
 
-import { BlockOrdering, Block } from "../../src/core/block"
-import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
-import { SimplePos, SimplePosPart } from "../../src"
+import { BlockOrdering, Block } from "../../../src/core/block"
+import { SimpleBlockFactory } from "../../../src/pos/simple/simpleblockfactory"
+import { SimplePos, SimplePosPart } from "../../../src"
 
 const seed = "dotted-logootsplit"
 

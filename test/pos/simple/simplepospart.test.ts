@@ -2,8 +2,8 @@ import test from "ava"
 
 import { twinPositionPart } from "./pos.testutil"
 
-import { Ordering } from "../../src/core/ordering"
-import { SimplePosPart } from "../../src/position/simplepospart"
+import { Ordering } from "../../../src/core/ordering"
+import { SimplePosPart } from "../../../src/pos/simple/simplepospart"
 
 const part001 = SimplePosPart.from(1, 0, 1)
 const part010 = SimplePosPart.from(1, 1, 0)

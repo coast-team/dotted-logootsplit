@@ -19,8 +19,8 @@ export * from "./core/pos"
 
 export { u32 } from "./core/number"
 
-export * from "./position/simpleblockfactory"
-export * from "./position/simplepos"
-export * from "./position/simplepospart"
+export * from "./pos/simple/simpleblockfactory"
+export * from "./pos/simple/simplepos"
+export * from "./pos/simple/simplepospart"
 
-export * from "./list/replicatedlinkedlist"
+export * from "./list/linked/replicatedlinkedlist"

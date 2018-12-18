@@ -1,9 +1,9 @@
 import test from "ava"
 
-import { ReplicatedLinkedList } from "../../src/list/replicatedlinkedlist"
-import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
-import { SimplePos } from "../../src/position/simplepos"
-import { Insertion, Deletion } from "../../src/core/localoperation"
+import { ReplicatedLinkedList } from "../../../src/list/linked/replicatedlinkedlist"
+import { SimpleBlockFactory } from "../../../src/pos/simple/simpleblockfactory"
+import { SimplePos } from "../../../src/pos/simple/simplepos"
+import { Insertion, Deletion } from "../../../src/core/localoperation"
 
 function newSeq (factory: SimpleBlockFactory): ReplicatedLinkedList<SimplePos, string> {
     return new ReplicatedLinkedList(factory, "")

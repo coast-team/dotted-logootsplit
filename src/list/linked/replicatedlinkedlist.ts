@@ -6,14 +6,14 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "../core/assert"
-import { Block, LengthBlock } from "../core/block"
-import { BlockFactory } from "../core/blockfactory"
-import { Concat } from "../core/concat"
-import { Pos } from "../core/pos"
-import { Insertion, Deletion } from "../core/localoperation"
-import { digestOf, isU32, u32 } from "../core/number"
-import { ReadonlyReplicatedList, ReplicatedList } from "../core/replicatedlist"
+import { assert } from "../../core/assert"
+import { Block, LengthBlock } from "../../core/block"
+import { BlockFactory } from "../../core/blockfactory"
+import { Concat } from "../../core/concat"
+import { Pos } from "../../core/pos"
+import { Insertion, Deletion } from "../../core/localoperation"
+import { digestOf, isU32, u32 } from "../../core/number"
+import { ReadonlyReplicatedList, ReplicatedList } from "../../core/replicatedlist"
 import { Sentinel } from "./replicatedlinkedlistcell"
 
 export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>

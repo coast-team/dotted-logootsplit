@@ -6,8 +6,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "../core/assert"
-import { isObject } from "../core/data-validation"
+import { assert } from "../../core/assert"
+import { isObject } from "../../core/data-validation"
 import {
     compareU32,
     digestOf,
@@ -15,8 +15,8 @@ import {
     u32,
     U32_BOTTOM,
     U32_TOP,
-} from "../core/number"
-import { lexCompareOrdering, Ordering } from "../core/ordering"
+} from "../../core/number"
+import { lexCompareOrdering, Ordering } from "../../core/ordering"
 
 /**
  * Part of a {@link SimplePos}.

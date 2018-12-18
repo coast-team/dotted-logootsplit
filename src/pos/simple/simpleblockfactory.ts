@@ -8,13 +8,13 @@
 
 import { alea, AleaState } from "replayable-random"
 
-import { assert, heavyAssert } from "../core/assert"
-import { isObject } from "../core/data-validation"
+import { assert, heavyAssert } from "../../core/assert"
+import { isObject } from "../../core/data-validation"
 import { SimplePos } from "./simplepos"
 import { SimplePosPart } from "./simplepospart"
-import { isU32, u32, U32_TOP } from "../core/number"
-import { Ordering } from "../core/ordering"
-import { BlockFactory } from "../core/blockfactory"
+import { isU32, u32, U32_TOP } from "../../core/number"
+import { Ordering } from "../../core/ordering"
+import { BlockFactory } from "../../core/blockfactory"
 
 /**
  * Factory of block with {@link SimplePos } as implementation of
