@@ -7,6 +7,7 @@
 */
 
 import { assert, heavyAssert, readonly } from "./assert"
+import { isObject, fromArray, FromPlain, NonFunctionNames } from "../core/data-validation"
 import { digestOf, isUint32, uint32 } from "./number"
 import { Anchor } from "./anchor"
 import { Position, BaseOrdering } from "./position"
@@ -73,6 +74,21 @@ export class Block <P extends Position<P>, E extends Concatenable<E>> {
             "all positions are valid")
         this.lowerPosition = lowerPosition
         this.items = items
+    }
+
+    static fromPlain <P extends Position<P>, E extends Concatenable<E>>
+        (f: FromPlain<P>, g: FromPlain<E>): FromPlain<Block<P, E>> {
+
+        return (x: unknown) => {
+            if (isObject<{ lowerPosition: unknown, items: unknown }>(x)) {
+                const pos = f(x.lowerPosition)
+                const items = g(x.items)
+                if (pos !== undefined && items !== undefined) {
+                    return new Block(pos, items)
+                }
+            }
+            return undefined
+        }
     }
 
 // Access

@@ -9,6 +9,7 @@
 import { alea, AleaState } from "replayable-random"
 
 import { assert, heavyAssert } from "../core/assert"
+import { isObject } from "../core/data-validation"
 import { SimplePosition } from "./simpleposition"
 import { SimplePositionPart } from "./simplepositionpart"
 import { isUint32, nextRandomUint32, uint32, UINT32_TOP } from "../core/number"
@@ -52,6 +53,21 @@ export class SimpleBlockFactory extends BlockFactory<SimplePosition> {
         const seed = `${globalSeed}${replica}`
         const randState = alea.from(seed)
         return new SimpleBlockFactory(replica, 0, randState)
+    }
+
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain (x: unknown): SimpleBlockFactory | undefined {
+        if (isObject<SimpleBlockFactory>(x) &&
+            isUint32(x.replica) && x.replica !== UINT32_TOP &&
+            isUint32(x.seq)) {
+
+            // FIXME: check randState
+            return new SimpleBlockFactory(x.replica, x.seq, x.randState as AleaState)
+        }
+        return undefined
     }
 
 // Access

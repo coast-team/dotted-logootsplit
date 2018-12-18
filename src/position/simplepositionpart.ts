@@ -7,6 +7,7 @@
 */
 
 import { assert } from "../core/assert"
+import { isObject } from "../core/data-validation"
 import {
     compareUint32,
     digestOf,
@@ -50,6 +51,19 @@ export class SimplePositionPart {
         assert(() => replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP.")
         return new SimplePositionPart(priority, replica, seq)
+    }
+
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain (x: unknown): SimplePositionPart | undefined {
+        if (isObject<SimplePositionPart>(x) && isUint32(x.priority) &&
+            isUint32(x.replica) && isUint32(x.seq)) {
+
+            return new SimplePositionPart(x.priority, x.replica, x.seq)
+        }
+        return undefined
     }
 
     /**

@@ -15,7 +15,6 @@ import { Insertion, Deletion } from "../core/localoperation"
 import { digestOf, isUint32, uint32 } from "../core/number"
 import { ReadonlyReplicatableList, ReplicatableList } from "../core/replicablelist"
 import { Sentinel } from "./replicablelinkedlistcell"
-import { SimplePosition } from ".."
 
 export class ReadonlyReplicableLinkedList <P extends Position<P>, E extends Concatenable<E>>
     implements ReadonlyReplicatableList<P, E> {

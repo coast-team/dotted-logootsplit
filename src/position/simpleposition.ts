@@ -7,6 +7,7 @@
 */
 
 import { assert, heavyAssert } from "../core/assert"
+import { isObject, fromArray } from "../core/data-validation"
 import {
     absoluteSubstraction,
     compareUint32,
@@ -55,6 +56,26 @@ export class SimplePosition implements Position<SimplePosition> {
         assert(() => lastPart.replica !== UINT32_TOP,
             "replica != UINT32_TOP. This is reserved for BOTTOM and TOP.")
         return new SimplePosition(parts)
+    }
+
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain (x: unknown): SimplePosition | undefined {
+        if (isObject<SimplePosition>(x) && Array.isArray(x.parts)) {
+            const parts = fromArray(x.parts, SimplePositionPart.fromPlain)
+            if (parts !== undefined) {
+                const lastPart = parts[parts.length - 1]
+                if (lastPart.priority !== UINT32_BOTTOM &&
+                    lastPart.priority !== UINT32_TOP &&
+                    lastPart.replica !== UINT32_TOP) {
+
+                    return SimplePosition.from(parts)
+                }
+            }
+        }
+        return undefined
     }
 
     /**

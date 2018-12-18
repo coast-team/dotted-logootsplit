@@ -18,7 +18,8 @@ export const UINT32_TOP = 0xFFFF_FFFF // 2^32 - 1
  * @param n
  * @return Is {@link n} an uint32?
  */
-export const isUint32 = (n: number): n is uint32 =>
+export const isUint32 = (n: unknown): n is uint32 =>
+    typeof n === "number" &&
     Number.isSafeInteger(n) && UINT32_BOTTOM <= n && n <= UINT32_TOP
 
 /**
