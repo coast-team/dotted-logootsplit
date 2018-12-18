@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { twinBlock } from "../position/position.testutil"
+import { twinBlock } from "../position/pos.testutil"
 
 import { Block, BlockOrdering } from "../../src/core/block"
 import { SimplePos } from "../../src/position/simplepos"
@@ -15,10 +15,10 @@ const pos10 = SimplePos.from([prefixingPart1, part0, part3])
 
 const b1abc = new Block(pos1, "abc")
 const b1ab = new Block(pos1, "ab")
-const b1bc = new Block(pos1.intSuccessor(1), "bc")
+const b1bc = new Block(pos1.intSucc(1), "bc")
 const b1a = new Block(pos1, "a")
-const b1b = new Block(pos1.intSuccessor(1), "b")
-const b1c = new Block(pos1.intSuccessor(2), "c")
+const b1b = new Block(pos1.intSucc(1), "b")
+const b1c = new Block(pos1.intSucc(2), "c")
 const b10xyz = new Block(pos10, "xyz")
 
 test("length", (t) => {
@@ -27,7 +27,7 @@ test("length", (t) => {
 
 test("nthPosition", (t) => {
     for (let i = 0; i < b1abc.length; i++) {
-        t.deepEqual(b1abc.nthPos(i), b1abc.lowerPosition.intSuccessor(i))
+        t.deepEqual(b1abc.nthPos(i), b1abc.lowerPos.intSucc(i))
     }
 })
 

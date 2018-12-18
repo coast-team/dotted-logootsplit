@@ -13,7 +13,7 @@ import { Ordering } from "./ordering"
  * An anchor can be used to model the cursor, the selection of a participant in
  * a coeditable list.
  *
- * An anchor is always just before a given {@link Position }.
+ * An anchor is always just before a given {@link Pos }.
  */
 export class Anchor <P extends Pos<P>> {
     /**
@@ -21,17 +21,9 @@ export class Anchor <P extends Pos<P>> {
      * Anchor(p) is just before p
      * There not exists another position between Anchor(p) and p
      *
-     * @param ref {@link Anchor#reference}
+     * @param ref position to which this anchor is relative to.
      */
-    constructor (ref: P) {
-        this.reference = ref
-    }
-
-// Access
-    /**
-     * Position to which this anchor is relative to.
-     */
-    readonly reference: P
+    constructor (readonly ref: P) {}
 
 // Status
     /**
@@ -39,7 +31,7 @@ export class Anchor <P extends Pos<P>> {
      * @return this [Order relation] other
      */
     compare (other: Anchor<P>): Ordering {
-        return this.reference.compare(other.reference)
+        return this.ref.compare(other.ref)
     }
 
     /**
@@ -52,7 +44,7 @@ export class Anchor <P extends Pos<P>> {
     compareTo (pos: P): Ordering.BEFORE | Ordering.AFTER {
         // TODO: avoid union type.
         // use a specific enum type? or just Ordering?
-        const rel = this.reference.compare(pos)
+        const rel = this.ref.compare(pos)
         if (rel !== Ordering.EQUAL) {
             return rel
         } else {

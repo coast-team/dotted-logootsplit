@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { twinPositionPart } from "./position.testutil"
+import { twinPositionPart } from "./pos.testutil"
 
 import { Ordering } from "../../src/core/ordering"
 import { SimplePosPart } from "../../src/position/simplepospart"

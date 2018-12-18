@@ -7,7 +7,7 @@
 */
 
 import { assert } from "./assert"
-import { isUint32, uint32 } from "./number"
+import { isU32, u32 } from "./number"
 
 /**
  * Concatenable and sliceable types.
@@ -17,7 +17,7 @@ export interface Concat <E extends Concat<E>> {
     /**
      * Number of elements.
      */
-    readonly length: uint32
+    readonly length: u32
 
     /**
      * "abc".slice(0, 3) === "abc"
@@ -27,7 +27,7 @@ export interface Concat <E extends Concat<E>> {
      * @param excludedUpper excluded index where the slice ends.
      * @return Slice between indexes [`lower', `excludedUpper'[.
      */
-    readonly slice: (lower: uint32, excludedUpper: uint32) => E
+    readonly slice: (lower: u32, excludedUpper: u32) => E
 
     /**
      * @param other appended elements
@@ -40,34 +40,34 @@ export interface Concat <E extends Concat<E>> {
  * Minimal implementation of Concatenable.
  * This enables to model a number of elements without their availability.
  *
- * For instance ConcatenableLength(3) can represent "abc", [1, 2, 3], or any
+ * For instance ConcatLength(3) can represent "abc", [1, 2, 3], or any
  * 3-elements list.
  */
-export class ConcatenableLength implements Concat<ConcatenableLength> {
+export class ConcatLength implements Concat<ConcatLength> {
     /** Nominal typing */
     private readonly brandConcatenableLength: undefined
 
     /**
-     * @param length Concatenable#length
+     * @param length {@link Concat#length}
      */
-    constructor (readonly length: uint32) {
-        assert(() => isUint32(length), "length ∈ uint32")
+    constructor (readonly length: u32) {
+        assert(() => isU32(length), "length ∈ u32")
     }
 
 // Access
     /** @override */
-    slice (lower: uint32, excludedUpper: uint32): ConcatenableLength {
-        assert(() => isUint32(lower), "lower ∈ uint32")
+    slice (lower: u32, excludedUpper: u32): ConcatLength {
+        assert(() => isU32(lower), "lower ∈ u32")
         assert(() => lower < this.length, "lower < this.length")
-        assert(() => isUint32(excludedUpper), "excludedUpper ∈ uint32")
+        assert(() => isU32(excludedUpper), "excludedUpper ∈ u32")
         assert(() => excludedUpper <= this.length, "excludedUpper <= this.length")
         assert(() => lower <= excludedUpper, "lower <= excludedUpper")
-        return new ConcatenableLength(excludedUpper - lower)
+        return new ConcatLength(excludedUpper - lower)
     }
 
     /** @override */
-    concat (other: ConcatenableLength): ConcatenableLength {
-        assert(() => isUint32(this.length + other.length), "valid concatenation")
-        return new ConcatenableLength(this.length + other.length)
+    concat (other: ConcatLength): ConcatLength {
+        assert(() => isU32(this.length + other.length), "valid concatenation")
+        return new ConcatLength(this.length + other.length)
     }
 }

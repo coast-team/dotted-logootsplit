@@ -1,10 +1,10 @@
 import test from "ava"
 
-import { ConcatenableLength } from "../../src/core/concat"
+import { ConcatLength } from "../../src/core/concat"
 
-const length0 = new ConcatenableLength(0)
-const length1 = new ConcatenableLength(1)
-const length2 = new ConcatenableLength(2)
+const length0 = new ConcatLength(0)
+const length1 = new ConcatLength(1)
+const length2 = new ConcatLength(2)
 
 test("slice", (t) => {
     t.deepEqual(length2.slice(0, 0), length0)

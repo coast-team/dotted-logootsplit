@@ -10,12 +10,12 @@ import { assert, heavyAssert } from "../core/assert"
 import { isObject, fromArray } from "../core/data-validation"
 import {
     absoluteSubstraction,
-    compareUint32,
+    compareU32,
     digestOf,
-    isUint32,
-    uint32,
-    UINT32_BOTTOM,
-    UINT32_TOP,
+    isU32,
+    u32,
+    U32_BOTTOM,
+    U32_TOP,
 } from "../core/number"
 import { Pos, BaseOrdering, baseOrderingInversion } from "../core/pos"
 import { SimplePosPart } from "./simplepospart"
@@ -36,7 +36,7 @@ import { Ordering, orderingInversion } from "../core/ordering"
  */
 export class SimplePos implements Pos<SimplePos> {
     /**
-     * @param parts {@link SimplePosition#parts }
+     * @param parts {@link SimplePos#parts }
      */
     protected constructor (parts: ReadonlyArray<SimplePosPart>) {
         assert(() => parts.length > 0, "parts must not be empty")
@@ -44,17 +44,17 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /**
-     * @param parts {@link SimplePosition#parts }
-     *  The last part must be distinct of SimplePositionPart.BOTTOM and
-     *  SimplePositionPart.TOP.
-     * @return Position with {@link parts } as {@link SimplePosition#parts }.
+     * @param parts {@link SimplePos#parts }
+     *  The last part must be distinct of SimplePosPart.BOTTOM and
+     *  SimplePosPart.TOP.
+     * @return Position with {@link parts } as {@link SimplePos#parts }.
      */
     static from (parts: ReadonlyArray<SimplePosPart>): SimplePos {
         const lastPart = parts[parts.length - 1]
-        assert(() => lastPart.priority !== UINT32_BOTTOM && lastPart.priority !== UINT32_TOP,
-            "priority ∉ {UINT32_BOTTOM, UINT32_TOP}")
-        assert(() => lastPart.replica !== UINT32_TOP,
-            "replica != UINT32_TOP. This is reserved for BOTTOM and TOP.")
+        assert(() => lastPart.priority !== U32_BOTTOM && lastPart.priority !== U32_TOP,
+            "priority ∉ {U32_BOTTOM, U32_TOP}")
+        assert(() => lastPart.replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP.")
         return new SimplePos(parts)
     }
 
@@ -67,9 +67,9 @@ export class SimplePos implements Pos<SimplePos> {
             const parts = fromArray(x.parts, SimplePosPart.fromPlain)
             if (parts !== undefined) {
                 const lastPart = parts[parts.length - 1]
-                if (lastPart.priority !== UINT32_BOTTOM &&
-                    lastPart.priority !== UINT32_TOP &&
-                    lastPart.replica !== UINT32_TOP) {
+                if (lastPart.priority !== U32_BOTTOM &&
+                    lastPart.priority !== U32_TOP &&
+                    lastPart.replica !== U32_TOP) {
 
                     return SimplePos.from(parts)
                 }
@@ -94,8 +94,8 @@ export class SimplePos implements Pos<SimplePos> {
      * @return Position with the same base as this,
      *  but with a different seq
      */
-    withSeq (seq: uint32): SimplePos {
-        assert(() => isUint32(seq), "offset ∈ uint32")
+    withSeq (seq: u32): SimplePos {
+        assert(() => isU32(seq), "offset ∈ u32")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
         parts[lastIndex] = parts[lastIndex].withSeq(seq)
@@ -103,9 +103,9 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    intSuccessor (n: uint32): SimplePos {
-        assert(() => isUint32(n), "n ∈ uint32")
-        assert(() => this.hasIntSuccessor(n), "this has a n-th successor")
+    intSucc (n: u32): SimplePos {
+        assert(() => isU32(n), "n ∈ u32")
+        assert(() => this.hasIntSucc(n), "this has a n-th successor")
         return this.withSeq(this.seq() + n)
     }
 
@@ -116,35 +116,35 @@ export class SimplePos implements Pos<SimplePos> {
     readonly parts: ReadonlyArray<SimplePosPart>
 
     /**
-     * Last part of {@link SimplePositionPart#parts }.
+     * Last part of {@link SimplePosPart#parts }.
      */
     lastPart (): SimplePosPart {
         return this.parts[this.parts.length - 1]
     }
 
     /**
-     * Number of part in {@link SimplePositionPart#parts }.
+     * Number of part in {@link SimplePosPart#parts }.
      */
-    depth (): uint32 {
+    depth (): u32 {
         return this.parts.length
     }
 
     /** @override */
-    replica (): uint32 {
+    replica (): u32 {
         return this.lastPart().replica
     }
 
     /** @override */
-    seq (): uint32 {
+    seq (): u32 {
         return this.lastPart().seq
     }
 
     /**
      * @return unique identifier of the block where the position is part of.
      */
-    blockIdentifier (): ReadonlyArray<uint32> {
+    blockIdentifier (): ReadonlyArray<u32> {
         // TODO use a typed array and then a typeable array as return type?
-        const result = this.parts.reduce((acc: uint32[], part) => (
+        const result = this.parts.reduce((acc: u32[], part) => (
                 acc.concat(part.asTuple())
             ), [])
         result.pop() // remove last seq
@@ -152,7 +152,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    intDistance (other: SimplePos): [uint32, Ordering] {
+    intDistance (other: SimplePos): [u32, Ordering] {
         if (this.depth() > other.depth()) {
             const [dist, order] = other.intDistance(this)
             return [dist, orderingInversion[order]]
@@ -166,21 +166,21 @@ export class SimplePos implements Pos<SimplePos> {
             const seq = this.seq()
             return [
                 absoluteSubstraction(seq, otherSeq),
-                compareUint32(seq, otherSeq)
+                compareU32(seq, otherSeq)
             ]
         }
     }
 
     /** @override */
-    digest (): uint32 {
+    digest (): u32 {
         return digestOf(this.parts.map((part) => part.digest()))
     }
 
 // Status
     /** @override */
-    hasIntSuccessor (n: uint32): boolean {
-        assert(() => isUint32(n), "n ∈ uint32")
-        return isUint32(this.seq() + n)
+    hasIntSucc (n: u32): boolean {
+        assert(() => isU32(n), "n ∈ u32")
+        return isU32(this.seq() + n)
     }
 
     /** @override */
@@ -236,7 +236,7 @@ export class SimplePos implements Pos<SimplePos> {
             } while (i < this.depth() && cmp === Ordering.EQUAL)
 
             if (cmp === Ordering.EQUAL) {
-                return compareUint32(this.depth(), other.depth())
+                return compareU32(this.depth(), other.depth())
             } else {
                 return cmp
             }

@@ -7,7 +7,7 @@
 */
 
 import { readonly } from "./assert"
-import { uint32 } from "./number"
+import { u32 } from "./number"
 import { Ordering } from "./ordering"
 
 /**
@@ -64,18 +64,18 @@ export interface Pos <P extends Pos<P>> {
      * @param n 0-based index.
      * @return {@link n } -th integer successor of this.
      */
-    readonly intSuccessor: (n: uint32) => P
+    readonly intSucc: (n: u32) => P
 
 // Access
     /**
      * Globally unique identifier of the author which generated this position.
      */
-    readonly replica: () => uint32
+    readonly replica: () => u32
 
     /**
      * When was generated this position.
      */
-    readonly seq: () => uint32
+    readonly seq: () => u32
 
     /**
      * @example
@@ -89,23 +89,23 @@ export interface Pos <P extends Pos<P>> {
      * @return Integer distance from this to {@link other } and
      *  order between this and {@link other }.
      */
-    readonly intDistance: (other: P) => [uint32, Ordering]
+    readonly intDistance: (other: P) => [u32, Ordering]
 
     /**
      * Hash code.
      */
-    readonly digest: () => uint32
+    readonly digest: () => u32
 
 // Status
     /**
      * hasIntSuccessor(0) is always true.
      *
-     * See also {@link Pos#intSuccessor }.
+     * See also {@link Pos#intSucc }.
      *
      * @param n 0-based index.
      * @return is there a {@link n } -th integer successor?
      */
-    readonly hasIntSuccessor: (n: uint32) => boolean
+    readonly hasIntSucc: (n: u32) => boolean
 
     /**
      * @param other

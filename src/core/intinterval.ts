@@ -7,7 +7,7 @@
 */
 
 import { assert } from "./assert"
-import { isUint32, uint32 } from "./number"
+import { isU32, u32 } from "./number"
 
 /**
  * Possible order relation between two intervals.
@@ -32,28 +32,25 @@ export const enum IntervalOrdering  {
 }
 
 /**
- * Interval of uint32.
+ * Interval of u32.
  */
 export class IntInterval {
     /**
-     * @param lower {@link IntInterval#lower }
-     * @param length  {@link IntInterval#length }
+     * @param lower Lower bound.
+     * @param length Number of elements in the interval.
      */
-    protected constructor (lower: uint32, length: uint32) {
-        this.lower = lower
-        this.length = length
-    }
+    protected constructor (readonly lower: u32, readonly length: u32) {}
 
     /**
      * @param lower {@link IntInterval#lower }
      * @param length {@link IntInterval#length }
      * @return New interval.
      */
-    static fromLength (lower: uint32, length: uint32): IntInterval {
-        assert(() => isUint32(lower), "lower ∈ uint32")
-        assert(() => isUint32(length), "length ∈ uint32")
+    static fromLength (lower: u32, length: u32): IntInterval {
+        assert(() => isU32(lower), "lower ∈ u32")
+        assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
-        //assert(() => isUint32(lower + length))
+        //assert(() => isu32(lower + length))
         return new IntInterval(lower, length)
     }
 
@@ -62,24 +59,14 @@ export class IntInterval {
      * @param upper {@link IntInterval#length }
      * @return New interval.
      */
-    static fromBounds (lower: uint32, upper: uint32): IntInterval {
-        assert(() => isUint32(lower), "lower ∈ uint32")
-        assert(() => isUint32(upper), "upper ∈ uint32")
+    static fromBounds (lower: u32, upper: u32): IntInterval {
+        assert(() => isU32(lower), "lower ∈ u32")
+        assert(() => isU32(upper), "upper ∈ u32")
         assert(() => lower <= upper, "lower <= upper")
         return IntInterval.fromLength(lower, upper - lower + 1)
     }
 
 // Access
-    /**
-     * Lower bound.
-     */
-    readonly lower: uint32
-
-    /**
-     * Number of elements in the interval.
-     */
-    readonly length: uint32
-
     /**
      * @example
      * nth(0) == lower
@@ -88,17 +75,17 @@ export class IntInterval {
      * @param nth 0-based
      * @return n-th element.
      */
-    nth (nth: uint32): uint32 {
-        assert(() => isUint32(nth), "nth ∈ uint32")
+    nth (nth: u32): u32 {
+        assert(() => isU32(nth), "nth ∈ u32")
         assert(() => nth < this.length, "valid nth")
-        assert(() => isUint32(this.lower + nth), "No integer overflow")
+        assert(() => isU32(this.lower + nth), "No integer overflow")
         return this.lower + nth
     }
 
     /**
      * Upper bound.
      */
-    upper (): uint32 {
+    upper (): u32 {
         return this.nth(this.length - 1)
     }
 
@@ -118,8 +105,8 @@ export class IntInterval {
      *      0 < index < length
      * @return Right and left splits.
      */
-    splitAt (index: uint32): [IntInterval, IntInterval] {
-        assert(() => isUint32(index), "index ∈ uint32")
+    splitAt (index: u32): [IntInterval, IntInterval] {
+        assert(() => isU32(index), "index ∈ u32")
         assert(() => 0 < index && index < this.length, "0 < index < this.length")
 
         const leftInterval = new IntInterval(this.lower, index)

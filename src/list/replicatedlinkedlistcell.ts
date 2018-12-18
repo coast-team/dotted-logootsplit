@@ -12,22 +12,15 @@ import { BlockFactory } from "../core/blockfactory"
 import { Concat } from "../core/concat"
 import { Pos } from "../core/pos"
 import { Insertion, Deletion } from "../core/localoperation"
-import { isUint32, uint32 } from "../core/number"
+import { isU32, u32 } from "../core/number"
 
 export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
     /**
-     * @param right {@link Linkable#right }
+     * @param right Next cell.
      */
-    constructor (right?: Cell<P, E>) {
-        this.right = right
-    }
+    constructor (public right?: Cell<P, E>) {}
 
 // Access
-    /**
-     * Next cell.
-     */
-    right?: Cell<P, E>
-
     reduceBlock <U> (f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
         if (this.right === undefined) {
             return prefix
@@ -59,8 +52,8 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert (iBlock: Block<P, E>, index: uint32): Insertion<E>[] {
-        assert(() => isUint32(index), "index ∈ uint32")
+    insert (iBlock: Block<P, E>, index: u32): Insertion<E>[] {
+        assert(() => isU32(index), "index ∈ u32")
 
         if (this.right === undefined) {
             this.insertRight(iBlock)
@@ -139,8 +132,8 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
      * @param factory strategy of block generation.
      * @return Delta which represents the insertion.
      */
-    insertAt (index: uint32, items: E, factory: BlockFactory<P>): [Block<P, E>, BlockFactory<P>] {
-        assert(() => isUint32(index), "index ∈ uint32")
+    insertAt (index: u32, items: E, factory: BlockFactory<P>): [Block<P, E>, BlockFactory<P>] {
+        assert(() => isU32(index), "index ∈ u32")
         assert(() => items.length > 0, "items.length > 0")
 
         let generated: [Block<P, E>, BlockFactory<P>]
@@ -187,9 +180,9 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt (index: uint32, length: uint32): LengthBlock<P>[] {
-        assert(() => isUint32(index), "index ∈ uint32")
-        assert(() => isUint32(length), "length ∈ uint32")
+    removeAt (index: u32, length: u32): LengthBlock<P>[] {
+        assert(() => isU32(index), "index ∈ u32")
+        assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
 
         if (this.right !== undefined) {
@@ -236,8 +229,8 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove (dBlock: LengthBlock<P> | Block<P, E>, index: uint32): Deletion[] {
-        assert(() => isUint32(index), "index ∈ uint32")
+    remove (dBlock: LengthBlock<P> | Block<P, E>, index: u32): Deletion[] {
+        assert(() => isU32(index), "index ∈ u32")
 
         if (this.right !== undefined) {
             const rBlock = this.right.block
@@ -312,7 +305,7 @@ export class Cell <P extends Pos<P>, E extends Concat<E>> extends Linkable<P, E>
      * @param block {@link Cell#block }
      * @param right {@link Linkable#right }
      */
-    constructor (block: Block<P, E>, right?: Cell<P, E>) {
+    constructor (block: Block<P, E>, right: Cell<P, E> | undefined) {
         heavyAssert(() => (right === undefined ||
                 block.compare(right.block) === BlockOrdering.BEFORE),
             "block < right.block")

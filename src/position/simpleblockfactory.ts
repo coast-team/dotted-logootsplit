@@ -12,7 +12,7 @@ import { assert, heavyAssert } from "../core/assert"
 import { isObject } from "../core/data-validation"
 import { SimplePos } from "./simplepos"
 import { SimplePosPart } from "./simplepospart"
-import { isUint32, uint32, UINT32_TOP } from "../core/number"
+import { isU32, u32, U32_TOP } from "../core/number"
 import { Ordering } from "../core/ordering"
 import { BlockFactory } from "../core/blockfactory"
 
@@ -28,12 +28,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @param seq {@link SimpleBlockFactory#seq }
      * @param randState random generator's state
      */
-    constructor (replica: uint32, seq: uint32, randState: AleaState) {
-        assert(() => isUint32(replica), "replica ∈ uint32")
-        assert(() => replica !== UINT32_TOP,
-            "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
+    constructor (replica: u32, seq: u32, randState: AleaState) {
+        assert(() => isU32(replica), "replica ∈ u32")
+        assert(() => replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP pos.")
         super(SimplePos)
-        assert(() => isUint32(seq), "seq ∈ uint32")
+        assert(() => isU32(seq), "seq ∈ u32")
         this.replica = replica
         this.seq = seq
         this.randState = randState
@@ -46,10 +46,10 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @param globalSeed Seed for predictable random generation.
      * @return New factory with 0 as {@link SimpleBlockFactory#seq }
      */
-    static from (replica: uint32, globalSeed: string): SimpleBlockFactory {
-        assert(() => isUint32(replica), "replica ∈ uint32")
-        assert(() => replica !== UINT32_TOP,
-            "replica != UINT32_TOP. This is reserved for BOTTOM and TOP positions.")
+    static from (replica: u32, globalSeed: string): SimpleBlockFactory {
+        assert(() => isU32(replica), "replica ∈ u32")
+        assert(() => replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP positions.")
         const seed = `${globalSeed}${replica}`
         const randState = alea.from(seed)
         return new SimpleBlockFactory(replica, 0, randState)
@@ -61,8 +61,8 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      */
     static fromPlain (x: unknown): SimpleBlockFactory | undefined {
         if (isObject<SimpleBlockFactory>(x) &&
-            isUint32(x.replica) && x.replica !== UINT32_TOP &&
-            isUint32(x.seq)) {
+            isU32(x.replica) && x.replica !== U32_TOP &&
+            isU32(x.seq)) {
 
             // FIXME: check randState
             return new SimpleBlockFactory(x.replica, x.seq, x.randState as AleaState)
@@ -72,10 +72,10 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
 // Access
     /** @Override */
-    readonly replica: uint32
+    readonly replica: u32
 
     /** @Override */
-    readonly seq: uint32
+    readonly seq: u32
 
     readonly randState: AleaState
 
@@ -87,9 +87,9 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * increased by {@link by } and {@link SimpleBlockFactory#randState }
      * replaced by {@link randState }
      */
-    evolve (by: uint32, randState: AleaState): SimpleBlockFactory {
-        assert(() => isUint32(by), "by ∈ uint32")
-        assert(() => isUint32(this.seq + by), "no overflow")
+    evolve (by: u32, randState: AleaState): SimpleBlockFactory {
+        assert(() => isU32(by), "by ∈ u32")
+        assert(() => isU32(this.seq + by), "no overflow")
         return new SimpleBlockFactory(this.replica, this.seq + by, randState)
     }
 
@@ -98,23 +98,23 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @return Same factory, but with {@link SimpleBlockFactory#seq }
      * increased by {@link by }
      */
-    increasedSeq (by: uint32): SimpleBlockFactory {
-        assert(() => isUint32(by), "by ∈ uint32")
-        assert(() => isUint32(this.seq + by), "no overflow")
+    increasedSeq (by: u32): SimpleBlockFactory {
+        assert(() => isU32(by), "by ∈ u32")
+        assert(() => isU32(this.seq + by), "no overflow")
         return this.evolve(by, this.randState)
     }
 
 // Impl
     /** @override */
-    posBetween (l: SimplePos, length: uint32, u: SimplePos): [SimplePos, SimpleBlockFactory] {
+    posBetween (l: SimplePos, length: u32, u: SimplePos): [SimplePos, SimpleBlockFactory] {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
-        assert(() => isUint32(length), "length ∈ uint32")
+        assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length is strictly positive")
-        assert(() => isUint32(this.seq + length), "no overflow")
+        assert(() => isU32(this.seq + length), "no overflow")
 
         if (l.replica() === this.replica && (l.seq() + 1) === this.seq) {
             // Appendable
-            return [l.intSuccessor(1), this.increasedSeq(length)]
+            return [l.intSucc(1), this.increasedSeq(length)]
         } else {
             const seqL = infiniteSequence(l.parts, SimplePosPart.BOTTOM)
             const seqU = infiniteSequence(u.parts, SimplePosPart.TOP)
@@ -128,7 +128,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
                     // Split
                     parts.push(partL)
                 } else {
-                    parts.push(partL.withSeq(UINT32_TOP))
+                    parts.push(partL.withSeq(U32_TOP))
                 }
                 partL = seqL.next().value
                 partU = seqU.next().value

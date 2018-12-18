@@ -40,7 +40,7 @@ test("between_surrounded-block", (t) => {
 
 test("between_dense-set-appendable", (t) => {
     const B = 2
-    const priority = firstA.lowerPosition.parts[0].priority
+    const priority = firstA.lowerPos.parts[0].priority
     const pos2 = SimplePosPart.from(priority + 1, B, 0)
     const block2 = new Block(SimplePos.from([pos2]), "x")
 

@@ -10,7 +10,7 @@ import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { Insertion, Deletion } from "./localoperation"
-import { uint32 } from "./number"
+import { u32 } from "./number"
 
 /**
  * List which can only be remotely updated using deltas.
@@ -19,7 +19,7 @@ export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> 
     /**
      * Number of inserted items.
      */
-    readonly length: uint32
+    readonly length: u32
 
     /**
      * @param prefix
@@ -31,7 +31,7 @@ export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> 
      * Hash code.
      * Note that the content is not take into account.
      */
-    readonly structuralDigest: () => uint32
+    readonly structuralDigest: () => u32
 
 // Modification
     /**
@@ -63,7 +63,7 @@ export interface ReplicatedList <P extends Pos<P>, E extends Concat<E>>
      * @param items elements to insert.
      * @return Delta which represents the insertion.
      */
-    insertAt: (index: uint32, items: E) => Block<P, E>
+    insertAt: (index: u32, items: E) => Block<P, E>
 
     /**
      * [Mutation]
@@ -73,5 +73,5 @@ export interface ReplicatedList <P extends Pos<P>, E extends Concat<E>>
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt: (index: uint32, length: uint32) => LengthBlock<P>[]
+    removeAt: (index: u32, length: u32) => LengthBlock<P>[]
 }

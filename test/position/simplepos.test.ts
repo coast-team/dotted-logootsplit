@@ -1,9 +1,9 @@
 import test from "ava"
 
-import { twinPosition } from "./position.testutil"
+import { twinPosition } from "./pos.testutil"
 
 //import {INT32_TOP} from '../../src/core/number'
-import { UINT32_TOP } from "../../src/core/number"
+import { U32_TOP } from "../../src/core/number"
 import { BaseOrdering } from "../../src/core/pos"
 import { Ordering } from "../../src/core/ordering"
 import { SimplePosPart } from "../../src/position/simplepospart"
@@ -24,17 +24,17 @@ const pos14 = SimplePos.from([part1, part4])
 const pos15 = SimplePos.from([part1, part5])
 
 test("hasIntSuccessor", (t) => {
-    t.true(pos0.hasIntSuccessor(1))
-    t.true(pos0.hasIntSuccessor(UINT32_TOP))
+    t.true(pos0.hasIntSucc(1))
+    t.true(pos0.hasIntSucc(U32_TOP))
 })
 
 test("hasIntSuccessor_contract_", (t) => {
-    t.throws(() => pos0.hasIntSuccessor(-1))
-    t.throws(() => pos0.hasIntSuccessor(UINT32_TOP + 1))
+    t.throws(() => pos0.hasIntSucc(-1))
+    t.throws(() => pos0.hasIntSucc(U32_TOP + 1))
 })
 
 test("intSuccessor", (t) => {
-    t.deepEqual(pos0.intSuccessor(1), pos1)
+    t.deepEqual(pos0.intSucc(1), pos1)
 })
 
 test("intDistance", (t) => {

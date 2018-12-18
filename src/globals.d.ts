@@ -17,7 +17,7 @@ interface Console {
 
     trace: () => void
 
-    count: (label?: string) => uint32
+    count: (label?: string) => u32
 
 // Logging
     info: (message?: string, ...objs: any[]) => void

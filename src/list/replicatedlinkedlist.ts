@@ -12,7 +12,7 @@ import { BlockFactory } from "../core/blockfactory"
 import { Concat } from "../core/concat"
 import { Pos } from "../core/pos"
 import { Insertion, Deletion } from "../core/localoperation"
-import { digestOf, isUint32, uint32 } from "../core/number"
+import { digestOf, isU32, u32 } from "../core/number"
 import { ReadonlyReplicatedList, ReplicatedList } from "../core/replicatedlist"
 import { Sentinel } from "./replicatedlinkedlistcell"
 
@@ -31,7 +31,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
     /**
      * Map replica to their last observed seq.
      */
-    protected readonly versionVector: {[replica: string]: uint32 | undefined}
+    protected readonly versionVector: {[replica: string]: u32 | undefined}
 
     /**
      * Chain entry.
@@ -39,7 +39,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
     readonly sentinel: Sentinel<P, E>
 
     /** @Override */
-    length: uint32
+    length: u32
 
     /** @Override */
     concatenated (prefix: E): E {
@@ -47,7 +47,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
     }
 
     /** @Override */
-    structuralDigest (): uint32 {
+    structuralDigest (): u32 {
         return this.sentinel.reduceBlock(
             (acc, b) => digestOf([acc, b.structuralDigest()]), 0)
     }
@@ -116,7 +116,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
     }
 }
 
-export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
+export class ReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>
     extends ReadonlyReplicatedLinkedList<P, E>
     implements ReplicatedList<P, E> {
 
@@ -136,11 +136,11 @@ export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
 
 // Modification
     /** @Override */
-    insertAt (index: uint32, items: E): Block<P, E> {
-        assert(() => isUint32(index), "index ∈ uint32")
+    insertAt (index: u32, items: E): Block<P, E> {
+        assert(() => isU32(index), "index ∈ u32")
         assert(() => index <= this.length, "valid index")
         assert(() => items.length > 0, "items is not empty")
-        assert(() => isUint32(this.length + items.length), "(items.length + this.length) ∈ uint32")
+        assert(() => isU32(this.length + items.length), "(items.length + this.length) ∈ u32")
         const [result, newFactory] = this.sentinel.insertAt(index, items, this.factory)
         this.factory = newFactory
         this.length = this.length + items.length
@@ -149,10 +149,10 @@ export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
     }
 
     /** @Override */
-    removeAt (index: uint32, length: uint32): LengthBlock<P>[] {
-        assert(() => isUint32(index), "index ∈ uint32")
-        assert(() => isUint32(length), "length ∈ uint32")
-        assert(() => isUint32(index + length), "(index + length) ∈ uint32")
+    removeAt (index: u32, length: u32): LengthBlock<P>[] {
+        assert(() => isU32(index), "index ∈ u32")
+        assert(() => isU32(length), "length ∈ u32")
+        assert(() => isU32(index + length), "(index + length) ∈ u32")
         assert(() => length > 0, "length > 0")
         assert(() => (index + length) <= this.length, "(index + length) <= this.length")
         this.length = this.length - length

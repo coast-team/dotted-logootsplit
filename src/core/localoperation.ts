@@ -8,38 +8,28 @@
 
 import { assert } from "./assert"
 import { Concat } from "./concat"
-import { isUint32, uint32 } from "./number"
+import { isU32, u32 } from "./number"
 
 /**
  * Model an insertion in a single-user list.
  */
 export class Insertion <E extends Concat<E>> {
     /**
-     * @param index {@link Insertion#index}
-     * @param items {@link Insertion#items}
+     * @param index Insertion index.
+     * @param items Inserted elements.
      */
-    constructor (index: uint32, items: E) {
-        assert(() => isUint32(index), "index ∈ uint32")
-        assert(() => items.length > 0, "length ∈ uint32")
+    constructor (readonly index: u32, readonly items: E) {
+        assert(() => isU32(index), "index ∈ u32")
+        assert(() => items.length > 0, "length ∈ u32")
         this.index = index
         this.items = items
     }
 
 // Access
     /**
-     * Insertion index.
-     */
-    readonly index: uint32
-
-    /**
-     * Inserted elements.
-     */
-    readonly items: E
-
-    /**
      * Number of inserted elements.
      */
-    get length (): uint32 {
+    get length (): u32 {
         return this.items.length
     }
 }
@@ -49,25 +39,12 @@ export class Insertion <E extends Concat<E>> {
  */
 export class Deletion {
     /**
-     * @param index Insertion#index
-     * @param items Insertion#length
+     * @param index Removal index.
+     * @param items Number of removed elements.
      */
-    constructor (index: uint32, length: uint32) {
-        assert(() => isUint32(index), "index ∈ uint32")
-        assert(() => isUint32(length), "length ∈ uint32")
+    constructor (readonly index: u32, readonly length: u32) {
+        assert(() => isU32(index), "index ∈ u32")
+        assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
-        this.index = index
-        this.length = length
     }
-
-// Access
-    /**
-     * Removal index.
-     */
-    readonly index: uint32
-
-    /**
-     * Number of removed elements.
-     */
-    readonly length: uint32
 }

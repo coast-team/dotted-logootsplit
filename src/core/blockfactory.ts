@@ -10,7 +10,7 @@ import { assert, heavyAssert } from "./assert"
 import { Block, BlockOrdering } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { uint32 } from "../core/number"
+import { u32 } from "../core/number"
 import { Anchor } from "./anchor"
 
 /**
@@ -35,14 +35,14 @@ export abstract class BlockFactory <P extends Pos<P>> {
      * Globally unique identifier of the author of the generated blocks
      * by this factory.
      */
-    readonly abstract replica: uint32
+    readonly abstract replica: u32
 
     /**
      * Monotically increasing sequence number.
      * It is locally unique.
      * Seq use in the next generation.
      */
-    readonly abstract seq: uint32
+    readonly abstract seq: u32
 
     /**
      * @param items
@@ -77,7 +77,7 @@ export abstract class BlockFactory <P extends Pos<P>> {
     before <E extends Concat<E>> (items: E, u: Block<P, E>): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         const [pos, factory] =
-            this.posBetween(this.posBounds.BOTTOM, items.length, u.lowerPosition)
+            this.posBetween(this.posBounds.BOTTOM, items.length, u.lowerPos)
         return [new Block(pos, items), factory]
     }
 
@@ -92,7 +92,7 @@ export abstract class BlockFactory <P extends Pos<P>> {
         assert(() => items.length > 0, "items.length > 0")
         heavyAssert(() => l.compare(u) <= BlockOrdering.PREPENDABLE, "l < u")
         const [pos, factory] =
-            this.posBetween(l.upperPos(), items.length, u.lowerPosition)
+            this.posBetween(l.upperPos(), items.length, u.lowerPos)
         return [new Block(pos, items), factory]
     }
 
@@ -103,5 +103,5 @@ export abstract class BlockFactory <P extends Pos<P>> {
      * @param u position greater than all generated positions
      * @return Lower position of the set of int-successive generated positions.
      */
-    protected abstract posBetween (l: P, length: uint32, u: P): [P, BlockFactory<P>]
+    protected abstract posBetween (l: P, length: u32, u: P): [P, BlockFactory<P>]
 }
