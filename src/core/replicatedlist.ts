@@ -6,16 +6,16 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { Block, LengthBlock } from "../core/block"
+import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { Insertion, Deletion } from "../core/localoperation"
-import { uint32 } from "../core/number"
+import { Insertion, Deletion } from "./localoperation"
+import { uint32 } from "./number"
 
 /**
  * List which can only be remotely updated using deltas.
  */
-export interface ReadonlyReplicatableList <P extends Pos<P>, E extends Concat<E>> {
+export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> {
     /**
      * Number of inserted items.
      */
@@ -31,7 +31,7 @@ export interface ReadonlyReplicatableList <P extends Pos<P>, E extends Concat<E>
      * Hash code.
      * Note that the content is not take into account.
      */
-    readonly structuralDigest: uint32
+    readonly structuralDigest: () => uint32
 
 // Modification
     /**
@@ -52,8 +52,8 @@ export interface ReadonlyReplicatableList <P extends Pos<P>, E extends Concat<E>
 /**
  * List which can be remotely and locally updated.
  */
-export interface ReplicatableList <P extends Pos<P>, E extends Concat<E>>
-    extends ReadonlyReplicatableList<P, E> {
+export interface ReplicatedList <P extends Pos<P>, E extends Concat<E>>
+    extends ReadonlyReplicatedList<P, E> {
 
     /**
      * [Mutation]

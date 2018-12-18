@@ -120,7 +120,7 @@ export class SimplePosPart {
     /**
      * Hash code.
      */
-    get digest (): uint32 {
+    digest (): uint32 {
         return digestOf(this.asTuple())
     }
 

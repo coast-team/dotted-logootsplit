@@ -70,12 +70,12 @@ export interface Pos <P extends Pos<P>> {
     /**
      * Globally unique identifier of the author which generated this position.
      */
-    readonly replica: uint32
+    readonly replica: () => uint32
 
     /**
      * When was generated this position.
      */
-    readonly seq: uint32
+    readonly seq: () => uint32
 
     /**
      * @example
@@ -94,7 +94,7 @@ export interface Pos <P extends Pos<P>> {
     /**
      * Hash code.
      */
-    readonly digest: uint32
+    readonly digest: () => uint32
 
 // Status
     /**

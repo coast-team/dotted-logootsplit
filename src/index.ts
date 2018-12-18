@@ -23,4 +23,4 @@ export * from "./position/simpleblockfactory"
 export * from "./position/simplepos"
 export * from "./position/simplepospart"
 
-export * from "./list/replicablelinkedlist"
+export * from "./list/replicatedlinkedlist"

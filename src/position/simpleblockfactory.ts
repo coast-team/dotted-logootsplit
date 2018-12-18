@@ -112,7 +112,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
         assert(() => length > 0, "length is strictly positive")
         assert(() => isUint32(this.seq + length), "no overflow")
 
-        if (l.replica === this.replica && (l.seq + 1) === this.seq) {
+        if (l.replica() === this.replica && (l.seq() + 1) === this.seq) {
             // Appendable
             return [l.intSuccessor(1), this.increasedSeq(length)]
         } else {

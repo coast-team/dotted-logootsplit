@@ -13,11 +13,11 @@ import { Concat } from "../core/concat"
 import { Pos } from "../core/pos"
 import { Insertion, Deletion } from "../core/localoperation"
 import { digestOf, isUint32, uint32 } from "../core/number"
-import { ReadonlyReplicatableList, ReplicatableList } from "../core/replicablelist"
-import { Sentinel } from "./replicablelinkedlistcell"
+import { ReadonlyReplicatedList, ReplicatedList } from "../core/replicatedlist"
+import { Sentinel } from "./replicatedlinkedlistcell"
 
-export class ReadonlyReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
-    implements ReadonlyReplicatableList<P, E> {
+export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>
+    implements ReadonlyReplicatedList<P, E> {
     /**
      * New empty list.
      */
@@ -47,9 +47,9 @@ export class ReadonlyReplicableLinkedList <P extends Pos<P>, E extends Concat<E>
     }
 
     /** @Override */
-    get structuralDigest (): uint32 {
+    structuralDigest (): uint32 {
         return this.sentinel.reduceBlock(
-            (acc, b) => digestOf([acc, b.structuralDigest]), 0)
+            (acc, b) => digestOf([acc, b.structuralDigest()]), 0)
     }
 
 // Modification
@@ -87,29 +87,29 @@ export class ReadonlyReplicableLinkedList <P extends Pos<P>, E extends Concat<E>
     applyDelta(delta: LengthBlock<P>): Deletion[]
     applyDelta(delta: Block<P, E>): Insertion<E>[]
     applyDelta (delta: LengthBlock<P> | Block<P, E>): Deletion[] | Insertion<E>[] {
-        const deltaSeqs = delta.seqs
+        const deltaSeqs = delta.seqs()
         //const lastSeq = this.versionVector.get(delta.replica)
-        const lastSeq = this.versionVector[delta.replica]
+        const lastSeq = this.versionVector[delta.replica()]
 
         if (delta.isLengthBlock()) {
             if (lastSeq !== undefined) {
-                this.versionVector[delta.replica] = Math.max(lastSeq, deltaSeqs.upper)
+                this.versionVector[delta.replica()] = Math.max(lastSeq, deltaSeqs.upper())
             } else {
-                this.versionVector[delta.replica] = deltaSeqs.upper
+                this.versionVector[delta.replica()] = deltaSeqs.upper()
             }
             return this.remove(delta)
         } else {
             if (lastSeq === undefined) {
-                this.versionVector[delta.replica] = deltaSeqs.upper
+                this.versionVector[delta.replica()] = deltaSeqs.upper()
                 return this.insert(delta)
             } else if (deltaSeqs.lower > (lastSeq + 1)) {
                 assert(() => false, "FIFO violation")
                 return []
-            } else if (deltaSeqs.upper <= lastSeq) {
+            } else if (deltaSeqs.upper() <= lastSeq) {
                 return []
             } else {
                 const remaining = delta.rightSplitAt(lastSeq + 1 - deltaSeqs.lower)
-                this.versionVector[delta.replica] = deltaSeqs.upper
+                this.versionVector[delta.replica()] = deltaSeqs.upper()
                 return this.insert(remaining)
             }
         }
@@ -117,8 +117,8 @@ export class ReadonlyReplicableLinkedList <P extends Pos<P>, E extends Concat<E>
 }
 
 export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
-    extends ReadonlyReplicableLinkedList<P, E>
-    implements ReplicatableList<P, E> {
+    extends ReadonlyReplicatedLinkedList<P, E>
+    implements ReplicatedList<P, E> {
 
     /**
      * @param factory strategy of block generation.
@@ -144,7 +144,7 @@ export class ReplicableLinkedList <P extends Pos<P>, E extends Concat<E>>
         const [result, newFactory] = this.sentinel.insertAt(index, items, this.factory)
         this.factory = newFactory
         this.length = this.length + items.length
-        this.versionVector[result.replica] = result.seqs.upper
+        this.versionVector[result.replica()] = result.seqs().upper()
         return result
     }
 

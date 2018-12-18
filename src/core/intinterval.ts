@@ -98,7 +98,7 @@ export class IntInterval {
     /**
      * Upper bound.
      */
-    get upper (): uint32 {
+    upper (): uint32 {
         return this.nth(this.length - 1)
     }
 
@@ -133,35 +133,35 @@ export class IntInterval {
      * @return this [order relation] other.
      */
     compare (other: IntInterval): IntervalOrdering {
-        if (this.upper < other.lower) {
-            if (this.upper + 1 === other.lower) {
+        if (this.upper() < other.lower) {
+            if (this.upper() + 1 === other.lower) {
                 return IntervalOrdering.PREPENDABLE
             } else {
                 return IntervalOrdering.BEFORE
             }
-        } else if (other.upper < this.lower) {
-            if (other.upper + 1 === this.lower) {
+        } else if (other.upper() < this.lower) {
+            if (other.upper() + 1 === this.lower) {
                 return IntervalOrdering.APPENDABLE
             } else {
                 return IntervalOrdering.AFTER
             }
         } else {
             if (this.lower === other.lower) {
-                if (this.upper === other.upper) {
+                if (this.upper() === other.upper()) {
                     return IntervalOrdering.EQUAL
-                } else if (this.upper < other.upper) {
+                } else if (this.upper() < other.upper()) {
                     return IntervalOrdering.INCLUDED_BY
                 } else {
                     return IntervalOrdering.INCLUDING
                 }
             } else if (this.lower < other.lower) {
-                if (other.upper <= this.upper) {
+                if (other.upper() <= this.upper()) {
                     return IntervalOrdering.INCLUDING
                 } else {
                     return IntervalOrdering.OVERLAPPING_BEFORE
                 }
             } else {
-                if (this.upper <= other.upper) {
+                if (this.upper() <= other.upper()) {
                     return IntervalOrdering.INCLUDED_BY
                 } else {
                     return IntervalOrdering.OVERLAPPING_AFTER

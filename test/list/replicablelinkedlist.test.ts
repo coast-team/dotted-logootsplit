@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { ReplicableLinkedList } from "../../src/list/replicablelinkedlist"
+import { ReplicableLinkedList } from "../../src/list/replicatedlinkedlist"
 import { SimpleBlockFactory } from "../../src/position/simpleblockfactory"
 import { SimplePos } from "../../src/position/simplepos"
 import { Insertion, Deletion } from "../../src/core/localoperation"

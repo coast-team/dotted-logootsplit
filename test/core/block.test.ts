@@ -32,7 +32,7 @@ test("nthPosition", (t) => {
 })
 
 test("upperPosition", (t) => {
-    t.deepEqual(b1abc.upperPos, b1abc.nthPos(b1abc.length - 1))
+    t.deepEqual(b1abc.upperPos(), b1abc.nthPos(b1abc.length - 1))
 })
 
 test("compare", (t) => {

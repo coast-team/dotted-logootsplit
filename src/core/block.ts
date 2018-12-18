@@ -130,7 +130,7 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
     /**
      * Last position of the block.
      */
-    get upperPos (): P {
+    upperPos (): P {
         return this.nthPos(this.length - 1)
     }
 
@@ -148,15 +148,15 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
     /**
      * Globally unique identifier of the author which generated this block.
      */
-    get replica (): uint32 {
-        return this.lowerPosition.replica
+    replica (): uint32 {
+        return this.lowerPosition.replica()
     }
 
     /**
      * When each position of this block were generated.
      */
-    get seqs (): IntInterval {
-        return IntInterval.fromLength(this.lowerPosition.seq, this.length)
+    seqs (): IntInterval {
+        return IntInterval.fromLength(this.lowerPosition.seq(), this.length)
     }
 
     /**
@@ -184,8 +184,8 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
      * Hash code.
      * Note that the content is not take into account.
      */
-    get structuralDigest (): uint32 {
-        return digestOf([this.lowerPosition.digest, this.length])
+    structuralDigest (): uint32 {
+        return digestOf([this.lowerPosition.digest(), this.length])
     }
 
 // Status

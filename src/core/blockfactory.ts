@@ -64,7 +64,7 @@ export abstract class BlockFactory <P extends Pos<P>> {
     after <E extends Concat<E>> (l: Block<P, E>, items: E): [Block<P, E>, BlockFactory<P>] {
         assert(() => items.length > 0, "items.length > 0")
         const [pos, factory] =
-            this.posBetween(l.upperPos, items.length, this.posBounds.TOP)
+            this.posBetween(l.upperPos(), items.length, this.posBounds.TOP)
         return [new Block(pos, items), factory]
     }
 
@@ -92,7 +92,7 @@ export abstract class BlockFactory <P extends Pos<P>> {
         assert(() => items.length > 0, "items.length > 0")
         heavyAssert(() => l.compare(u) <= BlockOrdering.PREPENDABLE, "l < u")
         const [pos, factory] =
-            this.posBetween(l.upperPos, items.length, u.lowerPosition)
+            this.posBetween(l.upperPos(), items.length, u.lowerPosition)
         return [new Block(pos, items), factory]
     }
 
