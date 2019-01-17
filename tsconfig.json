@@ -8,7 +8,7 @@
     "sourceMap": true,
     "importHelpers": true,
 
-    "outDir": "./.built",
+    "outDir": "./.tested",
 
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,

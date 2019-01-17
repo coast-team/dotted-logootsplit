@@ -15,44 +15,54 @@
   "bugs": {
     "url": "https://github.com/coast-team/dotted-logootsplit/issues"
   },
-  "main": "dist/node/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/main/index.js",
+  "module": "dist/module/index.js",
   "es2015": "dist/es2015/index.js",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "build": "rm -rf dist/ && tsc -p tsconfig.node.json && tsc -p tsconfig.esm.json && tsc -p tsconfig.es2015.json",
-    "check": "tsc --noEmit",
-    "lint": "tslint --project tsconfig.json",
-    "lint:fix": "tslint --project tsconfig.json --fix",
-    "test": "rm -rf .built && tsc && ava",
-    "release:pre": "npm run test && npm run lint && npm run build",
-    "release": "npm run release:pre && standard-version --sign --no-verify",
-    "commitmsg": "commitlint  -e  $GIT_PARAMS",
-    "prepush": "npm test && npm run lint"
+    "prebuild": "rm -rf dist/",
+    "build": "tsc -b tsconfig.main.json tsconfig.module.json tsconfig.es2015.json tsconfig.types.json",
+    "clean": "rm -rf dist/ .tested/ .nyc_output/",
+    "pretest": "rm -rf .tested/test/ && tsc",
+    "test": "nyc ava",
+    "prerelease": "npm run test && npm run lint && npm run build",
+    "release": "standard-version --sign --no-verify"
+  },
+  "ava": {
+    "files": [
+      ".tested/test/**/*.test.js"
+    ],
+    "sources": [
+      ".tested/src/**/*.js"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "ava",
+      "pre-push": "npm test"
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
     "ava": "^1.0",
     "husky": "^1.2.1",
+    "nyc": "^13.1.0",
     "standard-version": "^4.4.0",
-    "tslint": "^5.12.0",
     "typescript": "^3.2"
   },
   "dependencies": {
-    "replayable-random": "^0.1.0",
+    "replayable-random": "=0.1.0",
     "tslib": "^1.9.3"
-  },
-  "ava": {
-    "files": [
-      ".built/**/*.test.js"
-    ],
-    "sources": [
-      "test"
-    ]
   }
 }

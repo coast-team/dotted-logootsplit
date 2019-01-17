@@ -50,7 +50,7 @@
     "no-sparse-arrays": true,
     "no-string-literal": true,
     "no-switch-case-fall-through": true,
-    "no-this-assignment": true,
+    "no-this-assignment": false,
     "no-unsafe-any": true,
     "no-unsafe-finally": true,
     "no-unused-expression": true,

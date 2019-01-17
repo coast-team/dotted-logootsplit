@@ -2,10 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "module": "ES6",
-    "moduleResolution": "Node",
+    "emitDeclarationOnly": true,
 
-    "outDir": "./dist/esm"
+    "outDir": "./dist/types"
   },
   "include": ["src/**/*.ts"]
 }
