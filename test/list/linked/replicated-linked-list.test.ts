@@ -11,9 +11,9 @@ function newSeq (factory: SimpleBlockFactory): ReplicatedLinkedList<SimplePos, s
 
 const seed = "dotted-logootsplit"
 
-const factoryA = SimpleBlockFactory.from(1, "dotted-logootsplit")
-const factoryB = SimpleBlockFactory.from(2, "dotted-logootsplit")
-const factoryC = SimpleBlockFactory.from(3, "dotted-logootsplit")
+const factoryA = SimpleBlockFactory.from(1, seed)
+const factoryB = SimpleBlockFactory.from(2, seed)
+const factoryC = SimpleBlockFactory.from(3, seed)
 
 // insertAt
 
@@ -320,7 +320,7 @@ test("removeAt_all", (t) => {
 
 test("removeAt_first", (t) => {
     const seqA = newSeq(factoryA)
-    const ab = seqA.insertAt(0, "abc")
+    seqA.insertAt(0, "abc")
 
     seqA.removeAt(0, 2)
 
@@ -329,7 +329,7 @@ test("removeAt_first", (t) => {
 
 test("removeAt_last", (t) => {
     const seqA = newSeq(factoryA)
-    const ab = seqA.insertAt(0, "abc")
+    seqA.insertAt(0, "abc")
 
     seqA.removeAt(1, 2)
 
@@ -338,7 +338,7 @@ test("removeAt_last", (t) => {
 
 test("removeAt_inside", (t) => {
     const seqA = newSeq(factoryA)
-    const ab = seqA.insertAt(0, "abc")
+    seqA.insertAt(0, "abc")
 
     seqA.removeAt(1, 1)
 
@@ -351,7 +351,7 @@ test("remove_nothing", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const ab = seqA.insertAt(0, "ab")
-    const [abRemoval, ..._] = seqA.removeAt(0, ab.length)
+    const [abRemoval, ] = seqA.removeAt(0, ab.length)
 
     const abLocalRemoval = seqB.remove(abRemoval.toLengthBlock())
 
@@ -365,7 +365,7 @@ test("remove_nothing-after", (t) => {
 
     const ab = seqA.insertAt(0, "ab")
     const cd = seqA.insertAt(2, "cd")
-    const [cdRemoval, ..._] = seqA.removeAt(2, cd.length)
+    const [cdRemoval, ] = seqA.removeAt(2, cd.length)
 
     seqB.insert(ab)
     const abLocalRemoval = seqB.remove(cdRemoval.toLengthBlock())
@@ -379,7 +379,7 @@ test("remove_all", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const ab = seqA.insertAt(0, "ab")
-    const [abRemoval, ..._] = seqA.removeAt(0, ab.length)
+    const [abRemoval, ] = seqA.removeAt(0, ab.length)
 
     seqB.insert(ab)
     const abLocalRemoval = seqB.remove(abRemoval.toLengthBlock())
@@ -394,7 +394,7 @@ test("remove_then-append", (t) => {
 
     const ab = seqA.insertAt(0, "ab")
     const x = seqA.insertAt(1, "x") // split
-    const [xRemoval, ..._] = seqA.removeAt(1, 1)
+    const [xRemoval, ] = seqA.removeAt(1, 1)
 
     seqB.insert(ab)
     seqB.insert(x) // split
@@ -431,7 +431,7 @@ test("remove_including", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const abc = seqA.insertAt(0, "abc")
-    const [abcRemoval, ..._] = seqA.removeAt(0, abc.length)
+    const [abcRemoval, ] = seqA.removeAt(0, abc.length)
 
     const b = abc.leftSplitAt(2).rightSplitAt(1)
     seqB.insert(b)
@@ -446,7 +446,7 @@ test("remove_included", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const abc = seqA.insertAt(0, "abc")
-    const [bRemoval, ..._] = seqA.removeAt(1, 1)
+    const [bRemoval, ] = seqA.removeAt(1, 1)
 
     seqB.insert(abc)
     const bLocalRemovals = seqB.remove(bRemoval.toLengthBlock())
@@ -460,7 +460,7 @@ test("remove_included-left", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const abc = seqA.insertAt(0, "abc")
-    const [aRemoval, ..._] = seqA.removeAt(0, 1)
+    const [aRemoval, ] = seqA.removeAt(0, 1)
 
     seqB.insert(abc)
     const aLocalRemovals = seqB.remove(aRemoval.toLengthBlock())
@@ -474,7 +474,7 @@ test("remove_included-right", (t) => {
     const [seqA, seqB] = [factoryA, factoryB].map(newSeq)
 
     const abc = seqA.insertAt(0, "abc")
-    const [cRemoval, ..._] = seqA.removeAt(2, 1)
+    const [cRemoval, ] = seqA.removeAt(2, 1)
 
     seqB.insert(abc)
     const cLocalRemovals = seqB.remove(cRemoval.toLengthBlock())

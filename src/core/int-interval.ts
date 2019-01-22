@@ -66,7 +66,7 @@ export class IntInterval {
         return IntInterval.fromLength(lower, upper - lower + 1)
     }
 
-// Access
+    // Access
     /**
      * @example
      * nth(0) == lower
@@ -89,7 +89,7 @@ export class IntInterval {
         return this.nth(this.length - 1)
     }
 
-// Derivation
+    // Derivation
     /**
      * @param other
      * @return {@link other } appended to this.
@@ -114,7 +114,7 @@ export class IntInterval {
         return [leftInterval, rightInterval]
     }
 
-// Status
+    // Status
     /**
      * @param other
      * @return this [order relation] other.

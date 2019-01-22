@@ -10,6 +10,7 @@ import { assert } from "./assert"
 import { Ordering } from "./ordering"
 
 export type u32 = number
+export type i32 = number
 
 export const U32_BOTTOM = 0
 export const U32_TOP = 0xFFFF_FFFF // 2^32 - 1
@@ -47,5 +48,6 @@ export function compareU32 (n1: u32, n2: u32): Ordering {
 export const digestOf = (values: ReadonlyArray<u32>): u32 =>
     values.reduce((acc, v) => (acc * 17 >>> 0) + v >>> 0)
 
-export const absoluteSubstraction = (a: u32, b: u32): u32 =>
-    (a < b) ? (b - a) : (a - b)
+export const absoluteSubstraction = (a: u32, b: u32): u32 => {
+    return (a < b) ? (b - a) : (a - b)
+}

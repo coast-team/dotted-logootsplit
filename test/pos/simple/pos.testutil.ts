@@ -12,8 +12,8 @@ export function twinPosition (ref: SimplePos): SimplePos {
     return SimplePos.from(ref.parts.map(twinPositionPart))
 }
 
-export function twinBlock <E extends Concat<E>>
-    (ref: Block<SimplePos, E>): Block<SimplePos, E> {
-
+export function twinBlock <E extends Concat<E>> (
+    ref: Block<SimplePos, E>
+): Block<SimplePos, E> {
     return new Block(twinPosition(ref.lowerPos), ref.items)
 }

@@ -11,29 +11,29 @@ const [firstA, factoryA] = SimpleBlockFactory.from(1, seed).from("ab")
 const [firstB, factoryB] = SimpleBlockFactory.from(2, seed).after(firstA, "rs")
 
 test("after_appendable-block", (t) => {
-    const [appendable, _] = factoryA.after(firstA, "cd")
+    const [appendable, ] = factoryA.after(firstA, "cd")
 
     t.is(appendable.compare(firstA), BlockOrdering.APPENDABLE)
 })
 
 test("between_splitting-block", (t) => {
     const [lBlock, rBlock] = firstA.splitAt(1)
-    const [splitting, _] = factoryA.between(lBlock, "xy", rBlock)
+    const [splitting, ] = factoryA.between(lBlock, "xy", rBlock)
     t.is(splitting.compare(firstA), BlockOrdering.SPLITTING)
 })
 
 test("before_other-replica", (t) => {
-    const [after, _] = factoryB.before("xy", firstA)
+    const [after, ] = factoryB.before("xy", firstA)
     t.is(after.compare(firstA), BlockOrdering.BEFORE)
 })
 
 test("after_other-replica", (t) => {
-    const [after, _] = factoryB.after(firstA, "xy")
+    const [after, ] = factoryB.after(firstA, "xy")
     t.is(after.compare(firstA), BlockOrdering.AFTER)
 })
 
 test("between_surrounded-block", (t) => {
-    const [surrounded, _] = factoryB.between(firstA, "xy", firstB)
+    const [surrounded, ] = factoryB.between(firstA, "xy", firstB)
 
     t.is(surrounded.compare(firstA), BlockOrdering.AFTER)
     t.is(surrounded.compare(firstB), BlockOrdering.BEFORE)

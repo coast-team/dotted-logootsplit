@@ -65,7 +65,7 @@ export class SimplePos implements Pos<SimplePos> {
     static fromPlain (x: unknown): SimplePos | undefined {
         if (isObject<SimplePos>(x) && Array.isArray(x.parts)) {
             const parts = fromArray(x.parts, SimplePosPart.fromPlain)
-            if (parts !== undefined) {
+            if (parts !== undefined && parts.length > 0) {
                 const lastPart = parts[parts.length - 1]
                 if (lastPart.priority !== U32_BOTTOM &&
                     lastPart.priority !== U32_TOP &&
@@ -88,7 +88,7 @@ export class SimplePos implements Pos<SimplePos> {
      */
     static readonly TOP = new SimplePos([SimplePosPart.TOP])
 
-// Derivation
+    // Derivation
     /**
      * @param seq The last seq of the new position
      * @return Position with the same base as this,
@@ -109,7 +109,7 @@ export class SimplePos implements Pos<SimplePos> {
         return this.withSeq(this.seq() + n)
     }
 
-// Access
+    // Access
     /**
      * Parts of this position.
      */
@@ -139,18 +139,6 @@ export class SimplePos implements Pos<SimplePos> {
         return this.lastPart().seq
     }
 
-    /**
-     * @return unique identifier of the block where the position is part of.
-     */
-    blockIdentifier (): ReadonlyArray<u32> {
-        // TODO use a typed array and then a typeable array as return type?
-        const result = this.parts.reduce((acc: u32[], part) => (
-                acc.concat(part.asTuple())
-            ), [])
-        result.pop() // remove last seq
-        return result
-    }
-
     /** @override */
     intDistance (other: SimplePos): [u32, Ordering] {
         if (this.depth() > other.depth()) {
@@ -160,7 +148,7 @@ export class SimplePos implements Pos<SimplePos> {
             heavyAssert(() => (
                 (cmp) => cmp === BaseOrdering.PREFIXING ||
                     cmp === BaseOrdering.EQUAL
-                )(this.compareBase(other)), "MARK")
+            )(this.compareBase(other)), "MARK")
 
             const otherSeq = other.parts[this.depth() - 1].seq
             const seq = this.seq()
@@ -176,7 +164,7 @@ export class SimplePos implements Pos<SimplePos> {
         return digestOf(this.parts.map((part) => part.digest()))
     }
 
-// Status
+    // Status
     /** @override */
     hasIntSucc (n: u32): boolean {
         assert(() => isU32(n), "n ∈ u32")

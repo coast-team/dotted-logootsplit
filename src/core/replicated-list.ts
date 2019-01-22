@@ -33,7 +33,7 @@ export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> 
      */
     readonly structuralDigest: () => u32
 
-// Modification
+    // Modification
     /**
      * [Mutation]
      *
@@ -47,6 +47,10 @@ export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> 
         (delta: LengthBlock<P>): Deletion[]
         (delta: Block<P, E>): Insertion<E>[]
     }
+
+    readonly insert: (delta: Block<P, E>) => Insertion<E>[]
+
+    readonly remove: (delta: LengthBlock<P>) => Deletion[]
 }
 
 /**

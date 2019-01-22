@@ -16,11 +16,18 @@ import { isU32, u32 } from "../../core/number"
 
 export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
     /**
+     * Next cell
+     */
+    right?: Cell<P, E>
+
+    /**
      * @param right Next cell.
      */
-    constructor (public right?: Cell<P, E>) {}
+    constructor (right?: Cell<P, E>) {
+        this.right = right
+    }
 
-// Access
+    // Access
     reduceBlock <U> (f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
         if (this.right === undefined) {
             return prefix
@@ -30,7 +37,7 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
-// Modification
+    // Modification
     /**
      * [Mutation]
      * Insert {@link rblock } to right and preserve the chain.
@@ -259,7 +266,7 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
                         this.insertRight(lRemaning)
                         removalIndex = removalIndex + lRemaning.length
                     }
-                    return [new Deletion(removalIndex, dBlock.length)]
+                    return [new Deletion(removalIndex, removed.length)]
                 }
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right
@@ -277,7 +284,7 @@ export abstract class Linkable <P extends Pos<P>, E extends Concat<E>> {
                     //remaining = remaining as Block<P, E>
                     this.right = this.right.right
                     this.insertRight(remaining)
-                    const removals = this.remove(dBlock, index + remaining.length)
+                    this.remove(dBlock, index + remaining.length)
                     return [new Deletion(index + remaining.length, removed.length)]
                 }
                 case BlockOrdering.OVERLAPPING_AFTER: {
@@ -307,8 +314,7 @@ export class Cell <P extends Pos<P>, E extends Concat<E>> extends Linkable<P, E>
      */
     constructor (block: Block<P, E>, right: Cell<P, E> | undefined) {
         heavyAssert(() => (right === undefined ||
-                block.compare(right.block) === BlockOrdering.BEFORE),
-            "block < right.block")
+                block.compare(right.block) === BlockOrdering.BEFORE), "block < right.block")
         super(right)
         this.block = block
     }

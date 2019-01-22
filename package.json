@@ -28,6 +28,7 @@
     "build": "tsc -b tsconfig.main.json tsconfig.module.json tsconfig.es2015.json tsconfig.types.json",
     "clean": "rm -rf dist/ .tested/ .nyc_output/",
     "pretest": "rm -rf .tested/test/ && tsc",
+    "lint": "eslint '{src,test}/**/*.ts'",
     "test": "nyc ava",
     "prerelease": "npm run test && npm run lint && npm run build",
     "release": "standard-version --sign --no-verify"
@@ -55,7 +56,12 @@
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
+    "@typescript-eslint/eslint-plugin": "^1.0.0",
+    "@typescript-eslint/parser": "^1.0.0",
+    "@typescript-eslint/typescript-estree": "^1.0.0",
     "ava": "^1.0",
+    "eslint": "^5.12.1",
+    "eslint-config-conaclos": "^2.4.0",
     "husky": "^1.2.1",
     "nyc": "^13.1.0",
     "standard-version": "^4.4.0",

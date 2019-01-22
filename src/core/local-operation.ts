@@ -25,7 +25,7 @@ export class Insertion <E extends Concat<E>> {
         this.items = items
     }
 
-// Access
+    // Access
     /**
      * Number of inserted elements.
      */

@@ -16,8 +16,9 @@ import { digestOf, isU32, u32 } from "../../core/number"
 import { ReadonlyReplicatedList, ReplicatedList } from "../../core/replicated-list"
 import { Sentinel } from "./replicated-linked-list-cell"
 
-export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>
-    implements ReadonlyReplicatedList<P, E> {
+export class ReadonlyReplicatedLinkedList <
+    P extends Pos<P>, E extends Concat<E>
+> implements ReadonlyReplicatedList<P, E> {
     /**
      * New empty list.
      */
@@ -27,7 +28,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
         this.versionVector = {} //Object.create(null) is unsafe in TS
     }
 
-// Access
+    // Access
     /**
      * Map replica to their last observed seq.
      */
@@ -52,7 +53,7 @@ export class ReadonlyReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>
             (acc, b) => digestOf([acc, b.structuralDigest()]), 0)
     }
 
-// Modification
+    // Modification
     /**
      * [Mutation]
      * Insert without updating and checking the version vector.
@@ -134,7 +135,7 @@ export class ReplicatedLinkedList <P extends Pos<P>, E extends Concat<E>>
         }
     }
 
-// Modification
+    // Modification
     /** @Override */
     insertAt (index: u32, items: E): Block<P, E> {
         assert(() => isU32(index), "index ∈ u32")

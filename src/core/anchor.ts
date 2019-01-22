@@ -8,7 +8,7 @@
 
 import { Pos } from "./pos"
 import { Ordering } from "./ordering"
-
+var u = 1
 /**
  * An anchor can be used to model the cursor, the selection of a participant in
  * a coeditable list.
@@ -17,15 +17,21 @@ import { Ordering } from "./ordering"
  */
 export class Anchor <P extends Pos<P>> {
     /**
+     * Position to which this anchor is relative to
+     */
+    readonly ref: P
+
+    /**
      * @example
      * Anchor(p) is just before p
      * There not exists another position between Anchor(p) and p
      *
-     * @param ref position to which this anchor is relative to.
+     * @param ref position to which this anchor is relative to
      */
-    constructor (readonly ref: P) {}
+    constructor (ref: P) {
+        this.ref = ref
+    }
 
-// Status
     /**
      * @param other
      * @return this [Order relation] other

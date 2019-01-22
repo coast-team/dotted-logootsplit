@@ -73,11 +73,12 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
         assert(() => lowerPos.hasIntSucc(items.length - 1), "valid positions")
     }
 
-    static fromPlain <P extends Pos<P>, E extends Concat<E>>
-        (f: FromPlain<P>, g: FromPlain<E>): FromPlain<Block<P, E>> {
-
+    static fromPlain <P extends Pos<P>, E extends Concat<E>> (
+        f: FromPlain<P>,
+        g: FromPlain<E>
+    ): FromPlain<Block<P, E>> {
         return (x: unknown) => {
-            if (isObject<{ lowerPos: unknown, items: unknown }>(x)) {
+            if (isObject<{ lowerPos: unknown; items: unknown }>(x)) {
                 const pos = f(x.lowerPos)
                 const items = g(x.items)
                 if (pos !== undefined && items !== undefined) {
@@ -88,7 +89,7 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
-// Access
+    // Access
     /**
      * Length of {@link Block#items }
      */
@@ -175,7 +176,7 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
         return digestOf([this.lowerPos.digest(), this.length])
     }
 
-// Status
+    // Status
     /**
      * @return Is this block a length block?
      */
@@ -192,6 +193,26 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
         return cmp === BlockOrdering.OVERLAPPING_BEFORE ||
         cmp === BlockOrdering.OVERLAPPING_AFTER || cmp === BlockOrdering.EQUAL ||
         cmp === BlockOrdering.INCLUDING || cmp === BlockOrdering.INCLUDED_BY
+    }
+
+    /**
+     * @param other
+     * @return Has this an appendable segment to {@link other }?
+     */
+    hasAppendable (other: Block<P, E> | LengthBlock<P>): boolean {
+        const cmp = this.compare(other)
+        return cmp === BlockOrdering.OVERLAPPING_AFTER ||
+            cmp === BlockOrdering.INCLUDING
+    }
+
+    /**
+     * @param other
+     * @return Has this a prependable segment to {@link other }?
+     */
+    hasPrependable (other: Block<P, E> | LengthBlock<P>): boolean {
+        const cmp = this.compare(other)
+        return cmp === BlockOrdering.OVERLAPPING_BEFORE ||
+            cmp === BlockOrdering.INCLUDING
     }
 
     /**
@@ -240,7 +261,7 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
-// Derivation
+    // Derivation
     /**
      * @example
      * Block(p, "ab").append(Block(_, "cd")) == Block(p, "abcd")
@@ -319,10 +340,8 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
      * @return Part of this block which can be append to {@link block }.
      */
     appendable (other: Block<P, E> | LengthBlock<P>): Block<P, E> {
-        heavyAssert(() => ((cmp) =>
-            cmp === BlockOrdering.OVERLAPPING_AFTER ||
-            cmp === BlockOrdering.INCLUDING
-        )(this.compare(other)), "this has an appendable segment to other")
+        heavyAssert(() => this.hasAppendable(other),
+            "this has an appendable segment to other")
 
         const [dist, order] = this.lowerPos.intDistance(other.lowerPos)
         if (order === Ordering.BEFORE) {
@@ -338,10 +357,8 @@ export class Block <P extends Pos<P>, E extends Concat<E>> {
      * @return Part of this block which can be prepend to {@link block }.
      */
     prependable (other: Block<P, E> | LengthBlock<P>): Block<P, E> {
-        heavyAssert(() => ((cmp) =>
-            cmp === BlockOrdering.OVERLAPPING_BEFORE ||
-            cmp === BlockOrdering.INCLUDING
-        )(this.compare(other)), "this has a prependable segment to other")
+        heavyAssert(() => this.hasPrependable(other),
+            "this has a prependable segment to other")
 
         const [dist, ] = this.lowerPos.intDistance(other.lowerPos)
         return this.leftSplitAt(dist)

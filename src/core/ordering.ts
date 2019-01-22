@@ -39,5 +39,6 @@ export const orderingInversion = readonly({
  * @param r2
  * @return Lexicographic order between {@link r1} and {@link r2}.
  */
-export const lexCompareOrdering = (r1: Ordering, r2: Ordering): Ordering =>
-    (r1 !== Ordering.EQUAL) ? r1 : r2
+export const lexCompareOrdering = (r1: Ordering, r2: Ordering): Ordering => {
+    return (r1 !== Ordering.EQUAL) ? r1 : r2
+}

@@ -21,11 +21,11 @@ export abstract class BlockFactory <P extends Pos<P>> {
     /**
      * @param posBounds bottom and top positions.
      */
-    constructor (protected readonly posBounds: {BOTTOM: P, TOP: P}) {
+    constructor (protected readonly posBounds: {BOTTOM: P; TOP: P}) {
         this.topAnchor = new Anchor(posBounds.TOP)
     }
 
-// Factory
+    // Factory
     /**
      * Greatest Anchor. All generated block are before this anchor.
      */
@@ -96,7 +96,7 @@ export abstract class BlockFactory <P extends Pos<P>> {
         return [new Block(pos, items), factory]
     }
 
-// Impl
+    // Impl
     /**
      * @param l position lower than all generated positions
      * @param length Number of int-successive positions to generate

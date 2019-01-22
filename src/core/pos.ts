@@ -66,7 +66,7 @@ export interface Pos <P extends Pos<P>> {
      */
     readonly intSucc: (n: u32) => P
 
-// Access
+    // Access
     /**
      * Globally unique identifier of the author which generated this position.
      */
@@ -96,7 +96,7 @@ export interface Pos <P extends Pos<P>> {
      */
     readonly digest: () => u32
 
-// Status
+    // Status
     /**
      * hasIntSuccessor(0) is always true.
      *

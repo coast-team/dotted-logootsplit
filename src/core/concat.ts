@@ -54,7 +54,7 @@ export class ConcatLength implements Concat<ConcatLength> {
         assert(() => isU32(length), "length ∈ u32")
     }
 
-// Access
+    // Access
     /** @override */
     slice (lower: u32, excludedUpper: u32): ConcatLength {
         assert(() => isU32(lower), "lower ∈ u32")

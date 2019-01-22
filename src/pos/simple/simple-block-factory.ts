@@ -17,6 +17,20 @@ import { Ordering } from "../../core/ordering"
 import { BlockFactory } from "../../core/block-factory"
 
 /**
+ * @param values
+ * @param defaultValue value to emit once {@link values } were emitted.
+ * @return Infinite stream of values.
+ */
+function *infiniteSequence <T>(values: ReadonlyArray<T>, defaultValue: T): IterableIterator<T> {
+    for (const v of values) {
+        yield v
+    }
+    while (true) {
+        yield defaultValue
+    }
+}
+
+/**
  * Factory of block with {@link SimplePos } as implementation of
  * {@link Pos}.
  * The strategy of generation is to genearte random positions between two
@@ -70,7 +84,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
         return undefined
     }
 
-// Access
+    // Access
     /** @Override */
     readonly replica: u32
 
@@ -79,7 +93,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
     readonly randState: AleaState
 
-// Derivation
+    // Derivation
     /**
      * @param by
      * @param randState
@@ -104,7 +118,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
         return this.evolve(by, this.randState)
     }
 
-// Impl
+    // Impl
     /** @override */
     posBetween (l: SimplePos, length: u32, u: SimplePos): [SimplePos, SimpleBlockFactory] {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
@@ -141,21 +155,5 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
             return [SimplePos.from(parts), this.evolve(length, s)]
         }
-    }
-}
-
-/**
- * @param values
- * @param defaultValue value to emit once {@link values } were emitted.
- * @return Infinite stream of values.
- */
-function *infiniteSequence <T>
-   (values: ReadonlyArray<T>, defaultValue: T): IterableIterator<T> {
-
-    for (const v of values) {
-        yield v
-    }
-    while (true) {
-        yield defaultValue
     }
 }

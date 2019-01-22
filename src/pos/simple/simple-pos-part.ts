@@ -78,7 +78,7 @@ export class SimplePosPart {
      */
     static readonly TOP = new SimplePosPart(U32_TOP, U32_TOP, 1)
 
-// Derivation
+    // Derivation
     /**
      * @param {u32} seq The seq of the new SimplePosPart
      * @return {SimplePosPart} with the same base,
@@ -86,10 +86,10 @@ export class SimplePosPart {
      */
     withSeq (seq: u32): SimplePosPart {
         assert(() => isU32(seq), "seq ∈ u32")
-        return SimplePosPart.from(this.priority, this.replica, seq)
+        return new SimplePosPart(this.priority, this.replica, seq)
     }
 
-// Access
+    // Access
     /**
      * Priority of the part over another one. Lower is better.
      *
@@ -124,7 +124,7 @@ export class SimplePosPart {
         return digestOf(this.asTuple())
     }
 
-// Status
+    // Status
     /**
      * @example
      * SimplePosPart(0, 0, _) == SimplePosPart(0, 0, _)
