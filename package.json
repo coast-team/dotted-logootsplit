@@ -29,8 +29,8 @@
     "clean": "rm -rf dist/ .tested/ .nyc_output/",
     "pretest": "rm -rf .tested/test/ && tsc",
     "test": "nyc ava",
-    "prerelease": "npm run test && npm run lint && npm run build",
-    "release": "standard-version --sign --no-verify"
+    "prerelease": "npm test && npm run build",
+    "release": "standard-version --sign"
   },
   "ava": {
     "files": [
