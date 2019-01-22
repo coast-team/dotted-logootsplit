@@ -13,7 +13,7 @@ import { isU32, u32 } from "./number"
  * Concatenable and sliceable types.
  * Native types Array and String implements this interface.
  */
-export interface Concat <E extends Concat<E>> {
+export interface Concat<E extends Concat<E>> {
     /**
      * Number of elements.
      */
@@ -50,23 +50,26 @@ export class ConcatLength implements Concat<ConcatLength> {
     /**
      * @param length {@link Concat#length}
      */
-    constructor (readonly length: u32) {
+    constructor(readonly length: u32) {
         assert(() => isU32(length), "length ∈ u32")
     }
 
     // Access
     /** @override */
-    slice (lower: u32, excludedUpper: u32): ConcatLength {
+    slice(lower: u32, excludedUpper: u32): ConcatLength {
         assert(() => isU32(lower), "lower ∈ u32")
         assert(() => lower < this.length, "lower < this.length")
         assert(() => isU32(excludedUpper), "excludedUpper ∈ u32")
-        assert(() => excludedUpper <= this.length, "excludedUpper <= this.length")
+        assert(
+            () => excludedUpper <= this.length,
+            "excludedUpper <= this.length"
+        )
         assert(() => lower <= excludedUpper, "lower <= excludedUpper")
         return new ConcatLength(excludedUpper - lower)
     }
 
     /** @override */
-    concat (other: ConcatLength): ConcatLength {
+    concat(other: ConcatLength): ConcatLength {
         assert(() => isU32(this.length + other.length), "valid concatenation")
         return new ConcatLength(this.length + other.length)
     }

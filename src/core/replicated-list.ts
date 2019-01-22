@@ -15,7 +15,7 @@ import { u32 } from "./number"
 /**
  * List which can only be remotely updated using deltas.
  */
-export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> {
+export interface ReadonlyReplicatedList<P extends Pos<P>, E extends Concat<E>> {
     /**
      * Number of inserted items.
      */
@@ -56,9 +56,8 @@ export interface ReadonlyReplicatedList <P extends Pos<P>, E extends Concat<E>> 
 /**
  * List which can be remotely and locally updated.
  */
-export interface ReplicatedList <P extends Pos<P>, E extends Concat<E>>
+export interface ReplicatedList<P extends Pos<P>, E extends Concat<E>>
     extends ReadonlyReplicatedList<P, E> {
-
     /**
      * [Mutation]
      * Insert {@link items } at {@link index}.

@@ -9,5 +9,5 @@
 export const flags = {
     assertionsEnabled: true,
     heavyAssertionsEnabled: true, // may hurt performance if enabled.
-    failFastEnabled: true
+    failFastEnabled: true,
 }

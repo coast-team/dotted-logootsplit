@@ -1,10 +1,6 @@
-
 import test from "ava"
 
-import {
-    ReplicatedLinkedList,
-    SimpleBlockFactory
-} from "../src/"
+import { ReplicatedLinkedList, SimpleBlockFactory } from "../src/"
 
 const seed = "dotted-logootsplit"
 

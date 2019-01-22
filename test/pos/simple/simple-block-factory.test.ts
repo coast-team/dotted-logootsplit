@@ -11,29 +11,29 @@ const [firstA, factoryA] = SimpleBlockFactory.from(1, seed).from("ab")
 const [firstB, factoryB] = SimpleBlockFactory.from(2, seed).after(firstA, "rs")
 
 test("after_appendable-block", (t) => {
-    const [appendable, ] = factoryA.after(firstA, "cd")
+    const [appendable] = factoryA.after(firstA, "cd")
 
     t.is(appendable.compare(firstA), BlockOrdering.APPENDABLE)
 })
 
 test("between_splitting-block", (t) => {
     const [lBlock, rBlock] = firstA.splitAt(1)
-    const [splitting, ] = factoryA.between(lBlock, "xy", rBlock)
+    const [splitting] = factoryA.between(lBlock, "xy", rBlock)
     t.is(splitting.compare(firstA), BlockOrdering.SPLITTING)
 })
 
 test("before_other-replica", (t) => {
-    const [after, ] = factoryB.before("xy", firstA)
+    const [after] = factoryB.before("xy", firstA)
     t.is(after.compare(firstA), BlockOrdering.BEFORE)
 })
 
 test("after_other-replica", (t) => {
-    const [after, ] = factoryB.after(firstA, "xy")
+    const [after] = factoryB.after(firstA, "xy")
     t.is(after.compare(firstA), BlockOrdering.AFTER)
 })
 
 test("between_surrounded-block", (t) => {
-    const [surrounded, ] = factoryB.between(firstA, "xy", firstB)
+    const [surrounded] = factoryB.between(firstA, "xy", firstB)
 
     t.is(surrounded.compare(firstA), BlockOrdering.AFTER)
     t.is(surrounded.compare(firstB), BlockOrdering.BEFORE)
@@ -45,8 +45,8 @@ test("between_dense-set-appendable", (t) => {
     const part2 = SimplePosPart.from(priority + 1, B, 0)
     const block2 = new Block(SimplePos.from([part2]), "x")
 
-    const [surrounded, ] = factoryB.between(firstA, "1", block2)
-    const [appendable, ] = factoryA.between(firstA, "c", surrounded)
+    const [surrounded] = factoryB.between(firstA, "1", block2)
+    const [appendable] = factoryA.between(firstA, "c", surrounded)
 
     t.is(appendable.compare(firstA), BlockOrdering.APPENDABLE)
     t.is(appendable.compare(surrounded), BlockOrdering.BEFORE)
@@ -63,12 +63,12 @@ test("between_variable-sized-position", (t) => {
     const partA2 = SimplePosPart.from(7, A, 1)
     const blockA2 = new Block(SimplePos.from([partA2]), "c")
 
-    const [surroundedB, ] = factoryB.between(blockA, "1", blockB)
+    const [surroundedB] = factoryB.between(blockA, "1", blockB)
 
     t.is(blockA.compare(surroundedB), BlockOrdering.BEFORE)
     t.is(surroundedB.compare(blockB), BlockOrdering.BEFORE)
 
-    const [surroundedA, ] = factoryA.between(blockB, "b", blockA2)
+    const [surroundedA] = factoryA.between(blockB, "b", blockA2)
 
     t.is(blockB.compare(surroundedA), BlockOrdering.BEFORE)
     t.is(surroundedA.compare(blockA2), BlockOrdering.BEFORE)

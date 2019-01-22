@@ -14,7 +14,7 @@ import { readonly } from "./assert"
 export const enum Ordering {
     BEFORE = -1, // <
     EQUAL = 0, // =
-    AFTER = 1 // >
+    AFTER = 1, // >
 }
 
 /**
@@ -26,7 +26,7 @@ export const enum Ordering {
 export const orderingInversion = readonly({
     [Ordering.BEFORE]: Ordering.AFTER,
     [Ordering.EQUAL]: Ordering.EQUAL,
-    [Ordering.AFTER]: Ordering.BEFORE
+    [Ordering.AFTER]: Ordering.BEFORE,
 })
 
 /**
@@ -40,5 +40,5 @@ export const orderingInversion = readonly({
  * @return Lexicographic order between {@link r1} and {@link r2}.
  */
 export const lexCompareOrdering = (r1: Ordering, r2: Ordering): Ordering => {
-    return (r1 !== Ordering.EQUAL) ? r1 : r2
+    return r1 !== Ordering.EQUAL ? r1 : r2
 }

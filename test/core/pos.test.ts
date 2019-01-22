@@ -7,7 +7,7 @@ const BASE_ORDERING_VALUES = [
     BaseOrdering.PREFIXING,
     BaseOrdering.EQUAL,
     BaseOrdering.PREFIXED_BY,
-    BaseOrdering.AFTER
+    BaseOrdering.AFTER,
 ]
 
 test("baseOrderingInversion", (t) => {

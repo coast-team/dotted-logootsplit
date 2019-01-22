@@ -21,7 +21,10 @@ import { BlockFactory } from "../../core/block-factory"
  * @param defaultValue value to emit once {@link values } were emitted.
  * @return Infinite stream of values.
  */
-function *infiniteSequence <T>(values: ReadonlyArray<T>, defaultValue: T): IterableIterator<T> {
+function* infiniteSequence<T>(
+    values: ReadonlyArray<T>,
+    defaultValue: T
+): IterableIterator<T> {
     for (const v of values) {
         yield v
     }
@@ -42,10 +45,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @param seq {@link SimpleBlockFactory#seq }
      * @param randState random generator's state
      */
-    constructor (replica: u32, seq: u32, randState: AleaState) {
+    constructor(replica: u32, seq: u32, randState: AleaState) {
         assert(() => isU32(replica), "replica ∈ u32")
-        assert(() => replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP pos.")
+        assert(
+            () => replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP pos."
+        )
         super(SimplePos)
         assert(() => isU32(seq), "seq ∈ u32")
         this.replica = replica
@@ -60,10 +65,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @param globalSeed Seed for predictable random generation.
      * @return New factory with 0 as {@link SimpleBlockFactory#seq }
      */
-    static from (replica: u32, globalSeed: string): SimpleBlockFactory {
+    static from(replica: u32, globalSeed: string): SimpleBlockFactory {
         assert(() => isU32(replica), "replica ∈ u32")
-        assert(() => replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP positions.")
+        assert(
+            () => replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP positions."
+        )
         const seed = `${globalSeed}${replica}`
         const randState = alea.from(seed)
         return new SimpleBlockFactory(replica, 0, randState)
@@ -73,13 +80,19 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain (x: unknown): SimpleBlockFactory | undefined {
-        if (isObject<SimpleBlockFactory>(x) &&
-            isU32(x.replica) && x.replica !== U32_TOP &&
-            isU32(x.seq)) {
-
+    static fromPlain(x: unknown): SimpleBlockFactory | undefined {
+        if (
+            isObject<SimpleBlockFactory>(x) &&
+            isU32(x.replica) &&
+            x.replica !== U32_TOP &&
+            isU32(x.seq)
+        ) {
             // FIXME: check randState
-            return new SimpleBlockFactory(x.replica, x.seq, x.randState as AleaState)
+            return new SimpleBlockFactory(
+                x.replica,
+                x.seq,
+                x.randState as AleaState
+            )
         }
         return undefined
     }
@@ -101,7 +114,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * increased by {@link by } and {@link SimpleBlockFactory#randState }
      * replaced by {@link randState }
      */
-    evolve (by: u32, randState: AleaState): SimpleBlockFactory {
+    evolve(by: u32, randState: AleaState): SimpleBlockFactory {
         assert(() => isU32(by), "by ∈ u32")
         assert(() => isU32(this.seq + by), "no overflow")
         return new SimpleBlockFactory(this.replica, this.seq + by, randState)
@@ -112,7 +125,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      * @return Same factory, but with {@link SimpleBlockFactory#seq }
      * increased by {@link by }
      */
-    increasedSeq (by: u32): SimpleBlockFactory {
+    increasedSeq(by: u32): SimpleBlockFactory {
         assert(() => isU32(by), "by ∈ u32")
         assert(() => isU32(this.seq + by), "no overflow")
         return this.evolve(by, this.randState)
@@ -120,13 +133,17 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
     // Impl
     /** @override */
-    posBetween (l: SimplePos, length: u32, u: SimplePos): [SimplePos, SimpleBlockFactory] {
+    posBetween(
+        l: SimplePos,
+        length: u32,
+        u: SimplePos
+    ): [SimplePos, SimpleBlockFactory] {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length is strictly positive")
         assert(() => isU32(this.seq + length), "no overflow")
 
-        if (l.replica() === this.replica && (l.seq() + 1) === this.seq) {
+        if (l.replica() === this.replica && l.seq() + 1 === this.seq) {
             // Appendable
             return [l.intSucc(1), this.increasedSeq(length)]
         } else {
@@ -136,7 +153,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
             let partL = seqL.next().value
             let partU = seqU.next().value
-            while ((partU.priority - partL.priority) < 2) {
+            while (partU.priority - partL.priority < 2) {
                 // Cannot insert a new part between partL and partU
                 if (partU.replica === partL.replica) {
                     // Split
@@ -147,10 +164,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
                 partL = seqL.next().value
                 partU = seqU.next().value
             }
-            const [priority, s] =
-                alea.u32Between(partL.priority + 1, partU.priority)(this.randState)
-                // priority ∈ ]tuple1.priority, tuple2.priority[
-                // tuple1.priority exclusion ensures a dense set
+            const [priority, s] = alea.u32Between(
+                partL.priority + 1,
+                partU.priority
+            )(this.randState)
+            // priority ∈ ]tuple1.priority, tuple2.priority[
+            // tuple1.priority exclusion ensures a dense set
             parts.push(SimplePosPart.from(priority, this.replica, this.seq))
 
             return [SimplePos.from(parts), this.evolve(length, s)]

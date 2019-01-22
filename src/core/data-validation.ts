@@ -6,11 +6,12 @@
 // (https://github.com/Conaclos/replayable-random)
 
 /** @internal */
-export type NonFunctionNames <T> =
-{ [k in keyof T]: T[k] extends Function ? never : k }[keyof T]
+export type NonFunctionNames<T> = {
+    [k in keyof T]: T[k] extends Function ? never : k
+}[keyof T]
 
 /** @internal */
-export type Unknown <T> = { [k in NonFunctionNames<T>]?: unknown }
+export type Unknown<T> = { [k in NonFunctionNames<T>]?: unknown }
 
 /**
  * Example:
@@ -22,12 +23,12 @@ export type Unknown <T> = { [k in NonFunctionNames<T>]?: unknown }
  * @param x
  * @param Is `x' a non-null object?
  */
-export const isObject = <T> (x: unknown): x is Unknown<T> =>
+export const isObject = <T>(x: unknown): x is Unknown<T> =>
     typeof x === "object" && x !== null
 
-export type FromPlain <T> = (x: unknown) => T | undefined
+export type FromPlain<T> = (x: unknown) => T | undefined
 
-export function fromArray <T> (x: unknown[], f: FromPlain<T>): T[] | undefined {
+export function fromArray<T>(x: unknown[], f: FromPlain<T>): T[] | undefined {
     let result: T[] | undefined = new Array(x.length)
     let i = 0
     while (result !== undefined && i < x.length) {

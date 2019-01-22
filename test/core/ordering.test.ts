@@ -1,6 +1,10 @@
 import test from "ava"
 
-import { lexCompareOrdering, Ordering, orderingInversion } from "../../src/core/ordering"
+import {
+    lexCompareOrdering,
+    Ordering,
+    orderingInversion,
+} from "../../src/core/ordering"
 
 const ORDERING_VALUES = [Ordering.BEFORE, Ordering.EQUAL, Ordering.AFTER]
 

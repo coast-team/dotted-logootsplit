@@ -13,12 +13,12 @@ import { isU32, u32 } from "./number"
 /**
  * Model an insertion in a single-user list.
  */
-export class Insertion <E extends Concat<E>> {
+export class Insertion<E extends Concat<E>> {
     /**
      * @param index Insertion index.
      * @param items Inserted elements.
      */
-    constructor (readonly index: u32, readonly items: E) {
+    constructor(readonly index: u32, readonly items: E) {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => items.length > 0, "length ∈ u32")
         this.index = index
@@ -29,7 +29,7 @@ export class Insertion <E extends Concat<E>> {
     /**
      * Number of inserted elements.
      */
-    get length (): u32 {
+    get length(): u32 {
         return this.items.length
     }
 }
@@ -42,7 +42,7 @@ export class Deletion {
      * @param index Removal index.
      * @param items Number of removed elements.
      */
-    constructor (readonly index: u32, readonly length: u32) {
+    constructor(readonly index: u32, readonly length: u32) {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")

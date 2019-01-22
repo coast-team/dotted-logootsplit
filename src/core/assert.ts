@@ -8,13 +8,13 @@
 
 import { flags } from "../flags"
 
-export type Lazy <T> = () => T
+export type Lazy<T> = () => T
 
 /**
  * @param test lazy test
  * @param msg reported message if {@link test } fails.
  */
-export function assert (test: Lazy<boolean>, msg: string): void {
+export function assert(test: Lazy<boolean>, msg: string): void {
     if (flags.assertionsEnabled) {
         if (flags.failFastEnabled) {
             console.assert(test(), msg)
@@ -28,7 +28,7 @@ export function assert (test: Lazy<boolean>, msg: string): void {
  * @param test lazy test which may be hurt the performance.
  * @param msg reported message if {@link test } fails.
  */
-export function heavyAssert (test: Lazy<boolean>, msg: string): void {
+export function heavyAssert(test: Lazy<boolean>, msg: string): void {
     if (flags.heavyAssertionsEnabled) {
         assert(test, msg)
     }
@@ -38,4 +38,4 @@ export function heavyAssert (test: Lazy<boolean>, msg: string): void {
  * @param o
  * @return read-only {@link o }
  */
-export const readonly = <T> (o: T): Readonly<T> => o
+export const readonly = <T>(o: T): Readonly<T> => o

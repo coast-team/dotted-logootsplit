@@ -1,11 +1,6 @@
 import test from "ava"
 
-import {
-    U32_BOTTOM,
-    U32_TOP,
-    isU32,
-    compareU32
-} from "../../src/core/number"
+import { U32_BOTTOM, U32_TOP, isU32, compareU32 } from "../../src/core/number"
 import { Ordering } from "../../src/core/ordering"
 
 test("safe-integers-are-not-uint32", (t) => {

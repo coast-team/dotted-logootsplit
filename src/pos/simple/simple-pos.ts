@@ -38,7 +38,7 @@ export class SimplePos implements Pos<SimplePos> {
     /**
      * @param parts {@link SimplePos#parts }
      */
-    protected constructor (parts: ReadonlyArray<SimplePosPart>) {
+    protected constructor(parts: ReadonlyArray<SimplePosPart>) {
         assert(() => parts.length > 0, "parts must not be empty")
         this.parts = parts
     }
@@ -49,12 +49,18 @@ export class SimplePos implements Pos<SimplePos> {
      *  SimplePosPart.TOP.
      * @return Position with {@link parts } as {@link SimplePos#parts }.
      */
-    static from (parts: ReadonlyArray<SimplePosPart>): SimplePos {
+    static from(parts: ReadonlyArray<SimplePosPart>): SimplePos {
         const lastPart = parts[parts.length - 1]
-        assert(() => lastPart.priority !== U32_BOTTOM && lastPart.priority !== U32_TOP,
-            "priority ∉ {U32_BOTTOM, U32_TOP}")
-        assert(() => lastPart.replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP.")
+        assert(
+            () =>
+                lastPart.priority !== U32_BOTTOM &&
+                lastPart.priority !== U32_TOP,
+            "priority ∉ {U32_BOTTOM, U32_TOP}"
+        )
+        assert(
+            () => lastPart.replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP."
+        )
         return new SimplePos(parts)
     }
 
@@ -62,15 +68,16 @@ export class SimplePos implements Pos<SimplePos> {
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain (x: unknown): SimplePos | undefined {
+    static fromPlain(x: unknown): SimplePos | undefined {
         if (isObject<SimplePos>(x) && Array.isArray(x.parts)) {
             const parts = fromArray(x.parts, SimplePosPart.fromPlain)
             if (parts !== undefined && parts.length > 0) {
                 const lastPart = parts[parts.length - 1]
-                if (lastPart.priority !== U32_BOTTOM &&
+                if (
+                    lastPart.priority !== U32_BOTTOM &&
                     lastPart.priority !== U32_TOP &&
-                    lastPart.replica !== U32_TOP) {
-
+                    lastPart.replica !== U32_TOP
+                ) {
                     return SimplePos.from(parts)
                 }
             }
@@ -94,7 +101,7 @@ export class SimplePos implements Pos<SimplePos> {
      * @return Position with the same base as this,
      *  but with a different seq
      */
-    withSeq (seq: u32): SimplePos {
+    withSeq(seq: u32): SimplePos {
         assert(() => isU32(seq), "offset ∈ u32")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
@@ -103,7 +110,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    intSucc (n: u32): SimplePos {
+    intSucc(n: u32): SimplePos {
         assert(() => isU32(n), "n ∈ u32")
         assert(() => this.hasIntSucc(n), "this has a n-th successor")
         return this.withSeq(this.seq() + n)
@@ -118,69 +125,75 @@ export class SimplePos implements Pos<SimplePos> {
     /**
      * Last part of {@link SimplePosPart#parts }.
      */
-    lastPart (): SimplePosPart {
+    lastPart(): SimplePosPart {
         return this.parts[this.parts.length - 1]
     }
 
     /**
      * Number of part in {@link SimplePosPart#parts }.
      */
-    depth (): u32 {
+    depth(): u32 {
         return this.parts.length
     }
 
     /** @override */
-    replica (): u32 {
+    replica(): u32 {
         return this.lastPart().replica
     }
 
     /** @override */
-    seq (): u32 {
+    seq(): u32 {
         return this.lastPart().seq
     }
 
     /** @override */
-    intDistance (other: SimplePos): [u32, Ordering] {
+    intDistance(other: SimplePos): [u32, Ordering] {
         if (this.depth() > other.depth()) {
             const [dist, order] = other.intDistance(this)
             return [dist, orderingInversion[order]]
         } else {
-            heavyAssert(() => (
-                (cmp) => cmp === BaseOrdering.PREFIXING ||
-                    cmp === BaseOrdering.EQUAL
-            )(this.compareBase(other)), "MARK")
+            heavyAssert(
+                () =>
+                    ((cmp) =>
+                        cmp === BaseOrdering.PREFIXING ||
+                        cmp === BaseOrdering.EQUAL)(this.compareBase(other)),
+                "MARK"
+            )
 
             const otherSeq = other.parts[this.depth() - 1].seq
             const seq = this.seq()
             return [
                 absoluteSubstraction(seq, otherSeq),
-                compareU32(seq, otherSeq)
+                compareU32(seq, otherSeq),
             ]
         }
     }
 
     /** @override */
-    digest (): u32 {
+    digest(): u32 {
         return digestOf(this.parts.map((part) => part.digest()))
     }
 
     // Status
     /** @override */
-    hasIntSucc (n: u32): boolean {
+    hasIntSucc(n: u32): boolean {
         assert(() => isU32(n), "n ∈ u32")
         return isU32(this.seq() + n)
     }
 
     /** @override */
-    compareBase (other: SimplePos): BaseOrdering {
+    compareBase(other: SimplePos): BaseOrdering {
         if (this.depth() > other.depth()) {
             return baseOrderingInversion[other.compareBase(this)]
-        } else if (this.replica() === other.replica() && this.seq() === other.seq()) {
+        } else if (
+            this.replica() === other.replica() &&
+            this.seq() === other.seq()
+        ) {
             return BaseOrdering.EQUAL
         } else {
             let i = 0
             let baseCmp: Ordering = Ordering.EQUAL
-            while (i < (this.depth() - 1) && baseCmp === Ordering.EQUAL) {
+            while (i < this.depth() - 1 && baseCmp === Ordering.EQUAL) {
                 baseCmp = this.parts[i].compare(other.parts[i])
                 i++
             }
@@ -205,12 +218,12 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    isBaseEqual (other: SimplePos): boolean {
+    isBaseEqual(other: SimplePos): boolean {
         return this.compareBase(other) === BaseOrdering.EQUAL
     }
 
     /** @override */
-    compare (other: SimplePos): Ordering {
+    compare(other: SimplePos): Ordering {
         if (this.depth() > other.depth()) {
             return orderingInversion[other.compare(this)]
         } else if (this.isEqual(other)) {
@@ -232,7 +245,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    isEqual (other: SimplePos): boolean {
+    isEqual(other: SimplePos): boolean {
         return this.replica() === other.replica() && this.seq() === other.seq()
     }
 }

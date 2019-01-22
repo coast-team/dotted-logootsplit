@@ -19,7 +19,7 @@ import { isU32, u32 } from "./number"
  * [0, 2] ⊂ [0, 3]
  * [0, 2] = [0, 2]
  */
-export const enum IntervalOrdering  {
+export const enum IntervalOrdering {
     BEFORE = -4, // <
     PREPENDABLE = -3, // <:
     OVERLAPPING_BEFORE = -2, // <∩
@@ -28,7 +28,7 @@ export const enum IntervalOrdering  {
     INCLUDING = 1, // ⊃
     OVERLAPPING_AFTER = 2, // >∩
     APPENDABLE = 3, // :>
-    AFTER = 4 // >
+    AFTER = 4, // >
 }
 
 /**
@@ -39,14 +39,14 @@ export class IntInterval {
      * @param lower Lower bound.
      * @param length Number of elements in the interval.
      */
-    protected constructor (readonly lower: u32, readonly length: u32) {}
+    protected constructor(readonly lower: u32, readonly length: u32) {}
 
     /**
      * @param lower {@link IntInterval#lower }
      * @param length {@link IntInterval#length }
      * @return New interval.
      */
-    static fromLength (lower: u32, length: u32): IntInterval {
+    static fromLength(lower: u32, length: u32): IntInterval {
         assert(() => isU32(lower), "lower ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
@@ -59,7 +59,7 @@ export class IntInterval {
      * @param upper {@link IntInterval#length }
      * @return New interval.
      */
-    static fromBounds (lower: u32, upper: u32): IntInterval {
+    static fromBounds(lower: u32, upper: u32): IntInterval {
         assert(() => isU32(lower), "lower ∈ u32")
         assert(() => isU32(upper), "upper ∈ u32")
         assert(() => lower <= upper, "lower <= upper")
@@ -75,7 +75,7 @@ export class IntInterval {
      * @param nth 0-based
      * @return n-th element.
      */
-    nth (nth: u32): u32 {
+    nth(nth: u32): u32 {
         assert(() => isU32(nth), "nth ∈ u32")
         assert(() => nth < this.length, "valid nth")
         assert(() => isU32(this.lower + nth), "No integer overflow")
@@ -85,7 +85,7 @@ export class IntInterval {
     /**
      * Upper bound.
      */
-    upper (): u32 {
+    upper(): u32 {
         return this.nth(this.length - 1)
     }
 
@@ -94,9 +94,11 @@ export class IntInterval {
      * @param other
      * @return {@link other } appended to this.
      */
-    append (other: IntInterval): IntInterval {
-        assert(() => other.compare(this) === IntervalOrdering.APPENDABLE,
-            "other is appendable to this")
+    append(other: IntInterval): IntInterval {
+        assert(
+            () => other.compare(this) === IntervalOrdering.APPENDABLE,
+            "other is appendable to this"
+        )
         return new IntInterval(this.lower, this.length + other.length)
     }
 
@@ -105,12 +107,18 @@ export class IntInterval {
      *      0 < index < length
      * @return Right and left splits.
      */
-    splitAt (index: u32): [IntInterval, IntInterval] {
+    splitAt(index: u32): [IntInterval, IntInterval] {
         assert(() => isU32(index), "index ∈ u32")
-        assert(() => 0 < index && index < this.length, "0 < index < this.length")
+        assert(
+            () => 0 < index && index < this.length,
+            "0 < index < this.length"
+        )
 
         const leftInterval = new IntInterval(this.lower, index)
-        const rightInterval = new IntInterval(this.lower  + index, this.length - index)
+        const rightInterval = new IntInterval(
+            this.lower + index,
+            this.length - index
+        )
         return [leftInterval, rightInterval]
     }
 
@@ -119,7 +127,7 @@ export class IntInterval {
      * @param other
      * @return this [order relation] other.
      */
-    compare (other: IntInterval): IntervalOrdering {
+    compare(other: IntInterval): IntervalOrdering {
         if (this.upper() < other.lower) {
             if (this.upper() + 1 === other.lower) {
                 return IntervalOrdering.PREPENDABLE

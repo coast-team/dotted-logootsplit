@@ -1,3 +1,6 @@
 {
-  "extends": "conaclos/ts-base"
+  "extends": "conaclos/ts-base",
+  "rules": {
+    "@typescript-eslint/indent": 0
+  }
 }

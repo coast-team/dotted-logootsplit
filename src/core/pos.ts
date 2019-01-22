@@ -18,7 +18,7 @@ export const enum BaseOrdering {
     PREFIXING = -1,
     EQUAL = 0,
     PREFIXED_BY = 1,
-    AFTER = 2
+    AFTER = 2,
 }
 
 /**
@@ -29,7 +29,7 @@ export const baseOrderingInversion = readonly({
     [BaseOrdering.PREFIXING]: BaseOrdering.PREFIXED_BY,
     [BaseOrdering.EQUAL]: BaseOrdering.EQUAL,
     [BaseOrdering.PREFIXED_BY]: BaseOrdering.PREFIXING,
-    [BaseOrdering.AFTER]: BaseOrdering.BEFORE
+    [BaseOrdering.AFTER]: BaseOrdering.BEFORE,
 })
 
 /**
@@ -58,8 +58,8 @@ export const baseOrderingInversion = readonly({
  *
  * In documentation p.intSuccessor(n) can be shorten by p+n.
  */
-export interface Pos <P extends Pos<P>> {
-// Derivation
+export interface Pos<P extends Pos<P>> {
+    // Derivation
     /**
      * @param n 0-based index.
      * @return {@link n } -th integer successor of this.

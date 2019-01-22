@@ -108,11 +108,13 @@ test("from-plain", (t) => {
     const malformedPos1 = { parts: [] }
     t.is(SimplePos.fromPlain(malformedPos1), undefined)
     const malformedPos2 = {
-        parts: [{
-            priority: U32_TOP,
-            replica: 1,
-            seq: 0
-        }]
+        parts: [
+            {
+                priority: U32_TOP,
+                replica: 1,
+                seq: 0,
+            },
+        ],
     }
     t.is(SimplePos.fromPlain(malformedPos2), undefined)
     const malformedPos3 = { parts: [undefined] }

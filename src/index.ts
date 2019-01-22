@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-export {flags} from "./flags"
+export { flags } from "./flags"
 
 export * from "./core/anchor"
 export * from "./core/block"

@@ -30,7 +30,7 @@ export class SimplePosPart {
      * @param replica {@link SimplePosPart#replica }
      * @param seq {@link SimplePosPart#seq }
      */
-    protected constructor (priority: u32, replica: u32, seq: u32) {
+    protected constructor(priority: u32, replica: u32, seq: u32) {
         assert(() => isU32(priority), "random ∈ u32")
         assert(() => isU32(replica), "replica ∈ u32")
         assert(() => isU32(seq), "seq ∈ u32")
@@ -45,11 +45,15 @@ export class SimplePosPart {
      * @param replica {@link SimplePosPart#replica }
      * @param seq {@link SimplePosPart#seq }
      */
-    static from (priority: u32, replica: u32, seq: u32): SimplePosPart {
-        assert(() => priority !== U32_BOTTOM && priority !== U32_TOP,
-            "priority ∉ {U32_BOTTOM, U32_TOP}")
-        assert(() => replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP.")
+    static from(priority: u32, replica: u32, seq: u32): SimplePosPart {
+        assert(
+            () => priority !== U32_BOTTOM && priority !== U32_TOP,
+            "priority ∉ {U32_BOTTOM, U32_TOP}"
+        )
+        assert(
+            () => replica !== U32_TOP,
+            "replica != U32_TOP. This is reserved for BOTTOM and TOP."
+        )
         return new SimplePosPart(priority, replica, seq)
     }
 
@@ -57,10 +61,13 @@ export class SimplePosPart {
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain (x: unknown): SimplePosPart | undefined {
-        if (isObject<SimplePosPart>(x) && isU32(x.priority) &&
-            isU32(x.replica) && isU32(x.seq)) {
-
+    static fromPlain(x: unknown): SimplePosPart | undefined {
+        if (
+            isObject<SimplePosPart>(x) &&
+            isU32(x.priority) &&
+            isU32(x.replica) &&
+            isU32(x.seq)
+        ) {
             return new SimplePosPart(x.priority, x.replica, x.seq)
         }
         return undefined
@@ -84,7 +91,7 @@ export class SimplePosPart {
      * @return {SimplePosPart} with the same base,
      *  but with a different seq
      */
-    withSeq (seq: u32): SimplePosPart {
+    withSeq(seq: u32): SimplePosPart {
         assert(() => isU32(seq), "seq ∈ u32")
         return new SimplePosPart(this.priority, this.replica, seq)
     }
@@ -113,14 +120,14 @@ export class SimplePosPart {
     /**
      * @return [priority, replica, seq]
      */
-    asTuple (): [u32, u32, u32] {
+    asTuple(): [u32, u32, u32] {
         return [this.priority, this.replica, this.seq]
     }
 
     /**
      * Hash code.
      */
-    digest (): u32 {
+    digest(): u32 {
         return digestOf(this.asTuple())
     }
 
@@ -137,7 +144,7 @@ export class SimplePosPart {
      * @return Compare this and {@link other } regardless their sequence
      *  {@link SimplePosPart#seq}
      */
-    compareBase (other: SimplePosPart): Ordering {
+    compareBase(other: SimplePosPart): Ordering {
         return lexCompareOrdering(
             compareU32(this.priority, other.priority),
             compareU32(this.replica, other.replica)
@@ -155,12 +162,14 @@ export class SimplePosPart {
      * @param other
      * @return this [Order relation] {@link other}.
      */
-    compare (other: SimplePosPart): Ordering {
-        return (this === other)
-            ? Ordering.EQUAL
-            : lexCompareOrdering(
+    compare(other: SimplePosPart): Ordering {
+        if (this === other) {
+            return Ordering.EQUAL
+        } else {
+            return lexCompareOrdering(
                 this.compareBase(other),
                 compareU32(this.seq, other.seq)
             )
+        }
     }
 }
