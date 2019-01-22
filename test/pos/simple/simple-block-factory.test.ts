@@ -3,6 +3,7 @@ import test from "ava"
 import { BlockOrdering, Block } from "../../../src/core/block"
 import { SimpleBlockFactory } from "../../../src/pos/simple/simple-block-factory"
 import { SimplePos, SimplePosPart } from "../../../src"
+import { U32_BOTTOM } from "../../../src/core/number"
 
 const seed = "dotted-logootsplit"
 
@@ -41,12 +42,46 @@ test("between_surrounded-block", (t) => {
 test("between_dense-set-appendable", (t) => {
     const B = 2
     const priority = firstA.lowerPos.parts[0].priority
-    const pos2 = SimplePosPart.from(priority + 1, B, 0)
-    const block2 = new Block(SimplePos.from([pos2]), "x")
+    const part2 = SimplePosPart.from(priority + 1, B, 0)
+    const block2 = new Block(SimplePos.from([part2]), "x")
 
     const [surrounded, ] = factoryB.between(firstA, "1", block2)
     const [appendable, ] = factoryA.between(firstA, "c", surrounded)
 
     t.is(appendable.compare(firstA), BlockOrdering.APPENDABLE)
     t.is(appendable.compare(surrounded), BlockOrdering.BEFORE)
+    t.is(surrounded.compare(block2), BlockOrdering.BEFORE)
+})
+
+test("between_variable-sized-position", (t) => {
+    const [A, B] = [1, 2]
+    const partA1 = SimplePosPart.from(5, A, 0)
+    const blockA = new Block(SimplePos.from([partA1]), "a")
+    const partB1 = SimplePosPart.from(6, B, 0)
+    const partB2 = SimplePosPart.from(U32_BOTTOM + 1, B, 1)
+    const blockB = new Block(SimplePos.from([partB1, partB2]), "2")
+    const partA2 = SimplePosPart.from(7, A, 1)
+    const blockA2 = new Block(SimplePos.from([partA2]), "c")
+
+    const [surroundedB, ] = factoryB.between(blockA, "1", blockB)
+
+    t.is(blockA.compare(surroundedB), BlockOrdering.BEFORE)
+    t.is(surroundedB.compare(blockB), BlockOrdering.BEFORE)
+
+    const [surroundedA, ] = factoryA.between(blockB, "b", blockA2)
+
+    t.is(blockB.compare(surroundedA), BlockOrdering.BEFORE)
+    t.is(surroundedA.compare(blockA2), BlockOrdering.BEFORE)
+})
+
+test("from-plain", (t) => {
+    t.is(SimpleBlockFactory.fromPlain(undefined), undefined)
+    t.is(SimpleBlockFactory.fromPlain(null), undefined)
+    t.is(SimpleBlockFactory.fromPlain({}), undefined)
+    t.is(SimpleBlockFactory.fromPlain([]), undefined)
+
+    t.deepEqual(
+        SimpleBlockFactory.fromPlain(factoryA),
+        factoryA as SimpleBlockFactory
+    )
 })

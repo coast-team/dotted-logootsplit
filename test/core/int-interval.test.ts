@@ -6,12 +6,15 @@ function twiInterval (ref: IntInterval): IntInterval {
     return IntInterval.fromLength(ref.lower, ref.length)
 }
 
-const from0to2 = IntInterval.fromLength(0, 3)
 const from0to1 = IntInterval.fromLength(0, 2)
 const from1to2 = IntInterval.fromLength(1, 2)
 const singleton0 = IntInterval.fromLength(0, 1)
 const singleton1 = IntInterval.fromLength(1, 1)
 const singleton2 = IntInterval.fromLength(2, 1)
+
+test("from-bounds", (t) => {
+    t.deepEqual(IntInterval.fromBounds(0, 1), from0to1)
+})
 
 test("compare", (t) => {
     t.is(singleton0.compare(twiInterval(singleton0)), IntervalOrdering.EQUAL)

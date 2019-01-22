@@ -28,11 +28,6 @@ test("hasIntSuccessor", (t) => {
     t.true(pos0.hasIntSucc(U32_TOP))
 })
 
-test("hasIntSuccessor_contract_", (t) => {
-    t.throws(() => pos0.hasIntSucc(-1))
-    t.throws(() => pos0.hasIntSucc(U32_TOP + 1))
-})
-
 test("intSuccessor", (t) => {
     t.deepEqual(pos0.intSucc(1), pos1)
 })
@@ -97,4 +92,29 @@ test("compare", (t) => {
 
     t.is(pos14.compare(pos15), Ordering.BEFORE)
     t.is(pos15.compare(pos14), Ordering.AFTER)
+})
+
+test("isBaseEqual", (t) => {
+    t.true(pos0.isBaseEqual(pos0))
+
+    t.true(pos0.isBaseEqual(pos1))
+    t.true(pos1.isBaseEqual(pos0))
+})
+
+test("from-plain", (t) => {
+    t.is(SimplePos.fromPlain(undefined), undefined)
+    t.deepEqual(SimplePos.fromPlain(pos0), pos0)
+
+    const malformedPos1 = { parts: [] }
+    t.is(SimplePos.fromPlain(malformedPos1), undefined)
+    const malformedPos2 = {
+        parts: [{
+            priority: U32_TOP,
+            replica: 1,
+            seq: 0
+        }]
+    }
+    t.is(SimplePos.fromPlain(malformedPos2), undefined)
+    const malformedPos3 = { parts: [undefined] }
+    t.is(SimplePos.fromPlain(malformedPos3), undefined)
 })
