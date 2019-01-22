@@ -59,6 +59,13 @@
       "git add"
     ]
   },
+  "nyc": {
+    "exclude": [
+      ".tested/src/*.js",
+      ".tested/src/core/assert.js",
+      ".tested/test/"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-conventional": "^7.1.2",
