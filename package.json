@@ -28,7 +28,6 @@
     "build": "tsc -b tsconfig.main.json tsconfig.module.json tsconfig.es2015.json tsconfig.types.json",
     "clean": "rm -rf dist/ .tested/ .nyc_output/",
     "pretest": "rm -rf .tested/test/ && tsc",
-    "lint": "eslint '{src,test}/**/*.ts'",
     "test": "nyc ava",
     "prerelease": "npm run test && npm run lint && npm run build",
     "release": "standard-version --sign --no-verify"
@@ -49,9 +48,16 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "ava",
+      "pre-commit": "ava && lint-staged",
       "pre-push": "npm test"
     }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint",
+      "git add"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^7.2.1",
@@ -63,7 +69,9 @@
     "eslint": "^5.12.1",
     "eslint-config-conaclos": "^2.4.0",
     "husky": "^1.2.1",
+    "lint-staged": "^8.1.0",
     "nyc": "^13.1.0",
+    "prettier": "^1.16.1",
     "standard-version": "^4.4.0",
     "typescript": "^3.2"
   },
