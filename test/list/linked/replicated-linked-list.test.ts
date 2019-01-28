@@ -3,7 +3,7 @@ import test from "ava"
 import { ReplicatedLinkedList } from "../../../src/list/linked/replicated-linked-list"
 import { SimpleBlockFactory } from "../../../src/pos/simple/simple-block-factory"
 import { SimplePos } from "../../../src/pos/simple/simple-pos"
-import { Insertion, Deletion } from "../../../src/core/local-operation"
+import { Ins, Del } from "../../../src/core/local-operation"
 
 function newSeq(
     factory: SimpleBlockFactory
@@ -54,7 +54,7 @@ test("insert_single-insertion", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "ab")
-    t.deepEqual(abLocal, [new Insertion(0, "ab")])
+    t.deepEqual(abLocal, [new Ins(0, "ab")])
 })
 
 test("insert_append", (t) => {
@@ -71,7 +71,7 @@ test("insert_append", (t) => {
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.deepEqual(seqA.sentinel, seqC.sentinel)
     t.is(seqA.concatenated(""), "abcd")
-    t.deepEqual(cdLocal, [new Insertion(2, "cd")])
+    t.deepEqual(cdLocal, [new Ins(2, "cd")])
 })
 
 test("insert_prepend", (t) => {
@@ -85,7 +85,7 @@ test("insert_prepend", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcd")
-    t.deepEqual(abLocal, [new Insertion(0, "ab")])
+    t.deepEqual(abLocal, [new Ins(0, "ab")])
 })
 
 test("insert_append-before", (t) => {
@@ -102,7 +102,7 @@ test("insert_append-before", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcd12")
-    t.deepEqual(cdLocal, [new Insertion(2, "cd")])
+    t.deepEqual(cdLocal, [new Ins(2, "cd")])
 })
 
 test("insert_append-prepend", (t) => {
@@ -118,7 +118,7 @@ test("insert_append-prepend", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcdef")
-    t.deepEqual(cdLocal, [new Insertion(2, "cd")])
+    t.deepEqual(cdLocal, [new Ins(2, "cd")])
 })
 
 test("insert_after", (t) => {
@@ -133,7 +133,7 @@ test("insert_after", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "ab12")
-    t.deepEqual(_12Local, [new Insertion(2, "12")])
+    t.deepEqual(_12Local, [new Ins(2, "12")])
 })
 
 test("insert_before", (t) => {
@@ -148,7 +148,7 @@ test("insert_before", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "12ab")
-    t.deepEqual(_12Local, [new Insertion(0, "12")])
+    t.deepEqual(_12Local, [new Ins(0, "12")])
 })
 
 test("insert_splitting", (t) => {
@@ -163,7 +163,7 @@ test("insert_splitting", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "a12b")
-    t.deepEqual(_12Local, [new Insertion(1, "12")])
+    t.deepEqual(_12Local, [new Ins(1, "12")])
 })
 
 test("insert_splitted", (t) => {
@@ -177,7 +177,7 @@ test("insert_splitted", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abc")
-    t.deepEqual(acLocals, [new Insertion(0, "a"), new Insertion(2, "c")])
+    t.deepEqual(acLocals, [new Ins(0, "a"), new Ins(2, "c")])
 })
 
 test("insert_splitted-parts", (t) => {
@@ -192,8 +192,8 @@ test("insert_splitted-parts", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abc")
-    t.deepEqual(aLocal, [new Insertion(0, "a")])
-    t.deepEqual(cLocal, [new Insertion(2, "c")])
+    t.deepEqual(aLocal, [new Ins(0, "a")])
+    t.deepEqual(cLocal, [new Ins(2, "c")])
 })
 
 test("insert_splitted-parts-reversed", (t) => {
@@ -208,8 +208,8 @@ test("insert_splitted-parts-reversed", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abc")
-    t.deepEqual(cLocal, [new Insertion(1, "c")])
-    t.deepEqual(aLocal, [new Insertion(0, "a")])
+    t.deepEqual(cLocal, [new Ins(1, "c")])
+    t.deepEqual(aLocal, [new Ins(0, "a")])
 })
 
 test("insert_included", (t) => {
@@ -241,7 +241,7 @@ test("insert_including", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcdef")
-    t.deepEqual(abcdeflocals, [new Insertion(0, "ab"), new Insertion(4, "ef")])
+    t.deepEqual(abcdeflocals, [new Ins(0, "ab"), new Ins(4, "ef")])
 })
 
 test("insert_overlapping-before", (t) => {
@@ -259,7 +259,7 @@ test("insert_overlapping-before", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcdef")
-    t.deepEqual(abcdLocal, [new Insertion(0, "ab")])
+    t.deepEqual(abcdLocal, [new Ins(0, "ab")])
 })
 
 test("insert_overlapping-after", (t) => {
@@ -277,7 +277,7 @@ test("insert_overlapping-after", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "abcdef")
-    t.deepEqual(cdefLocal, [new Insertion(4, "ef")])
+    t.deepEqual(cdefLocal, [new Ins(4, "ef")])
 })
 
 test("insert_equal", (t) => {
@@ -388,7 +388,7 @@ test("remove_all", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "")
-    t.deepEqual(abLocalRemoval, [new Deletion(0, 2)])
+    t.deepEqual(abLocalRemoval, [new Del(0, 2)])
 })
 
 test("remove_then-append", (t) => {
@@ -408,7 +408,7 @@ test("remove_then-append", (t) => {
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.deepEqual(seqA.sentinel, seqC.sentinel)
     t.is(seqA.concatenated(""), "ab")
-    t.deepEqual(xLocalRemovalB, [new Deletion(1, 1)])
+    t.deepEqual(xLocalRemovalB, [new Del(1, 1)])
     t.deepEqual(xLocalRemovalC, [])
 })
 
@@ -426,7 +426,7 @@ test("remove_splitted", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "x")
-    t.deepEqual(xLocalRemoval, [new Deletion(0, 1), new Deletion(1, 1)])
+    t.deepEqual(xLocalRemoval, [new Del(0, 1), new Del(1, 1)])
 })
 
 test("remove_including", (t) => {
@@ -441,7 +441,7 @@ test("remove_including", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "")
-    t.deepEqual(bLocalRemovals, [new Deletion(0, 1)])
+    t.deepEqual(bLocalRemovals, [new Del(0, 1)])
 })
 
 test("remove_included", (t) => {
@@ -455,7 +455,7 @@ test("remove_included", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "ac")
-    t.deepEqual(bLocalRemovals, [new Deletion(1, 1)])
+    t.deepEqual(bLocalRemovals, [new Del(1, 1)])
 })
 
 test("remove_included-left", (t) => {
@@ -469,7 +469,7 @@ test("remove_included-left", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "bc")
-    t.deepEqual(aLocalRemovals, [new Deletion(0, 1)])
+    t.deepEqual(aLocalRemovals, [new Del(0, 1)])
 })
 
 test("remove_included-right", (t) => {
@@ -483,7 +483,7 @@ test("remove_included-right", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "ab")
-    t.deepEqual(cLocalRemovals, [new Deletion(2, 1)])
+    t.deepEqual(cLocalRemovals, [new Del(2, 1)])
 })
 
 test("remove_overlapping-before", (t) => {
@@ -497,7 +497,7 @@ test("remove_overlapping-before", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "c")
-    t.deepEqual(bLocalRemovals, [new Deletion(0, 1)])
+    t.deepEqual(bLocalRemovals, [new Del(0, 1)])
 })
 
 test("remove_overlapping-after", (t) => {
@@ -511,7 +511,7 @@ test("remove_overlapping-after", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "a")
-    t.deepEqual(bLocalRemovals, [new Deletion(1, 1)])
+    t.deepEqual(bLocalRemovals, [new Del(1, 1)])
 })
 
 // applyDelta
@@ -555,7 +555,7 @@ test("applyDelta_remove-partial-then-insert", (t) => {
 
     t.deepEqual(seqA.sentinel, seqB.sentinel)
     t.is(seqA.concatenated(""), "c")
-    t.deepEqual(abcLocalInsertion, [new Insertion(0, "c")])
+    t.deepEqual(abcLocalInsertion, [new Ins(0, "c")])
 })
 
 test("insert_apply-its-own-deltas", (t) => {

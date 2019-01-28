@@ -102,42 +102,31 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
     readonly replica: u32
 
     /** @Override */
-    readonly seq: u32
+    seq: u32
 
-    readonly randState: AleaState
+    randState: AleaState
 
-    // Derivation
     /**
-     * @param by
-     * @param randState
-     * @return Same factory, but with {@link SimpleBlockFactory#seq }
-     * increased by {@link by } and {@link SimpleBlockFactory#randState }
-     * replaced by {@link randState }
+     * @return Deep copy of this.
      */
-    evolve(by: u32, randState: AleaState): SimpleBlockFactory {
-        assert(() => isU32(by), "by ∈ u32")
-        assert(() => isU32(this.seq + by), "no overflow")
-        return new SimpleBlockFactory(this.replica, this.seq + by, randState)
+    copy(): SimpleBlockFactory {
+        return new SimpleBlockFactory(this.replica, this.seq, this.randState)
     }
 
     /**
+     * Increase {@link SimpleBlockFactory#seq } by {@link by }
+     *
      * @param by
-     * @return Same factory, but with {@link SimpleBlockFactory#seq }
-     * increased by {@link by }
      */
-    increasedSeq(by: u32): SimpleBlockFactory {
+    increaseSeq(by: u32): void {
         assert(() => isU32(by), "by ∈ u32")
         assert(() => isU32(this.seq + by), "no overflow")
-        return this.evolve(by, this.randState)
+        this.seq = this.seq + by
     }
 
     // Impl
     /** @override */
-    posBetween(
-        l: SimplePos,
-        length: u32,
-        u: SimplePos
-    ): [SimplePos, SimpleBlockFactory] {
+    posBetween(l: SimplePos, length: u32, u: SimplePos): SimplePos {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length is strictly positive")
@@ -145,7 +134,8 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
         if (l.replica() === this.replica && l.seq() + 1 === this.seq) {
             // Appendable
-            return [l.intSucc(1), this.increasedSeq(length)]
+            this.increaseSeq(length)
+            return l.intSucc(1)
         } else {
             const seqL = infiniteSequence(l.parts, SimplePosPart.BOTTOM)
             const seqU = infiniteSequence(u.parts, SimplePosPart.TOP)
@@ -172,7 +162,9 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
             // tuple1.priority exclusion ensures a dense set
             parts.push(SimplePosPart.from(priority, this.replica, this.seq))
 
-            return [SimplePos.from(parts), this.evolve(length, s)]
+            this.randState = s
+            this.increaseSeq(length)
+            return SimplePos.from(parts)
         }
     }
 }

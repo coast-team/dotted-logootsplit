@@ -11,7 +11,7 @@ import { Block, LengthBlock } from "../../core/block"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Insertion, Deletion } from "../../core/local-operation"
+import { Ins, Del } from "../../core/local-operation"
 import { digestOf, isU32, u32 } from "../../core/number"
 import {
     ReadonlyReplicatedList,
@@ -70,7 +70,7 @@ export class ReadonlyReplicatedLinkedList<P extends Pos<P>, E extends Concat<E>>
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert(block: Block<P, E>): Insertion<E>[] {
+    insert(block: Block<P, E>): Ins<E>[] {
         const result = this.sentinel.insert(block, 0)
         this.length = result.reduce((acc, v) => acc + v.length, this.length)
         return result
@@ -85,18 +85,16 @@ export class ReadonlyReplicatedLinkedList<P extends Pos<P>, E extends Concat<E>>
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove(block: LengthBlock<P>): Deletion[] {
+    remove(block: LengthBlock<P>): Del[] {
         const result = this.sentinel.remove(block, 0)
         this.length = result.reduce((acc, v) => acc - v.length, this.length)
         return result
     }
 
     /** @Override */
-    applyDelta(delta: LengthBlock<P>): Deletion[]
-    applyDelta(delta: Block<P, E>): Insertion<E>[]
-    applyDelta(
-        delta: LengthBlock<P> | Block<P, E>
-    ): Deletion[] | Insertion<E>[] {
+    applyDelta(delta: LengthBlock<P>): Del[]
+    applyDelta(delta: Block<P, E>): Ins<E>[]
+    applyDelta(delta: LengthBlock<P> | Block<P, E>): Del[] | Ins<E>[] {
         const deltaSeqs = delta.seqs()
         //const lastSeq = this.versionVector.get(delta.replica)
         const lastSeq = this.versionVector[delta.replica()]
@@ -158,12 +156,7 @@ export class ReplicatedLinkedList<P extends Pos<P>, E extends Concat<E>>
             () => isU32(this.length + items.length),
             "(items.length + this.length) ∈ u32"
         )
-        const [result, newFactory] = this.sentinel.insertAt(
-            index,
-            items,
-            this.factory
-        )
-        this.factory = newFactory
+        const result = this.sentinel.insertAt(index, items, this.factory)
         this.length = this.length + items.length
         this.versionVector[result.replica()] = result.seqs().upper()
         return result

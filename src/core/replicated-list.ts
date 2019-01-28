@@ -9,7 +9,7 @@
 import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { Insertion, Deletion } from "./local-operation"
+import { Ins, Del } from "./local-operation"
 import { u32 } from "./number"
 
 /**
@@ -44,13 +44,13 @@ export interface ReadonlyReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      *  The n+1 -th operation depends on the n -th operation.
      */
     readonly applyDelta: {
-        (delta: LengthBlock<P>): Deletion[]
-        (delta: Block<P, E>): Insertion<E>[]
+        (delta: LengthBlock<P>): Del[]
+        (delta: Block<P, E>): Ins<E>[]
     }
 
-    readonly insert: (delta: Block<P, E>) => Insertion<E>[]
+    readonly insert: (delta: Block<P, E>) => Ins<E>[]
 
-    readonly remove: (delta: LengthBlock<P>) => Deletion[]
+    readonly remove: (delta: LengthBlock<P>) => Del[]
 }
 
 /**

@@ -11,7 +11,7 @@ import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Insertion, Deletion } from "../../core/local-operation"
+import { Ins, Del } from "../../core/local-operation"
 import { isU32, u32 } from "../../core/number"
 
 export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
@@ -59,12 +59,12 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert(iBlock: Block<P, E>, index: u32): Insertion<E>[] {
+    insert(iBlock: Block<P, E>, index: u32): Ins<E>[] {
         assert(() => isU32(index), "index ∈ u32")
 
         if (this.right === undefined) {
             this.insertRight(iBlock)
-            return [new Insertion(index, iBlock.items)]
+            return [new Ins(index, iBlock.items)]
         } else {
             const rBlock = this.right.block
             switch (rBlock.compare(iBlock)) {
@@ -82,11 +82,11 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 }
                 case BlockOrdering.AFTER:
                     this.insertRight(iBlock)
-                    return [new Insertion(index, iBlock.items)]
+                    return [new Ins(index, iBlock.items)]
                 case BlockOrdering.APPENDABLE:
                     this.right = this.right.right
                     this.insertRight(iBlock.append(rBlock))
-                    return [new Insertion(index, iBlock.items)]
+                    return [new Ins(index, iBlock.items)]
                 case BlockOrdering.SPLITTING: {
                     const [lSplit, rSplit] = iBlock.splitWith(rBlock)
                     const rInsertions = this.right.insert(
@@ -94,7 +94,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         index + lSplit.length + rBlock.length
                     )
                     this.insertRight(lSplit)
-                    return [new Insertion(index, lSplit.items), ...rInsertions]
+                    return [new Ins(index, lSplit.items), ...rInsertions]
                 }
                 case BlockOrdering.SPLITTED_BY: {
                     const [lSplit, rSplit] = rBlock.splitWith(iBlock)
@@ -102,14 +102,14 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.insertRight(lSplit)
                         .insertRight(iBlock)
                         .insertRight(rSplit)
-                    return [new Insertion(index + lSplit.length, iBlock.items)]
+                    return [new Ins(index + lSplit.length, iBlock.items)]
                 }
                 case BlockOrdering.INCLUDED_BY: {
                     const [lRemaning, rRemaining] = iBlock.remove(rBlock)
-                    let insertions: Insertion<E>[] = []
+                    let insertions: Ins<E>[] = []
                     if (lRemaning !== undefined) {
                         this.right = this.right.right
-                        insertions = [new Insertion(index, lRemaning.items)]
+                        insertions = [new Ins(index, lRemaning.items)]
                         this.insertRight(lRemaning.append(rBlock))
                     }
                     if (rRemaining !== undefined) {
@@ -128,7 +128,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     const prependable = iBlock.prependable(rBlock)
                     this.right = this.right.right
                     this.insertRight(prependable.append(rBlock))
-                    return [new Insertion(index, prependable.items)]
+                    return [new Ins(index, prependable.items)]
                 }
                 default:
                     //case BlockOrdering.Including, BlockOrdering.Equal:
@@ -146,55 +146,51 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @param factory strategy of block generation.
      * @return Delta which represents the insertion.
      */
-    insertAt(
-        index: u32,
-        items: E,
-        factory: BlockFactory<P>
-    ): [Block<P, E>, BlockFactory<P>] {
+    insertAt(index: u32, items: E, factory: BlockFactory<P>): Block<P, E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => items.length > 0, "items.length > 0")
 
-        let generated: [Block<P, E>, BlockFactory<P>]
+        let iBlock: Block<P, E>
 
         if (this.right === undefined) {
             if (this instanceof Cell) {
-                generated = factory.after(this.block, items)
+                iBlock = factory.after(this.block, items)
             } else {
-                generated = factory.from(items)
+                iBlock = factory.from(items)
             }
-            this.insertRight(generated[0])
+            this.insertRight(iBlock)
         } else {
             const rBlock = this.right.block
 
             if (index > rBlock.length) {
-                generated = this.right.insertAt(
+                iBlock = this.right.insertAt(
                     index - rBlock.length,
                     items,
                     factory
                 )
             } else if (index === rBlock.length) {
-                generated =
+                iBlock =
                     this.right.right !== undefined
                         ? factory.between(rBlock, items, this.right.right.block)
                         : factory.after(rBlock, items)
-                this.insert(generated[0], 0) // handle append and prepend
+                this.insert(iBlock, 0) // handle append and prepend
             } else if (index === 0) {
                 assert(
                     () => this instanceof Sentinel,
                     "only Sentinel can insert at index 0"
                 )
-                generated = factory.before(items, rBlock)
-                this.insert(generated[0], 0) // handle prepend
+                iBlock = factory.before(items, rBlock)
+                this.insert(iBlock, 0) // handle prepend
             } else {
                 const [lSplit, rSplit] = rBlock.splitAt(index)
-                generated = factory.between(lSplit, items, rSplit)
+                iBlock = factory.between(lSplit, items, rSplit)
                 this.right = this.right.right // remove right
                 this.insertRight(lSplit)
-                    .insertRight(generated[0])
+                    .insertRight(iBlock)
                     .insertRight(rSplit)
             }
         }
-        return generated
+        return iBlock
     }
 
     /**
@@ -257,7 +253,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove(dBlock: LengthBlock<P> | Block<P, E>, index: u32): Deletion[] {
+    remove(dBlock: LengthBlock<P> | Block<P, E>, index: u32): Del[] {
         assert(() => isU32(index), "index ∈ u32")
 
         if (this.right !== undefined) {
@@ -290,16 +286,16 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         this.insertRight(lRemaning)
                         removalIndex = removalIndex + lRemaning.length
                     }
-                    return [new Deletion(removalIndex, removed.length)]
+                    return [new Del(removalIndex, removed.length)]
                 }
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right
-                    return [new Deletion(index, rBlock.length)]
+                    return [new Del(index, rBlock.length)]
                 case BlockOrdering.INCLUDED_BY: {
                     // Append of the current block is handled in the first switch-case
                     this.right = this.right.right
                     const rRemovals = this.remove(dBlock, index)
-                    return [new Deletion(index, rBlock.length), ...rRemovals]
+                    return [new Del(index, rBlock.length), ...rRemovals]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE: {
                     const removed = rBlock.intersection(dBlock)
@@ -309,9 +305,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.right = this.right.right
                     this.insertRight(remaining)
                     this.remove(dBlock, index + remaining.length)
-                    return [
-                        new Deletion(index + remaining.length, removed.length),
-                    ]
+                    return [new Del(index + remaining.length, removed.length)]
                 }
                 case BlockOrdering.OVERLAPPING_AFTER: {
                     const removed = rBlock.intersection(dBlock)
@@ -319,7 +313,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     //const [, remaining] = rBlock.remove(block) as [undefined, Block<P, E>]
                     this.right = this.right.right
                     this.insertRight(remaining)
-                    return [new Deletion(index, removed.length)]
+                    return [new Del(index, removed.length)]
                 }
                 //case BlockOrdering.After:
                 //case BlockOrdering.Appendable:

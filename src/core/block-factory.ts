@@ -48,14 +48,14 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @param items
      * @return New block with {@link items } as {@link Block#items }.
      */
-    from<E extends Concat<E>>(items: E): [Block<P, E>, BlockFactory<P>] {
+    from<E extends Concat<E>>(items: E): Block<P, E> {
         assert(() => items.length > 0, "items.length > 0")
-        const [pos, factory] = this.posBetween(
+        const pos = this.posBetween(
             this.posBounds.BOTTOM,
             items.length,
             this.posBounds.TOP
         )
-        return [new Block(pos, items), factory]
+        return new Block(pos, items)
     }
 
     /**
@@ -64,17 +64,14 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @return New block after {@link l } with {@link items } as
      *  {@link Block#items }.
      */
-    after<E extends Concat<E>>(
-        l: Block<P, E>,
-        items: E
-    ): [Block<P, E>, BlockFactory<P>] {
+    after<E extends Concat<E>>(l: Block<P, E>, items: E): Block<P, E> {
         assert(() => items.length > 0, "items.length > 0")
-        const [pos, factory] = this.posBetween(
+        const pos = this.posBetween(
             l.upperPos(),
             items.length,
             this.posBounds.TOP
         )
-        return [new Block(pos, items), factory]
+        return new Block(pos, items)
     }
 
     /**
@@ -83,17 +80,14 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @return New block before {@link u } with {@link items } as
      *  {@link Block#items }.
      */
-    before<E extends Concat<E>>(
-        items: E,
-        u: Block<P, E>
-    ): [Block<P, E>, BlockFactory<P>] {
+    before<E extends Concat<E>>(items: E, u: Block<P, E>): Block<P, E> {
         assert(() => items.length > 0, "items.length > 0")
-        const [pos, factory] = this.posBetween(
+        const pos = this.posBetween(
             this.posBounds.BOTTOM,
             items.length,
             u.lowerPos
         )
-        return [new Block(pos, items), factory]
+        return new Block(pos, items)
     }
 
     /**
@@ -107,15 +101,11 @@ export abstract class BlockFactory<P extends Pos<P>> {
         l: Block<P, E>,
         items: E,
         u: Block<P, E>
-    ): [Block<P, E>, BlockFactory<P>] {
+    ): Block<P, E> {
         assert(() => items.length > 0, "items.length > 0")
         heavyAssert(() => l.compare(u) <= BlockOrdering.PREPENDABLE, "l < u")
-        const [pos, factory] = this.posBetween(
-            l.upperPos(),
-            items.length,
-            u.lowerPos
-        )
-        return [new Block(pos, items), factory]
+        const pos = this.posBetween(l.upperPos(), items.length, u.lowerPos)
+        return new Block(pos, items)
     }
 
     // Impl
@@ -125,5 +115,5 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @param u position greater than all generated positions
      * @return Lower position of the set of int-successive generated positions.
      */
-    protected abstract posBetween(l: P, length: u32, u: P): [P, BlockFactory<P>]
+    protected abstract posBetween(l: P, length: u32, u: P): P
 }
