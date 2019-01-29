@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "./assert"
+import { assert, heavyAssert } from "./assert"
 import { isU32, u32 } from "./number"
 
 /**
@@ -95,14 +95,89 @@ export class IntInterval {
      * @return {@link other } appended to this.
      */
     append(other: IntInterval): IntInterval {
-        assert(
+        heavyAssert(
             () => other.compare(this) === IntervalOrdering.APPENDABLE,
             "other is appendable to this"
         )
         return new IntInterval(this.lower, this.length + other.length)
     }
 
+    /**
+     * @param other
+     *      this includes or overlaps after {@link other }
+     * @return Part of this block which can be append to {@link block }.
+     */
+    appendable(other: IntInterval): IntInterval {
+        heavyAssert(
+            () => this.hasAppendable(other),
+            "this has an appendable segment to other"
+        )
+        return IntInterval.fromLength(other.upper() + 1, this.upper())
+    }
+
+    /**
+     * @param other
+     *      this includes or overlaps before {@link other }
+     * @return Part of this block which can be prepend to {@link block }.
+     */
+    prependable(other: IntInterval): IntInterval {
+        heavyAssert(
+            () => this.hasPrependable(other),
+            "this has a prependable segment to other"
+        )
+        return IntInterval.fromLength(this.lower, other.upper() - this.lower)
+    }
+
+    /**
+     * @param other
+     *      this and {@link other } intersect.
+     * @return Intersection part between this and {@link other }.
+     */
+    intersection(other: IntInterval): IntInterval {
+        heavyAssert(() => this.hasIntersection(other), "this intersects other.")
+        return IntInterval.fromBounds(
+            Math.max(this.lower, other.lower),
+            Math.min(this.upper(), other.upper())
+        )
+    }
+
     // Status
+    /**
+     * @param other
+     * @return Are this and {@link other } an intersection?
+     */
+    hasIntersection(other: IntInterval): boolean {
+        const cmp = this.compare(other)
+        return (
+            IntervalOrdering.OVERLAPPING_BEFORE <= cmp &&
+            cmp <= IntervalOrdering.OVERLAPPING_AFTER
+        )
+    }
+
+    /**
+     * @param other
+     * @return Has this an appendable segment to {@link other }?
+     */
+    hasAppendable(other: IntInterval): boolean {
+        const cmp = this.compare(other)
+        return (
+            cmp === IntervalOrdering.OVERLAPPING_AFTER ||
+            (cmp === IntervalOrdering.INCLUDING && this.upper() > other.upper())
+        )
+    }
+
+    /**
+     * @param other
+     * @return Has this a prependable segment to {@link other }?
+     */
+    hasPrependable(other: IntInterval): boolean {
+        const cmp = this.compare(other)
+        return (
+            cmp === IntervalOrdering.OVERLAPPING_BEFORE ||
+            (cmp === IntervalOrdering.INCLUDING && this.lower < other.lower)
+        )
+    }
+
     /**
      * @param other
      * @return this [order relation] other.
