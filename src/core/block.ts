@@ -24,17 +24,21 @@ import { Ordering } from "./ordering"
  */
 export const enum BlockOrdering {
     // TODO: add "AfterVirtualBlock" & "BeforeVirtualBlock" (with better names)?
-    BEFORE = -5, // <
-    PREPENDABLE = -4, // <:
-    OVERLAPPING_BEFORE = -3, // <∩
-    SPLITTED_BY = -2, // |⊂
-    INCLUDED_BY = -1, // ⊂
+    SPLITTED_BY = -7, // |⊂
+    BEFORE = -6, // <
+    PREPENDABLE = -5, // <:
+    OVERLAPPING_BEFORE = -4, // <∩
+    INCLUDED_LEFT_BY = -3, // +⊂
+    INCLUDED_MIDDLE_BY = -2, // ⊂
+    INCLUDED_RIGHT_BY = -1, // -⊂
     EQUAL = 0, // =
-    INCLUDING = 1, // ⊃
-    SPLITTING = 2, // ⊃|
-    OVERLAPPING_AFTER = 3, // >∩
-    APPENDABLE = 4, // :>
-    AFTER = 5, // >
+    INCLUDING_LEFT = 1, // ⊃-
+    INCLUDING_MIDDLE = 2, // ⊃
+    INCLUDING_RIGHT = 3, // ⊃+
+    OVERLAPPING_AFTER = 4, // >∩
+    APPENDABLE = 5, // :>
+    AFTER = 6, // >
+    SPLITTING = 7, // ⊃|
 }
 
 /**
@@ -44,13 +48,13 @@ const intervalOrderingAsBlockOrdering = Object.freeze({
     [IntervalOrdering.BEFORE]: BlockOrdering.BEFORE,
     [IntervalOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
     [IntervalOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,
-    [IntervalOrdering.INCLUDING_LEFT]: BlockOrdering.INCLUDING,
-    [IntervalOrdering.INCLUDING_MIDDLE]: BlockOrdering.INCLUDING,
-    [IntervalOrdering.INCLUDING_RIGHT]: BlockOrdering.INCLUDING,
+    [IntervalOrdering.INCLUDING_LEFT]: BlockOrdering.INCLUDING_LEFT,
+    [IntervalOrdering.INCLUDING_MIDDLE]: BlockOrdering.INCLUDING_MIDDLE,
+    [IntervalOrdering.INCLUDING_RIGHT]: BlockOrdering.INCLUDING_RIGHT,
     [IntervalOrdering.EQUAL]: BlockOrdering.EQUAL,
-    [IntervalOrdering.INCLUDED_LEFT_BY]: BlockOrdering.INCLUDED_BY,
-    [IntervalOrdering.INCLUDED_MIDDLE_BY]: BlockOrdering.INCLUDED_BY,
-    [IntervalOrdering.INCLUDED_RIGHT_BY]: BlockOrdering.INCLUDED_BY,
+    [IntervalOrdering.INCLUDED_LEFT_BY]: BlockOrdering.INCLUDED_LEFT_BY,
+    [IntervalOrdering.INCLUDED_MIDDLE_BY]: BlockOrdering.INCLUDED_MIDDLE_BY,
+    [IntervalOrdering.INCLUDED_RIGHT_BY]: BlockOrdering.INCLUDED_RIGHT_BY,
     [IntervalOrdering.OVERLAPPING_AFTER]: BlockOrdering.OVERLAPPING_AFTER,
     [IntervalOrdering.APPENDABLE]: BlockOrdering.APPENDABLE,
     [IntervalOrdering.AFTER]: BlockOrdering.AFTER,
@@ -214,11 +218,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     hasIntersection(other: BaseBlockk<P>): boolean {
         const cmp = this.compare(other)
         return (
-            cmp === BlockOrdering.OVERLAPPING_BEFORE ||
-            cmp === BlockOrdering.OVERLAPPING_AFTER ||
-            cmp === BlockOrdering.EQUAL ||
-            cmp === BlockOrdering.INCLUDING ||
-            cmp === BlockOrdering.INCLUDED_BY
+            BlockOrdering.OVERLAPPING_BEFORE <= cmp &&
+            cmp <= BlockOrdering.OVERLAPPING_AFTER
         )
     }
 
@@ -230,8 +231,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_AFTER ||
-            (cmp === BlockOrdering.INCLUDING &&
-                this.upperPos().compare(other.upperPos()) === Ordering.AFTER)
+            cmp === BlockOrdering.INCLUDING_LEFT ||
+            cmp === BlockOrdering.INCLUDING_MIDDLE
         )
     }
 
@@ -243,8 +244,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_BEFORE ||
-            (cmp === BlockOrdering.INCLUDING &&
-                this.lowerPos.compare(other.lowerPos) === Ordering.BEFORE)
+            cmp === BlockOrdering.INCLUDING_RIGHT ||
+            cmp === BlockOrdering.INCLUDING_MIDDLE
         )
     }
 

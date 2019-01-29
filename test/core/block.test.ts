@@ -56,8 +56,14 @@ test("compare", (t) => {
     t.is(b1ab.compare(b1bc), BlockOrdering.OVERLAPPING_BEFORE)
     t.is(b1bc.compare(b1ab), BlockOrdering.OVERLAPPING_AFTER)
 
-    t.is(b1abc.compare(b1a), BlockOrdering.INCLUDING)
-    t.is(b1a.compare(b1abc), BlockOrdering.INCLUDED_BY)
+    t.is(b1abc.compare(b1a), BlockOrdering.INCLUDING_LEFT)
+    t.is(b1a.compare(b1abc), BlockOrdering.INCLUDED_LEFT_BY)
+
+    t.is(b1abc.compare(b1c), BlockOrdering.INCLUDING_RIGHT)
+    t.is(b1c.compare(b1abc), BlockOrdering.INCLUDED_RIGHT_BY)
+
+    t.is(b1abc.compare(b1b), BlockOrdering.INCLUDING_MIDDLE)
+    t.is(b1b.compare(b1abc), BlockOrdering.INCLUDED_MIDDLE_BY)
 })
 
 test("append", (t) => {

@@ -104,7 +104,9 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         .insertRight(rSplit)
                     return [new Ins(index + lSplit.length, iBlock.items)]
                 }
-                case BlockOrdering.INCLUDED_BY: {
+                case BlockOrdering.INCLUDED_LEFT_BY:
+                case BlockOrdering.INCLUDED_RIGHT_BY:
+                case BlockOrdering.INCLUDED_MIDDLE_BY: {
                     const [lRemaning, rRemaining] = iBlock.remove(rBlock)
                     let insertions: Ins<E>[] = []
                     if (lRemaning !== undefined) {
@@ -274,7 +276,9 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 }
                 case BlockOrdering.PREPENDABLE:
                     return this.right.remove(dBlock, index + rBlock.length) // tail recursion
-                case BlockOrdering.INCLUDING: {
+                case BlockOrdering.INCLUDING_LEFT:
+                case BlockOrdering.INCLUDING_RIGHT:
+                case BlockOrdering.INCLUDING_MIDDLE: {
                     const removed = rBlock.intersection(dBlock)
                     const [lRemaning, rRemaning] = rBlock.remove(dBlock)
                     this.right = this.right.right
@@ -291,7 +295,9 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right
                     return [new Del(index, rBlock.length)]
-                case BlockOrdering.INCLUDED_BY: {
+                case BlockOrdering.INCLUDED_LEFT_BY:
+                case BlockOrdering.INCLUDED_RIGHT_BY:
+                case BlockOrdering.INCLUDED_MIDDLE_BY: {
                     // Append of the current block is handled in the first switch-case
                     this.right = this.right.right
                     const rRemovals = this.remove(dBlock, index)
