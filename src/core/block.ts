@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert, readonly } from "./assert"
+import { assert, heavyAssert } from "./assert"
 import { isObject, FromPlain } from "../core/data-validation"
 import { digestOf, isU32, u32 } from "./number"
 import { Anchor } from "./anchor"
@@ -40,7 +40,7 @@ export const enum BlockOrdering {
 /**
  * Map IntervalOrdering to BlockOrdering.
  */
-const intervalOrderingAsBlockOrdering = readonly({
+const intervalOrderingAsBlockOrdering = Object.freeze({
     [IntervalOrdering.BEFORE]: BlockOrdering.BEFORE,
     [IntervalOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
     [IntervalOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,

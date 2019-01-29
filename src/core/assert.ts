@@ -33,9 +33,3 @@ export function heavyAssert(test: Lazy<boolean>, msg: string): void {
         assert(test, msg)
     }
 }
-
-/**
- * @param o
- * @return read-only {@link o }
- */
-export const readonly = <T>(o: T): Readonly<T> => o

@@ -6,7 +6,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { readonly } from "./assert"
 import { u32 } from "./number"
 import { Ordering } from "./ordering"
 
@@ -24,7 +23,7 @@ export const enum BaseOrdering {
 /**
  * Inversion of BaseOrdering.
  */
-export const baseOrderingInversion = readonly({
+export const baseOrderingInversion = Object.freeze({
     [BaseOrdering.BEFORE]: BaseOrdering.AFTER,
     [BaseOrdering.PREFIXING]: BaseOrdering.PREFIXED_BY,
     [BaseOrdering.EQUAL]: BaseOrdering.EQUAL,

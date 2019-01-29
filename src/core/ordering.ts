@@ -6,8 +6,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { readonly } from "./assert"
-
 /**
  * Possible relation between two elements in a totally ordered set.
  */
@@ -23,7 +21,7 @@ export const enum Ordering {
  * @example
  * orderingInversion[Ordering.BEFORE] === Ordering.AFTER
  */
-export const orderingInversion = readonly({
+export const orderingInversion = Object.freeze({
     [Ordering.BEFORE]: Ordering.AFTER,
     [Ordering.EQUAL]: Ordering.EQUAL,
     [Ordering.AFTER]: Ordering.BEFORE,
