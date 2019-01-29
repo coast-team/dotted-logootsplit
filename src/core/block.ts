@@ -59,6 +59,11 @@ export interface BaseBlockk<P> {
     readonly lowerPos: P
 
     /**
+     * Last position of the block.
+     */
+    readonly upperPos: () => P
+
+    /**
      * Block length.
      */
     readonly length: u32
@@ -221,7 +226,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_AFTER ||
-            cmp === BlockOrdering.INCLUDING
+            (cmp === BlockOrdering.INCLUDING &&
+                this.upperPos().compare(other.upperPos()) === Ordering.AFTER)
         )
     }
 
@@ -233,7 +239,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_BEFORE ||
-            cmp === BlockOrdering.INCLUDING
+            (cmp === BlockOrdering.INCLUDING &&
+                this.lowerPos.compare(other.lowerPos) === Ordering.BEFORE)
         )
     }
 

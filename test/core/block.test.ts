@@ -76,9 +76,27 @@ test("splitWith", (t) => {
     t.deepEqual(b1abc.splitWith(b10xyz), [b1a, b1bc])
 })
 
+test("has-prependable", (t) => {
+    t.true(b1ab.hasPrependable(b1bc))
+    t.true(b1ab.hasPrependable(b1b))
+    t.true(b1abc.hasPrependable(b1b))
+
+    t.false(b1bc.hasPrependable(b1b))
+    t.false(b1b.hasPrependable(b1c))
+})
+
 test("prependable", (t) => {
     t.deepEqual(b1ab.prependable(b1b), b1a)
     t.deepEqual(b1abc.prependable(b1b), b1a)
+})
+
+test("has-appendable", (t) => {
+    t.true(b1bc.hasAppendable(b1ab))
+    t.true(b1bc.hasAppendable(b1b))
+    t.true(b1abc.hasAppendable(b1b))
+
+    t.false(b1a.hasAppendable(b1c))
+    t.false(b1bc.hasAppendable(b1c))
 })
 
 test("appendable", (t) => {
