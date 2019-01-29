@@ -16,19 +16,25 @@ import { isU32, u32 } from "./number"
  * [0, 2] < [4, 6]
  * [0, 2] <: [3, 6]
  * [0, 4] <∩ [4, 6] (because their intersection is not empty)
- * [0, 2] ⊂ [0, 3]
+ * [0, 2] -⊂ [0, 3]
+ * [1, 2] ⊂ [0, 3]
+ * [2, 3] +⊂ [0, 3]
  * [0, 2] = [0, 2]
  */
 export const enum IntervalOrdering {
-    BEFORE = -4, // <
-    PREPENDABLE = -3, // <:
-    OVERLAPPING_BEFORE = -2, // <∩
-    INCLUDED_BY = -1, // ⊂
+    BEFORE = -6, // <
+    PREPENDABLE = -5, // <:
+    OVERLAPPING_BEFORE = -4, // <∩
+    INCLUDED_LEFT_BY = -3, // -⊂
+    INCLUDED_MIDDLE_BY = -2, // ⊂
+    INCLUDED_RIGHT_BY = -1, // +⊂
     EQUAL = 0, // =
-    INCLUDING = 1, // ⊃
-    OVERLAPPING_AFTER = 2, // >∩
-    APPENDABLE = 3, // :>
-    AFTER = 4, // >
+    INCLUDING_LEFT = 1, // ⊃-
+    INCLUDING_MIDDLE = 2, // ⊃
+    INCLUDING_RIGHT = 3, // ⊃+
+    OVERLAPPING_AFTER = 4, // >∩
+    APPENDABLE = 5, // :>
+    AFTER = 6, // >
 }
 
 /**
@@ -162,7 +168,8 @@ export class IntInterval {
         const cmp = this.compare(other)
         return (
             cmp === IntervalOrdering.OVERLAPPING_AFTER ||
-            (cmp === IntervalOrdering.INCLUDING && this.upper() > other.upper())
+            cmp === IntervalOrdering.INCLUDING_LEFT ||
+            cmp === IntervalOrdering.INCLUDING_MIDDLE
         )
     }
 
@@ -174,7 +181,8 @@ export class IntInterval {
         const cmp = this.compare(other)
         return (
             cmp === IntervalOrdering.OVERLAPPING_BEFORE ||
-            (cmp === IntervalOrdering.INCLUDING && this.lower < other.lower)
+            cmp === IntervalOrdering.INCLUDING_RIGHT ||
+            cmp === IntervalOrdering.INCLUDING_MIDDLE
         )
     }
 
@@ -183,36 +191,42 @@ export class IntInterval {
      * @return this [order relation] other.
      */
     compare(other: IntInterval): IntervalOrdering {
-        if (this.upper() < other.lower) {
-            if (this.upper() + 1 === other.lower) {
+        const thisUpper = this.upper()
+        const otherUpper = other.upper()
+        if (thisUpper < other.lower) {
+            if (thisUpper + 1 === other.lower) {
                 return IntervalOrdering.PREPENDABLE
             } else {
                 return IntervalOrdering.BEFORE
             }
-        } else if (other.upper() < this.lower) {
-            if (other.upper() + 1 === this.lower) {
+        } else if (otherUpper < this.lower) {
+            if (otherUpper + 1 === this.lower) {
                 return IntervalOrdering.APPENDABLE
             } else {
                 return IntervalOrdering.AFTER
             }
         } else {
             if (this.lower === other.lower) {
-                if (this.upper() === other.upper()) {
+                if (thisUpper === otherUpper) {
                     return IntervalOrdering.EQUAL
-                } else if (this.upper() < other.upper()) {
-                    return IntervalOrdering.INCLUDED_BY
+                } else if (thisUpper < otherUpper) {
+                    return IntervalOrdering.INCLUDED_LEFT_BY
                 } else {
-                    return IntervalOrdering.INCLUDING
+                    return IntervalOrdering.INCLUDING_LEFT
                 }
             } else if (this.lower < other.lower) {
-                if (other.upper() <= this.upper()) {
-                    return IntervalOrdering.INCLUDING
+                if (otherUpper === thisUpper) {
+                    return IntervalOrdering.INCLUDING_RIGHT
+                } else if (otherUpper < thisUpper) {
+                    return IntervalOrdering.INCLUDING_MIDDLE
                 } else {
                     return IntervalOrdering.OVERLAPPING_BEFORE
                 }
             } else {
-                if (this.upper() <= other.upper()) {
-                    return IntervalOrdering.INCLUDED_BY
+                if (thisUpper === otherUpper) {
+                    return IntervalOrdering.INCLUDED_RIGHT_BY
+                } else if (thisUpper < otherUpper) {
+                    return IntervalOrdering.INCLUDED_MIDDLE_BY
                 } else {
                     return IntervalOrdering.OVERLAPPING_AFTER
                 }
