@@ -102,26 +102,6 @@ export class IntInterval {
         return new IntInterval(this.lower, this.length + other.length)
     }
 
-    /**
-     * @param index where split.
-     *      0 < index < length
-     * @return Right and left splits.
-     */
-    splitAt(index: u32): [IntInterval, IntInterval] {
-        assert(() => isU32(index), "index ∈ u32")
-        assert(
-            () => 0 < index && index < this.length,
-            "0 < index < this.length"
-        )
-
-        const leftInterval = new IntInterval(this.lower, index)
-        const rightInterval = new IntInterval(
-            this.lower + index,
-            this.length - index
-        )
-        return [leftInterval, rightInterval]
-    }
-
     // Status
     /**
      * @param other

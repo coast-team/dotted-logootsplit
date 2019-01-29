@@ -35,7 +35,3 @@ test("compare", (t) => {
 test("append", (t) => {
     t.deepEqual(singleton0.append(singleton1), from0to1)
 })
-
-test("splitAt", (t) => {
-    t.deepEqual(from0to1.splitAt(1), [singleton0, singleton1])
-})
