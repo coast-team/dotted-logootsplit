@@ -52,6 +52,18 @@ const intervalOrderingAsBlockOrdering = readonly({
     [IntervalOrdering.AFTER]: BlockOrdering.AFTER,
 })
 
+export interface BaseBlockk<P> {
+    /**
+     * First position of the block.
+     */
+    readonly lowerPos: P
+
+    /**
+     * Block length.
+     */
+    readonly length: u32
+}
+
 /**
  * Represent the removal of a segment.
  */
@@ -152,7 +164,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      {@link other } must split this
      * @return 0-based index where {@link other } splits this block.
      */
-    splittingIndex(other: Block<P, E> | LengthBlock<P>): u32 {
+    splittingIndex(other: BaseBlockk<P>): u32 {
         heavyAssert(
             () => this.compare(other) === BlockOrdering.SPLITTED_BY,
             "other splits this"
@@ -190,7 +202,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      * @param other
      * @return Are this and {@link other } an intersection?
      */
-    hasIntersection(other: Block<P, E> | LengthBlock<P>): boolean {
+    hasIntersection(other: BaseBlockk<P>): boolean {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_BEFORE ||
@@ -205,7 +217,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      * @param other
      * @return Has this an appendable segment to {@link other }?
      */
-    hasAppendable(other: Block<P, E> | LengthBlock<P>): boolean {
+    hasAppendable(other: BaseBlockk<P>): boolean {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_AFTER ||
@@ -217,7 +229,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      * @param other
      * @return Has this a prependable segment to {@link other }?
      */
-    hasPrependable(other: Block<P, E> | LengthBlock<P>): boolean {
+    hasPrependable(other: BaseBlockk<P>): boolean {
         const cmp = this.compare(other)
         return (
             cmp === BlockOrdering.OVERLAPPING_BEFORE ||
@@ -232,7 +244,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      * @param other
      * @return this [Order relation] {@link other}.
      */
-    compare(other: Block<P, E> | LengthBlock<P>): BlockOrdering {
+    compare(other: BaseBlockk<P>): BlockOrdering {
         const baseCmp = this.lowerPos.compareBase(other.lowerPos)
 
         if (baseCmp === BaseOrdering.BEFORE) {
@@ -349,7 +361,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      {@link other } must split this
      * @return Left and right splits.
      */
-    splitWith(other: Block<P, E> | LengthBlock<P>): [Block<P, E>, Block<P, E>] {
+    splitWith(other: BaseBlockk<P>): [Block<P, E>, Block<P, E>] {
         assert(
             () => this.compare(other) === BlockOrdering.SPLITTED_BY,
             "other splits this"
@@ -362,7 +374,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      this includes or overlaps after {@link other }
      * @return Part of this block which can be append to {@link block }.
      */
-    appendable(other: Block<P, E> | LengthBlock<P>): Block<P, E> {
+    appendable(other: BaseBlockk<P>): Block<P, E> {
         heavyAssert(
             () => this.hasAppendable(other),
             "this has an appendable segment to other"
@@ -381,7 +393,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      this includes or overlaps before {@link other }
      * @return Part of this block which can be prepend to {@link block }.
      */
-    prependable(other: Block<P, E> | LengthBlock<P>): Block<P, E> {
+    prependable(other: BaseBlockk<P>): Block<P, E> {
         heavyAssert(
             () => this.hasPrependable(other),
             "this has a prependable segment to other"
@@ -396,7 +408,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      this and {@link other } intersect.
      * @return Intersection part between this and {@link other }.
      */
-    intersection(other: Block<P, E> | LengthBlock<P>): Block<P, E> {
+    intersection(other: BaseBlockk<P>): Block<P, E> {
         heavyAssert(() => this.hasIntersection(other), "this intersects other.")
 
         const [dist, order] = this.lowerPos.intDistance(other.lowerPos)
@@ -425,7 +437,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *  intersection between this and {@link other }.
      */
     remove(
-        other: Block<P, E> | LengthBlock<P>
+        other: BaseBlockk<P>
     ): [Block<P, E> | undefined, Block<P, E> | undefined] {
         heavyAssert(
             () => this.hasIntersection(other),
