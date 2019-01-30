@@ -42,3 +42,13 @@ export function fromArray<T>(x: unknown[], f: FromPlain<T>): T[] | undefined {
     }
     return result
 }
+
+export function or<A, B>(f: FromPlain<A>, g: FromPlain<B>): FromPlain<A | B> {
+    return (x) => {
+        const a = f(x)
+        if (a !== undefined) {
+            return a
+        }
+        return g(x)
+    }
+}
