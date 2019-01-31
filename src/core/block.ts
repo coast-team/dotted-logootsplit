@@ -24,9 +24,9 @@ import { Ordering } from "./ordering"
  */
 export const enum BlockOrdering {
     // TODO: add "AfterVirtualBlock" & "BeforeVirtualBlock" (with better names)?
-    SPLITTED_BY = -7, // |⊂
-    BEFORE = -6, // <
-    PREPENDABLE = -5, // <:
+    BEFORE = -7, // <
+    PREPENDABLE = -6, // <:
+    SPLITTED_BY = -5, // |⊂
     OVERLAPPING_BEFORE = -4, // <∩
     INCLUDED_LEFT_BY = -3, // +⊂
     INCLUDED_MIDDLE_BY = -2, // ⊂
@@ -36,9 +36,9 @@ export const enum BlockOrdering {
     INCLUDING_MIDDLE = 2, // ⊃
     INCLUDING_RIGHT = 3, // ⊃+
     OVERLAPPING_AFTER = 4, // >∩
-    APPENDABLE = 5, // :>
-    AFTER = 6, // >
-    SPLITTING = 7, // ⊃|
+    SPLITTING = 5, // ⊃|
+    APPENDABLE = 6, // :>
+    AFTER = 7, // >
 }
 
 /**
