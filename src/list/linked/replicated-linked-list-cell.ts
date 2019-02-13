@@ -104,23 +104,29 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         .insertRight(rSplit)
                     return [new Ins(index + lSplit.length, iBlock.items)]
                 }
-                case BlockOrdering.INCLUDED_LEFT_BY:
-                case BlockOrdering.INCLUDED_RIGHT_BY:
+                case BlockOrdering.INCLUDED_LEFT_BY: {
+                    const appendable = iBlock.appendable(rBlock)
+                    this.right = this.right.right
+                    this.insertRight(rBlock.append(appendable))
+                    return [new Ins(index + rBlock.length, appendable.items)]
+                }
+                case BlockOrdering.INCLUDED_RIGHT_BY: {
+                    const prependable = iBlock.prependable(rBlock)
+                    this.right = this.right.right
+                    this.insertRight(prependable.append(rBlock))
+                    return [new Ins(index, prependable.items)]
+                }
                 case BlockOrdering.INCLUDED_MIDDLE_BY: {
-                    const [lRemaning, rRemaining] = iBlock.remove(rBlock)
-                    let insertions: Ins<E>[] = []
-                    if (lRemaning !== undefined) {
-                        this.right = this.right.right
-                        insertions = [new Ins(index, lRemaning.items)]
-                        this.insertRight(lRemaning.append(rBlock))
-                    }
-                    if (rRemaining !== undefined) {
-                        insertions = [
-                            ...insertions,
-                            ...this.insert(rRemaining, index),
-                        ]
-                    }
-                    return insertions
+                    const prependable = iBlock.prependable(rBlock)
+                    const appendable = iBlock.appendable(rBlock)
+                    const b = prependable.append(rBlock).append(appendable)
+                    this.right = this.right.right
+                    this.insertRight(b)
+                    const lIndex = index + prependable.length + rBlock.length
+                    return [
+                        new Ins(index, prependable.items),
+                        new Ins(lIndex, appendable.items),
+                    ]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE: {
                     const appendable = iBlock.appendable(rBlock)
@@ -276,21 +282,24 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 }
                 case BlockOrdering.PREPENDABLE:
                     return this.right.remove(dBlock, index + rBlock.length) // tail recursion
-                case BlockOrdering.INCLUDING_LEFT:
-                case BlockOrdering.INCLUDING_RIGHT:
-                case BlockOrdering.INCLUDING_MIDDLE: {
-                    const removed = rBlock.intersection(dBlock)
-                    const [lRemaning, rRemaning] = rBlock.remove(dBlock)
+                case BlockOrdering.INCLUDING_LEFT: {
+                    const rRemaning = rBlock.appendable(dBlock)
                     this.right = this.right.right
-                    if (rRemaning !== undefined) {
-                        this.insertRight(rRemaning)
-                    }
-                    let removalIndex = index
-                    if (lRemaning !== undefined) {
-                        this.insertRight(lRemaning)
-                        removalIndex = removalIndex + lRemaning.length
-                    }
-                    return [new Del(removalIndex, removed.length)]
+                    this.insertRight(rRemaning)
+                    return [new Del(index, dBlock.length)]
+                }
+                case BlockOrdering.INCLUDING_RIGHT: {
+                    const lRemaning = rBlock.prependable(dBlock)
+                    this.right = this.right.right
+                    this.insertRight(lRemaning)
+                    return [new Del(index + lRemaning.length, dBlock.length)]
+                }
+                case BlockOrdering.INCLUDING_MIDDLE: {
+                    const rRemaning = rBlock.appendable(dBlock)
+                    const lRemaning = rBlock.prependable(dBlock)
+                    this.right = this.right.right
+                    this.insertRight(lRemaning).insertRight(rRemaning)
+                    return [new Del(index + lRemaning.length, dBlock.length)]
                 }
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right

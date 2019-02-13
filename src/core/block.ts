@@ -436,41 +436,4 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
             return new Block(pos, elements)
         }
     }
-
-    /**
-     * @example
-     * Block(p, "abc").remove(Block(p, "a")) == [undefined, Block(p+1, "bc")]
-     * Block(p, "abc").remove(Block(p+1, "b")) == [Block(_, "a"), Block(p+2, "c")]
-     * Block(p, "abc").remove(Block(p+2, "c")) == [Block(p, "ab"), undefined]
-     * Block(p, "abc").remove(Block(p+3, "d")) == [undefined, undefined]
-     *
-     * @param other
-     * @return Left and right remaining after removing from this the
-     *  intersection between this and {@link other }.
-     */
-    remove(
-        other: BaseBlockk<P>
-    ): [Block<P, E> | undefined, Block<P, E> | undefined] {
-        heavyAssert(
-            () => this.hasIntersection(other),
-            "this and other intersect."
-        )
-
-        const [dist, order] = this.lowerPos.intDistance(other.lowerPos)
-        if (order === Ordering.BEFORE) {
-            const removedLength = this.length - dist
-            if (removedLength > other.length) {
-                return [this.prependable(other), this.appendable(other)]
-            } else {
-                return [this.prependable(other), undefined]
-            }
-        } else {
-            const removedLength = other.length - dist
-            if (removedLength >= this.length) {
-                return [undefined, undefined]
-            } else {
-                return [undefined, this.appendable(other)]
-            }
-        }
-    }
 }

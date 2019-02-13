@@ -116,13 +116,3 @@ test("intersection", (t) => {
         t.deepEqual(b.intersection(b1abc), b)
     }
 })
-
-test("remove", (t) => {
-    t.deepEqual(b1abc.remove(b1a), [undefined, b1bc])
-    t.deepEqual(b1abc.remove(b1b), [b1a, b1c])
-    t.deepEqual(b1abc.remove(b1c), [b1ab, undefined])
-
-    t.deepEqual(b1a.remove(b1abc), [undefined, undefined])
-    t.deepEqual(b1b.remove(b1abc), [undefined, undefined])
-    t.deepEqual(b1c.remove(b1abc), [undefined, undefined])
-})
