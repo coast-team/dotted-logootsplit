@@ -12,7 +12,7 @@ import { digestOf, isU32, u32 } from "./number"
 import { Anchor } from "./anchor"
 import { Pos, BaseOrdering } from "./pos"
 import { Concat, ConcatLength } from "./concat"
-import { IntervalOrdering, IntInterval } from "./int-interval"
+import { RangeOrdering, U32Range } from "./u32-range"
 import { Ordering } from "./ordering"
 
 /**
@@ -44,20 +44,20 @@ export const enum BlockOrdering {
 /**
  * Map IntervalOrdering to BlockOrdering.
  */
-const intervalOrderingAsBlockOrdering = Object.freeze({
-    [IntervalOrdering.BEFORE]: BlockOrdering.BEFORE,
-    [IntervalOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
-    [IntervalOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,
-    [IntervalOrdering.INCLUDING_LEFT]: BlockOrdering.INCLUDING_LEFT,
-    [IntervalOrdering.INCLUDING_MIDDLE]: BlockOrdering.INCLUDING_MIDDLE,
-    [IntervalOrdering.INCLUDING_RIGHT]: BlockOrdering.INCLUDING_RIGHT,
-    [IntervalOrdering.EQUAL]: BlockOrdering.EQUAL,
-    [IntervalOrdering.INCLUDED_LEFT_BY]: BlockOrdering.INCLUDED_LEFT_BY,
-    [IntervalOrdering.INCLUDED_MIDDLE_BY]: BlockOrdering.INCLUDED_MIDDLE_BY,
-    [IntervalOrdering.INCLUDED_RIGHT_BY]: BlockOrdering.INCLUDED_RIGHT_BY,
-    [IntervalOrdering.OVERLAPPING_AFTER]: BlockOrdering.OVERLAPPING_AFTER,
-    [IntervalOrdering.APPENDABLE]: BlockOrdering.APPENDABLE,
-    [IntervalOrdering.AFTER]: BlockOrdering.AFTER,
+const rangeOrderingAsBlockOrdering = Object.freeze({
+    [RangeOrdering.BEFORE]: BlockOrdering.BEFORE,
+    [RangeOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
+    [RangeOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,
+    [RangeOrdering.INCLUDING_LEFT]: BlockOrdering.INCLUDING_LEFT,
+    [RangeOrdering.INCLUDING_MIDDLE]: BlockOrdering.INCLUDING_MIDDLE,
+    [RangeOrdering.INCLUDING_RIGHT]: BlockOrdering.INCLUDING_RIGHT,
+    [RangeOrdering.EQUAL]: BlockOrdering.EQUAL,
+    [RangeOrdering.INCLUDED_LEFT_BY]: BlockOrdering.INCLUDED_LEFT_BY,
+    [RangeOrdering.INCLUDED_MIDDLE_BY]: BlockOrdering.INCLUDED_MIDDLE_BY,
+    [RangeOrdering.INCLUDED_RIGHT_BY]: BlockOrdering.INCLUDED_RIGHT_BY,
+    [RangeOrdering.OVERLAPPING_AFTER]: BlockOrdering.OVERLAPPING_AFTER,
+    [RangeOrdering.APPENDABLE]: BlockOrdering.APPENDABLE,
+    [RangeOrdering.AFTER]: BlockOrdering.AFTER,
 })
 
 export interface BaseBlockk<P extends Pos<P>> {
@@ -168,8 +168,8 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     /**
      * When each position of this block were generated.
      */
-    seqs(): IntInterval {
-        return IntInterval.fromLength(this.lowerPos.seq(), this.length)
+    seqs(): U32Range {
+        return U32Range.fromLength(this.lowerPos.seq(), this.length)
     }
 
     /**
@@ -268,16 +268,13 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
 
             if (baseCmp === BaseOrdering.EQUAL) {
                 const lower1 = order === Ordering.BEFORE ? 0 : dist
-                const thisInterval = IntInterval.fromLength(lower1, this.length)
+                const thisInterval = U32Range.fromLength(lower1, this.length)
 
                 const lower2 = order === Ordering.BEFORE ? dist : 0
-                const otherInterval = IntInterval.fromLength(
-                    lower2,
-                    other.length
-                )
+                const otherInterval = U32Range.fromLength(lower2, other.length)
 
                 const intervalCmp = thisInterval.compare(otherInterval)
-                return intervalOrderingAsBlockOrdering[intervalCmp]
+                return rangeOrderingAsBlockOrdering[intervalCmp]
             } else if (baseCmp === BaseOrdering.PREFIXING) {
                 if (order === Ordering.AFTER) {
                     return BlockOrdering.AFTER

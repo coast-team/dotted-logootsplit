@@ -21,7 +21,7 @@ import { isU32, u32 } from "./number"
  * [2, 3] +⊂ [0, 3]
  * [0, 2] = [0, 2]
  */
-export const enum IntervalOrdering {
+export const enum RangeOrdering {
     BEFORE = -6, // <
     PREPENDABLE = -5, // <:
     OVERLAPPING_BEFORE = -4, // <∩
@@ -40,36 +40,36 @@ export const enum IntervalOrdering {
 /**
  * Interval of u32.
  */
-export class IntInterval {
+export class U32Range {
     /**
      * @param lower Lower bound.
-     * @param length Number of elements in the interval.
+     * @param length Number of elements in the range.
      */
     protected constructor(readonly lower: u32, readonly length: u32) {}
 
     /**
      * @param lower {@link IntInterval#lower }
      * @param length {@link IntInterval#length }
-     * @return New interval.
+     * @return New range.
      */
-    static fromLength(lower: u32, length: u32): IntInterval {
+    static fromLength(lower: u32, length: u32): U32Range {
         assert(() => isU32(lower), "lower ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
         //assert(() => isu32(lower + length))
-        return new IntInterval(lower, length)
+        return new U32Range(lower, length)
     }
 
     /**
      * @param lower {@link IntInterval#lower }
      * @param upper {@link IntInterval#length }
-     * @return New interval.
+     * @return New range.
      */
-    static fromBounds(lower: u32, upper: u32): IntInterval {
+    static fromBounds(lower: u32, upper: u32): U32Range {
         assert(() => isU32(lower), "lower ∈ u32")
         assert(() => isU32(upper), "upper ∈ u32")
         assert(() => lower <= upper, "lower <= upper")
-        return IntInterval.fromLength(lower, upper - lower + 1)
+        return U32Range.fromLength(lower, upper - lower + 1)
     }
 
     // Access
@@ -100,12 +100,12 @@ export class IntInterval {
      * @param other
      * @return {@link other } appended to this.
      */
-    append(other: IntInterval): IntInterval {
+    append(other: U32Range): U32Range {
         heavyAssert(
-            () => other.compare(this) === IntervalOrdering.APPENDABLE,
+            () => other.compare(this) === RangeOrdering.APPENDABLE,
             "other is appendable to this"
         )
-        return new IntInterval(this.lower, this.length + other.length)
+        return new U32Range(this.lower, this.length + other.length)
     }
 
     /**
@@ -113,12 +113,12 @@ export class IntInterval {
      *      this includes or overlaps after {@link other }
      * @return Part of this block which can be append to {@link block }.
      */
-    appendable(other: IntInterval): IntInterval {
+    appendable(other: U32Range): U32Range {
         heavyAssert(
             () => this.hasAppendable(other),
             "this has an appendable segment to other"
         )
-        return IntInterval.fromLength(other.upper() + 1, this.upper())
+        return U32Range.fromLength(other.upper() + 1, this.upper())
     }
 
     /**
@@ -126,12 +126,12 @@ export class IntInterval {
      *      this includes or overlaps before {@link other }
      * @return Part of this block which can be prepend to {@link block }.
      */
-    prependable(other: IntInterval): IntInterval {
+    prependable(other: U32Range): U32Range {
         heavyAssert(
             () => this.hasPrependable(other),
             "this has a prependable segment to other"
         )
-        return IntInterval.fromLength(this.lower, other.upper() - this.lower)
+        return U32Range.fromLength(this.lower, other.upper() - this.lower)
     }
 
     /**
@@ -139,9 +139,9 @@ export class IntInterval {
      *      this and {@link other } intersect.
      * @return Intersection part between this and {@link other }.
      */
-    intersection(other: IntInterval): IntInterval {
+    intersection(other: U32Range): U32Range {
         heavyAssert(() => this.hasIntersection(other), "this intersects other.")
-        return IntInterval.fromBounds(
+        return U32Range.fromBounds(
             Math.max(this.lower, other.lower),
             Math.min(this.upper(), other.upper())
         )
@@ -152,11 +152,11 @@ export class IntInterval {
      * @param other
      * @return Are this and {@link other } an intersection?
      */
-    hasIntersection(other: IntInterval): boolean {
+    hasIntersection(other: U32Range): boolean {
         const cmp = this.compare(other)
         return (
-            IntervalOrdering.OVERLAPPING_BEFORE <= cmp &&
-            cmp <= IntervalOrdering.OVERLAPPING_AFTER
+            RangeOrdering.OVERLAPPING_BEFORE <= cmp &&
+            cmp <= RangeOrdering.OVERLAPPING_AFTER
         )
     }
 
@@ -164,12 +164,12 @@ export class IntInterval {
      * @param other
      * @return Has this an appendable segment to {@link other }?
      */
-    hasAppendable(other: IntInterval): boolean {
+    hasAppendable(other: U32Range): boolean {
         const cmp = this.compare(other)
         return (
-            cmp === IntervalOrdering.OVERLAPPING_AFTER ||
-            cmp === IntervalOrdering.INCLUDING_LEFT ||
-            cmp === IntervalOrdering.INCLUDING_MIDDLE
+            cmp === RangeOrdering.OVERLAPPING_AFTER ||
+            cmp === RangeOrdering.INCLUDING_LEFT ||
+            cmp === RangeOrdering.INCLUDING_MIDDLE
         )
     }
 
@@ -177,12 +177,12 @@ export class IntInterval {
      * @param other
      * @return Has this a prependable segment to {@link other }?
      */
-    hasPrependable(other: IntInterval): boolean {
+    hasPrependable(other: U32Range): boolean {
         const cmp = this.compare(other)
         return (
-            cmp === IntervalOrdering.OVERLAPPING_BEFORE ||
-            cmp === IntervalOrdering.INCLUDING_RIGHT ||
-            cmp === IntervalOrdering.INCLUDING_MIDDLE
+            cmp === RangeOrdering.OVERLAPPING_BEFORE ||
+            cmp === RangeOrdering.INCLUDING_RIGHT ||
+            cmp === RangeOrdering.INCLUDING_MIDDLE
         )
     }
 
@@ -190,45 +190,45 @@ export class IntInterval {
      * @param other
      * @return this [order relation] other.
      */
-    compare(other: IntInterval): IntervalOrdering {
+    compare(other: U32Range): RangeOrdering {
         const thisUpper = this.upper()
         const otherUpper = other.upper()
         if (thisUpper < other.lower) {
             if (thisUpper + 1 === other.lower) {
-                return IntervalOrdering.PREPENDABLE
+                return RangeOrdering.PREPENDABLE
             } else {
-                return IntervalOrdering.BEFORE
+                return RangeOrdering.BEFORE
             }
         } else if (otherUpper < this.lower) {
             if (otherUpper + 1 === this.lower) {
-                return IntervalOrdering.APPENDABLE
+                return RangeOrdering.APPENDABLE
             } else {
-                return IntervalOrdering.AFTER
+                return RangeOrdering.AFTER
             }
         } else {
             if (this.lower === other.lower) {
                 if (thisUpper === otherUpper) {
-                    return IntervalOrdering.EQUAL
+                    return RangeOrdering.EQUAL
                 } else if (thisUpper < otherUpper) {
-                    return IntervalOrdering.INCLUDED_LEFT_BY
+                    return RangeOrdering.INCLUDED_LEFT_BY
                 } else {
-                    return IntervalOrdering.INCLUDING_LEFT
+                    return RangeOrdering.INCLUDING_LEFT
                 }
             } else if (this.lower < other.lower) {
                 if (otherUpper === thisUpper) {
-                    return IntervalOrdering.INCLUDING_RIGHT
+                    return RangeOrdering.INCLUDING_RIGHT
                 } else if (otherUpper < thisUpper) {
-                    return IntervalOrdering.INCLUDING_MIDDLE
+                    return RangeOrdering.INCLUDING_MIDDLE
                 } else {
-                    return IntervalOrdering.OVERLAPPING_BEFORE
+                    return RangeOrdering.OVERLAPPING_BEFORE
                 }
             } else {
                 if (thisUpper === otherUpper) {
-                    return IntervalOrdering.INCLUDED_RIGHT_BY
+                    return RangeOrdering.INCLUDED_RIGHT_BY
                 } else if (thisUpper < otherUpper) {
-                    return IntervalOrdering.INCLUDED_MIDDLE_BY
+                    return RangeOrdering.INCLUDED_MIDDLE_BY
                 } else {
-                    return IntervalOrdering.OVERLAPPING_AFTER
+                    return RangeOrdering.OVERLAPPING_AFTER
                 }
             }
         }
