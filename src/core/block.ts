@@ -60,7 +60,7 @@ const intervalOrderingAsBlockOrdering = Object.freeze({
     [IntervalOrdering.AFTER]: BlockOrdering.AFTER,
 })
 
-export interface BaseBlockk<P> {
+export interface BaseBlockk<P extends Pos<P>> {
     /**
      * First position of the block.
      */
