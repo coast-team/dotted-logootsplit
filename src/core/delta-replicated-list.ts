@@ -1,4 +1,4 @@
-import { Pos } from "./pos"
+import { DotPos } from "./dot-pos"
 import { Concat } from "./concat"
 import {
     OpReplicatedList,
@@ -11,7 +11,7 @@ import { LengthBlock, Block } from "./block"
 import { assert } from "./assert"
 import { isU32 } from "./number"
 
-export class DeltaReplicatedList<P extends Pos<P>, E extends Concat<E>> {
+export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     protected readonly list: OpReplicatedList<P, E>
 
     // Access
@@ -227,7 +227,7 @@ export class DeltaReplicatedList<P extends Pos<P>, E extends Concat<E>> {
 }
 
 export class EditableDeltaReplicatedList<
-    P extends Pos<P>,
+    P extends DotPos<P>,
     E extends Concat<E>
 > extends DeltaReplicatedList<P, E> {
     protected readonly list: EditableOpReplicatedList<P, E>

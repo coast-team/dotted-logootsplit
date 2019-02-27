@@ -10,8 +10,8 @@ import { alea, AleaState } from "replayable-random"
 
 import { assert, heavyAssert } from "../../core/assert"
 import { isObject, FromPlain } from "../../core/data-validation"
-import { SimplePos } from "./simple-pos"
-import { SimplePosPart } from "./simple-pos-part"
+import { SimpleDotPos } from "./simple-dot-pos"
+import { SimpleDotPosPart } from "./simple-dot-pos-part"
 import { isU32, u32, U32_TOP } from "../../core/number"
 import { Ordering } from "../../core/ordering"
 import { BlockFactory } from "../../core/block-factory"
@@ -41,7 +41,7 @@ function* infiniteSequence<T>(
  * The strategy of generation is to genearte random positions between two
  * defined positions.
  */
-export class SimpleBlockFactory extends BlockFactory<SimplePos> {
+export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
     /**
      * @param posBounds {@link SimpleBlockFactory#replica }
      * @param seq {@link SimpleBlockFactory#seq }
@@ -54,7 +54,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
             () => replica !== U32_TOP,
             "replica != U32_TOP. This is reserved for BOTTOM and TOP pos."
         )
-        super(SimplePos)
+        super(SimpleDotPos)
         this.replica = replica
         this.seq = seq
         this.randState = randState
@@ -104,8 +104,8 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      */
     static blockFromPlain<E extends Concat<E>>(
         g: FromPlain<E>
-    ): FromPlain<Block<SimplePos, E>> {
-        return Block.fromPlain(SimplePos.fromPlain, g)
+    ): FromPlain<Block<SimpleDotPos, E>> {
+        return Block.fromPlain(SimpleDotPos.fromPlain, g)
     }
 
     // Access
@@ -137,7 +137,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
     // Impl
     /** @override */
-    posBetween(l: SimplePos, length: u32, u: SimplePos): SimplePos {
+    posBetween(l: SimpleDotPos, length: u32, u: SimpleDotPos): SimpleDotPos {
         heavyAssert(() => l.compare(u) === Ordering.BEFORE, "l < u")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length is strictly positive")
@@ -148,9 +148,9 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
             this.seq = this.seq + length
             return l.intSucc(1)
         } else {
-            const seqL = infiniteSequence(l.parts, SimplePosPart.BOTTOM)
-            const seqU = infiniteSequence(u.parts, SimplePosPart.TOP)
-            const parts: SimplePosPart[] = []
+            const seqL = infiniteSequence(l.parts, SimpleDotPosPart.BOTTOM)
+            const seqU = infiniteSequence(u.parts, SimpleDotPosPart.TOP)
+            const parts: SimpleDotPosPart[] = []
 
             let partL = seqL.next().value
             let partU = seqU.next().value
@@ -171,11 +171,11 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
             )(this.randState)
             // priority ∈ ]partL.priority, partU.priority[
             // partL.priority exclusion ensures a dense set
-            parts.push(SimplePosPart.from(priority, this.replica, this.seq))
+            parts.push(SimpleDotPosPart.from(priority, this.replica, this.seq))
 
             this.randState = s
             this.seq = this.seq + length
-            return SimplePos.from(parts)
+            return SimpleDotPos.from(parts)
         }
     }
 }

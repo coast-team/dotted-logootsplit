@@ -16,11 +16,12 @@ export * from "./core/u32-range"
 export * from "./core/local-operation"
 export * from "./core/ordering"
 export * from "./core/pos"
+export * from "./core/dot-pos"
 export * from "./core/delta-replicated-list"
 
-export * from "./pos/simple/simple-block-factory"
-export * from "./pos/simple/simple-pos"
-export * from "./pos/simple/simple-pos-part"
+export * from "./dot-pos/simple/simple-block-factory"
+export * from "./dot-pos/simple/simple-dot-pos"
+export * from "./dot-pos/simple/simple-dot-pos-part"
 
 export * from "./list/linked/op-linked-list"
 

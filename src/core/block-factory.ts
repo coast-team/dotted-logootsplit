@@ -10,7 +10,7 @@ import { assert, heavyAssert } from "./assert"
 import { Block, BlockOrdering } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { u32 } from "../core/number"
+import { u32 } from "./number"
 import { Anchor } from "./anchor"
 import { FromPlain } from "./data-validation"
 

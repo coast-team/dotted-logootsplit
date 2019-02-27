@@ -2,24 +2,51 @@ import { ExecutionContext, Macro } from "ava"
 import { Pos, Ins, Del } from "../../src"
 import { EditableOpReplicatedList } from "../../src/core/op-replicated-list"
 import { EditableDeltaReplicatedList } from "../../src/core/delta-replicated-list"
+import { DotPos } from "../../src/core/dot-pos"
 
-export interface EmptyListFactory<P extends Pos<P>> {
-    (replica: number, globalSeed?: string): EditableOpReplicatedList<P, string>
+export interface OpListFactory<P extends Pos<P>> {
+    (replica: number, seed?: string): EditableOpReplicatedList<P, string>
 }
 
-export interface GenericListMacro {
+export interface GenericOpListMacro {
     <P extends Pos<P>>(
         t: ExecutionContext,
-        emp: EmptyListFactory<P>,
+        emp: OpListFactory<P>,
         id: string
     ): void
 
     title: (title: string | undefined, _: unknown, id: string) => string
 }
 
-export type ListMacro<P extends Pos<P>> = Macro<[EmptyListFactory<P>, string]>
+export type OpListMacro<P extends Pos<P>> = Macro<[OpListFactory<P>, string]>
 
-export type ListMacros<P extends Pos<P>> = [ListMacro<P>, ...ListMacro<P>[]]
+export type OpListMacros<P extends Pos<P>> = [
+    OpListMacro<P>,
+    ...OpListMacro<P>[]
+]
+
+export interface DeltaListFactory<P extends DotPos<P>> {
+    (replica: number, seed?: string): EditableDeltaReplicatedList<P, string>
+}
+
+export interface GenericDeltaListMacro {
+    <P extends DotPos<P>>(
+        t: ExecutionContext,
+        emp: DeltaListFactory<P>,
+        id: string
+    ): void
+
+    title: (title: string | undefined, _: unknown, id: string) => string
+}
+
+export type DeltaListMacro<P extends DotPos<P>> = Macro<
+    [DeltaListFactory<P>, string]
+>
+
+export type DeltaListMacros<P extends DotPos<P>> = [
+    DeltaListMacro<P>,
+    ...DeltaListMacro<P>[]
+]
 
 const titled = (defaultTitle: string) => (
     title = defaultTitle,
@@ -35,7 +62,7 @@ export const enum Peer {
 
 // empty list
 
-export const mEmpty: GenericListMacro = (t, emp) => {
+export const mEmpty: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
 
     t.is(seqA.concatenated(""), "")
@@ -45,7 +72,7 @@ mEmpty.title = titled("empty")
 
 // inserAt
 
-export const mInsertAtRight: GenericListMacro = (t, emp) => {
+export const mInsertAtRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ab")
     seqA.insertAt(2, "cd")
@@ -56,7 +83,7 @@ export const mInsertAtRight: GenericListMacro = (t, emp) => {
 }
 mInsertAtRight.title = titled("insert-at-right")
 
-export const mInsertAtLeft: GenericListMacro = (t, emp) => {
+export const mInsertAtLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ef")
     seqA.insertAt(0, "cd")
@@ -67,7 +94,7 @@ export const mInsertAtLeft: GenericListMacro = (t, emp) => {
 }
 mInsertAtLeft.title = titled("insert-at-left")
 
-export const mInsertAtBoth: GenericListMacro = (t, emp) => {
+export const mInsertAtBoth: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ef")
     seqA.insertAt(0, "ab")
@@ -80,7 +107,7 @@ export const mInsertAtBoth: GenericListMacro = (t, emp) => {
 }
 mInsertAtBoth.title = titled("insert-at-both")
 
-export const mInsertAtSplit: GenericListMacro = (t, emp) => {
+export const mInsertAtSplit: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ce")
     seqA.insertAt(0, "a")
@@ -94,7 +121,7 @@ export const mInsertAtSplit: GenericListMacro = (t, emp) => {
 }
 mInsertAtSplit.title = titled("insert-at-between")
 
-export const mInsertAtMultiple: GenericListMacro = (t, emp) => {
+export const mInsertAtMultiple: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "c")
     seqA.insertAt(0, "b")
@@ -109,7 +136,7 @@ mInsertAtMultiple.title = titled("insert-at-multiple")
 
 // insert
 
-export const mInsertSingle: GenericListMacro = (t, emp) => {
+export const mInsertSingle: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -117,14 +144,13 @@ export const mInsertSingle: GenericListMacro = (t, emp) => {
     const ins = seqB.insert(ab)
 
     t.is(ab.items, "ab")
-    t.is(ab.replica(), Peer.A)
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(ins, [new Ins(0, "ab")])
     t.is(seqA.structuralDigest(), seqB.structuralDigest())
 }
 mInsertSingle.title = titled("insert-single")
 
-export const mInsertReplayed: GenericListMacro = (t, emp) => {
+export const mInsertReplayed: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -135,7 +161,7 @@ export const mInsertReplayed: GenericListMacro = (t, emp) => {
 }
 mInsertReplayed.title = titled("insert-replayed")
 
-export const mInsertAppend: GenericListMacro = (t, emp) => {
+export const mInsertAppend: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const [ab, cd] = seqA.insertAt(0, "abcd").splitAt(2)
 
@@ -150,7 +176,7 @@ export const mInsertAppend: GenericListMacro = (t, emp) => {
 }
 mInsertAppend.title = titled("insert-append")
 
-export const mInsertPrepend: GenericListMacro = (t, emp) => {
+export const mInsertPrepend: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const [ab, cd] = seqA.insertAt(0, "abcd").splitAt(2)
 
@@ -165,7 +191,7 @@ export const mInsertPrepend: GenericListMacro = (t, emp) => {
 }
 mInsertPrepend.title = titled("insert-prepend")
 
-export const mInsertAppendPrepend: GenericListMacro = (t, emp) => {
+export const mInsertAppendPrepend: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const [ab, cdef] = seqA.insertAt(0, "abcdef").splitAt(2)
     const [cd, ef] = cdef.splitAt(2)
@@ -183,7 +209,7 @@ export const mInsertAppendPrepend: GenericListMacro = (t, emp) => {
 }
 mInsertAppendPrepend.title = titled("insert-append-prepend")
 
-export const mInsertSplitting: GenericListMacro = (t, emp) => {
+export const mInsertSplitting: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const bd = seqA.insertAt(0, "bd")
     const a = seqA.insertAt(0, "a")
@@ -204,7 +230,7 @@ export const mInsertSplitting: GenericListMacro = (t, emp) => {
 }
 mInsertSplitting.title = titled("insert-splitting")
 
-export const mInsertSplitted: GenericListMacro = (t, emp) => {
+export const mInsertSplitted: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ac = seqA.insertAt(0, "ac")
     const b = seqA.insertAt(1, "b")
@@ -227,7 +253,7 @@ export const mInsertSplitted: GenericListMacro = (t, emp) => {
 }
 mInsertSplitted.title = titled("insert-splitted")
 
-export const mInsertDoublySplitted: GenericListMacro = (t, emp) => {
+export const mInsertDoublySplitted: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ace = seqA.insertAt(0, "ace")
     const d = seqA.insertAt(2, "d")
@@ -252,7 +278,7 @@ export const mInsertDoublySplitted: GenericListMacro = (t, emp) => {
 }
 mInsertDoublySplitted.title = titled("insert-doubly-splitted")
 
-export const mInsertAppendSplitted: GenericListMacro = (t, emp) => {
+export const mInsertAppendSplitted: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const [ab, ce] = seqA.insertAt(0, "abce").splitAt(2)
     const d = seqA.insertAt(3, "d") // split "ce"
@@ -276,7 +302,7 @@ export const mInsertAppendSplitted: GenericListMacro = (t, emp) => {
 }
 mInsertAppendSplitted.title = titled("insert-append-splitted")
 
-export const mInsertPrependSplitted: GenericListMacro = (t, emp) => {
+export const mInsertPrependSplitted: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const [ac, de] = seqA.insertAt(0, "acde").splitAt(2)
     const b = seqA.insertAt(1, "b") // split "de"
@@ -300,7 +326,7 @@ export const mInsertPrependSplitted: GenericListMacro = (t, emp) => {
 }
 mInsertPrependSplitted.title = titled("insert-prepend-splitted")
 
-export const mInsertIncluded: GenericListMacro = (t, emp) => {
+export const mInsertIncluded: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcdef = seqA.insertAt(0, "abcdef")
     const cd = abcdef.rightSplitAt(2).leftSplitAt(2)
@@ -313,7 +339,7 @@ export const mInsertIncluded: GenericListMacro = (t, emp) => {
 }
 mInsertIncluded.title = titled("insert-included")
 
-export const mInsertIncluding: GenericListMacro = (t, emp) => {
+export const mInsertIncluding: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcdef = seqA.insertAt(0, "abcdef")
     const cd = abcdef.rightSplitAt(2).leftSplitAt(2)
@@ -325,7 +351,7 @@ export const mInsertIncluding: GenericListMacro = (t, emp) => {
 }
 mInsertIncluding.title = titled("insert-including")
 
-export const mInsertOverlappingAfter: GenericListMacro = (t, emp) => {
+export const mInsertOverlappingAfter: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     const ab = abc.leftSplitAt(2)
@@ -338,7 +364,7 @@ export const mInsertOverlappingAfter: GenericListMacro = (t, emp) => {
 }
 mInsertOverlappingAfter.title = titled("insert-overlapping-after")
 
-export const mInsertOverlappingBefore: GenericListMacro = (t, emp) => {
+export const mInsertOverlappingBefore: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     const ab = abc.leftSplitAt(2)
@@ -353,7 +379,7 @@ mInsertOverlappingBefore.title = titled("insert-overlapping-before")
 
 // insert by separate peers
 
-export const mInsertAfter: GenericListMacro = (t, emp) => {
+export const mInsertAfter: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -369,7 +395,7 @@ export const mInsertAfter: GenericListMacro = (t, emp) => {
 }
 mInsertAfter.title = titled("insert-after")
 
-export const mInsertBefore: GenericListMacro = (t, emp) => {
+export const mInsertBefore: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -387,7 +413,7 @@ mInsertBefore.title = titled("insert-before")
 
 // concurrent insert
 
-export const mInsertConcurrent: GenericListMacro = (t, emp) => {
+export const mInsertConcurrent: GenericOpListMacro = (t, emp) => {
     const seed = "seed"
     const seqA = emp(Peer.A, seed)
     const ab = seqA.insertAt(0, "ab")
@@ -405,7 +431,7 @@ export const mInsertConcurrent: GenericListMacro = (t, emp) => {
 }
 mInsertConcurrent.title = titled("insert-concurrent")
 
-export const mInsertConcurrentAppend: GenericListMacro = (t, emp) => {
+export const mInsertConcurrentAppend: GenericOpListMacro = (t, emp) => {
     const seed = "seed"
     const seqA = emp(Peer.A, seed)
     const ab = seqA.insertAt(0, "ab")
@@ -426,7 +452,7 @@ export const mInsertConcurrentAppend: GenericListMacro = (t, emp) => {
 }
 mInsertConcurrentAppend.title = titled("insert-concurrent-append")
 
-export const mInsertConcurrentPrepend: GenericListMacro = (t, emp) => {
+export const mInsertConcurrentPrepend: GenericOpListMacro = (t, emp) => {
     const seed = "seed"
     const seqA = emp(Peer.A, seed)
     const ab = seqA.insertAt(0, "ab")
@@ -449,7 +475,7 @@ mInsertConcurrentPrepend.title = titled("insert-concurrent-prepend")
 
 // removeAt
 
-export const mRemoveAtEqual: GenericListMacro = (t, emp) => {
+export const mRemoveAtEqual: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
     seqA.removeAt(0, 3) // remove "abc"
@@ -459,7 +485,7 @@ export const mRemoveAtEqual: GenericListMacro = (t, emp) => {
 }
 mRemoveAtEqual.title = titled("remove-at-equal")
 
-export const mRemoveAtEqualMerge: GenericListMacro = (t, emp) => {
+export const mRemoveAtEqualMerge: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
 
@@ -473,7 +499,7 @@ export const mRemoveAtEqualMerge: GenericListMacro = (t, emp) => {
 }
 mRemoveAtEqualMerge.title = titled("remove-at-equal-merge")
 
-export const mRemoveAtJustBefore: GenericListMacro = (t, emp) => {
+export const mRemoveAtJustBefore: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -488,7 +514,7 @@ export const mRemoveAtJustBefore: GenericListMacro = (t, emp) => {
 }
 mRemoveAtJustBefore.title = titled("remove-at-just-before")
 
-export const mRemoveAtBefore: GenericListMacro = (t, emp) => {
+export const mRemoveAtBefore: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -501,7 +527,7 @@ export const mRemoveAtBefore: GenericListMacro = (t, emp) => {
 }
 mRemoveAtBefore.title = titled("remove-at-before")
 
-export const mRemoveAtJustAfter: GenericListMacro = (t, emp) => {
+export const mRemoveAtJustAfter: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -516,7 +542,7 @@ export const mRemoveAtJustAfter: GenericListMacro = (t, emp) => {
 }
 mRemoveAtJustAfter.title = titled("remove-at-just-after")
 
-export const mRemoveAtAfter: GenericListMacro = (t, emp) => {
+export const mRemoveAtAfter: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -529,7 +555,7 @@ export const mRemoveAtAfter: GenericListMacro = (t, emp) => {
 }
 mRemoveAtAfter.title = titled("remove-at-after")
 
-export const mRemoveAtIncludedLeftBy: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludedLeftBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
     seqA.removeAt(0, 2) // remove "ab"
@@ -539,7 +565,7 @@ export const mRemoveAtIncludedLeftBy: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludedLeftBy.title = titled("remove-at-included-left-by")
 
-export const mRemoveAtIncludedMiddleBy: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludedMiddleBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
     seqA.removeAt(1, 1) // remove "b"
@@ -549,7 +575,7 @@ export const mRemoveAtIncludedMiddleBy: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludedMiddleBy.title = titled("remove-at-included-middle-by")
 
-export const mRemoveAtIncludedRightBy: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludedRightBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
     seqA.removeAt(1, 2) // remove "bc"
@@ -559,7 +585,7 @@ export const mRemoveAtIncludedRightBy: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludedRightBy.title = titled("remove-at-included-right-by")
 
-export const mRemoveAtIncludingLeft: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludingLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
 
@@ -573,7 +599,7 @@ export const mRemoveAtIncludingLeft: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludingLeft.title = titled("remove-at-including-left")
 
-export const mRemoveAtIncludingMiddle: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludingMiddle: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const def = seqA.insertAt(0, "def")
 
@@ -587,7 +613,7 @@ export const mRemoveAtIncludingMiddle: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludingMiddle.title = titled("remove-at-including-middle")
 
-export const mRemoveAtIncludingRight: GenericListMacro = (t, emp) => {
+export const mRemoveAtIncludingRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const def = seqA.insertAt(0, "def")
 
@@ -600,7 +626,7 @@ export const mRemoveAtIncludingRight: GenericListMacro = (t, emp) => {
 }
 mRemoveAtIncludingRight.title = titled("remove-at-including-right")
 
-export const mRemoveAtMultiple: GenericListMacro = (t, emp) => {
+export const mRemoveAtMultiple: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ef")
     seqA.insertAt(0, "ab")
@@ -616,7 +642,7 @@ mRemoveAtMultiple.title = titled("remove-at-multiple")
 
 // remove
 
-export const mRemoveNothing: GenericListMacro = (t, emp) => {
+export const mRemoveNothing: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     seqA.insertAt(0, "ab")
     const [abRmv] = seqA.removeAt(0, 2) // remove "ab"
@@ -631,7 +657,7 @@ export const mRemoveNothing: GenericListMacro = (t, emp) => {
 }
 mRemoveNothing.title = titled("remove-nothing")
 
-export const mRemoveEqual: GenericListMacro = (t, emp) => {
+export const mRemoveEqual: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
 
@@ -642,7 +668,7 @@ export const mRemoveEqual: GenericListMacro = (t, emp) => {
 }
 mRemoveEqual.title = titled("remove-equal")
 
-export const mRemoveIncludedLeftBy: GenericListMacro = (t, emp) => {
+export const mRemoveIncludedLeftBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const ab = abcd.leftSplitAt(2)
@@ -654,7 +680,7 @@ export const mRemoveIncludedLeftBy: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludedLeftBy.title = titled("remove-included-left-by")
 
-export const mRemoveIncludedMiddleBy: GenericListMacro = (t, emp) => {
+export const mRemoveIncludedMiddleBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const bcd = abcd.rightSplitAt(1)
@@ -667,7 +693,7 @@ export const mRemoveIncludedMiddleBy: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludedMiddleBy.title = titled("remove-included-middle-by")
 
-export const mRemoveIncludedRightBy: GenericListMacro = (t, emp) => {
+export const mRemoveIncludedRightBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const cd = abcd.rightSplitAt(2)
@@ -679,7 +705,7 @@ export const mRemoveIncludedRightBy: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludedRightBy.title = titled("remove-included-right-by")
 
-export const mRemoveIncludingLeft: GenericListMacro = (t, emp) => {
+export const mRemoveIncludingLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const ab = abcd.leftSplitAt(2)
@@ -693,7 +719,7 @@ export const mRemoveIncludingLeft: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludingLeft.title = titled("remove-including-left")
 
-export const mRemoveIncludingMiddle: GenericListMacro = (t, emp) => {
+export const mRemoveIncludingMiddle: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const bcd = abcd.rightSplitAt(1)
@@ -708,7 +734,7 @@ export const mRemoveIncludingMiddle: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludingMiddle.title = titled("remove-including-middle")
 
-export const mRemoveIncludingRight: GenericListMacro = (t, emp) => {
+export const mRemoveIncludingRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const cd = abcd.rightSplitAt(2)
@@ -722,7 +748,7 @@ export const mRemoveIncludingRight: GenericListMacro = (t, emp) => {
 }
 mRemoveIncludingRight.title = titled("remove-including-right")
 
-export const mRemoveOverlappingLeft: GenericListMacro = (t, emp) => {
+export const mRemoveOverlappingLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const ab = abcd.leftSplitAt(2)
@@ -737,7 +763,7 @@ export const mRemoveOverlappingLeft: GenericListMacro = (t, emp) => {
 }
 mRemoveOverlappingLeft.title = titled("remove-overlapping-left")
 
-export const mRemoveOverlappingRight: GenericListMacro = (t, emp) => {
+export const mRemoveOverlappingRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const cd = abcd.rightSplitAt(2)
@@ -752,7 +778,7 @@ export const mRemoveOverlappingRight: GenericListMacro = (t, emp) => {
 }
 mRemoveOverlappingRight.title = titled("remove-overlapping-right")
 
-export const mRemoveSplitting: GenericListMacro = (t, emp) => {
+export const mRemoveSplitting: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abef = seqA.insertAt(0, "abef")
 
@@ -769,7 +795,7 @@ export const mRemoveSplitting: GenericListMacro = (t, emp) => {
 }
 mRemoveSplitting.title = titled("remove-splitting")
 
-export const mRemoveSplittedBy: GenericListMacro = (t, emp) => {
+export const mRemoveSplittedBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abef = seqA.insertAt(0, "abef")
 
@@ -788,7 +814,7 @@ export const mRemoveSplittedBy: GenericListMacro = (t, emp) => {
 }
 mRemoveSplittedBy.title = titled("remove-splitted-by")
 
-export const mRemoveAfterBeforeMerge: GenericListMacro = (t, emp) => {
+export const mRemoveAfterBeforeMerge: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abefij = seqA.insertAt(0, "abefij")
     const [ab, efij] = abefij.splitAt(2)
@@ -812,7 +838,7 @@ mRemoveAfterBeforeMerge.title = titled("remove-efter-before-merge")
 
 // insertable
 
-export const mInsertertableEqual: GenericListMacro = (t, emp) => {
+export const mInsertertableEqual: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const ab = seqA.insertAt(0, "ab")
 
@@ -820,7 +846,7 @@ export const mInsertertableEqual: GenericListMacro = (t, emp) => {
 }
 mInsertertableEqual.title = titled("insertable-equal")
 
-export const mInsertertableIncludedLeftBy: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludedLeftBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const ab = abcd.leftSplitAt(2)
@@ -829,7 +855,7 @@ export const mInsertertableIncludedLeftBy: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludedLeftBy.title = titled("insertable-included-left-by")
 
-export const mInsertertableIncludedMiddleBy: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludedMiddleBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const cd = abcd.rightSplitAt(2)
@@ -839,7 +865,7 @@ export const mInsertertableIncludedMiddleBy: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludedMiddleBy.title = titled("insertable-included-middle-by")
 
-export const mInsertertableIncludedRightBy: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludedRightBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const cd = abcd.rightSplitAt(2)
@@ -848,7 +874,7 @@ export const mInsertertableIncludedRightBy: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludedRightBy.title = titled("insertable-included-right-by")
 
-export const mInsertertableIncludingLeft: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludingLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const [ab, cd] = abcd.splitAt(2)
@@ -860,7 +886,7 @@ export const mInsertertableIncludingLeft: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludingLeft.title = titled("insertable-including-left")
 
-export const mInsertertableIncludingMiddle: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludingMiddle: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const [abc, d] = abcd.splitAt(3)
@@ -873,7 +899,7 @@ export const mInsertertableIncludingMiddle: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludingMiddle.title = titled("insertable-including-middle")
 
-export const mInsertertableIncludingRight: GenericListMacro = (t, emp) => {
+export const mInsertertableIncludingRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const [ab, cd] = abcd.splitAt(2)
@@ -885,7 +911,7 @@ export const mInsertertableIncludingRight: GenericListMacro = (t, emp) => {
 }
 mInsertertableIncludingRight.title = titled("insertable-including-right")
 
-export const mInsertertableOverlappingLeft: GenericListMacro = (t, emp) => {
+export const mInsertertableOverlappingLeft: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const abc = abcd.leftSplitAt(3)
@@ -898,7 +924,7 @@ export const mInsertertableOverlappingLeft: GenericListMacro = (t, emp) => {
 }
 mInsertertableOverlappingLeft.title = titled("insertable-overlapping-left")
 
-export const mInsertertableOverlappingRight: GenericListMacro = (t, emp) => {
+export const mInsertertableOverlappingRight: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
     const bcd = abcd.rightSplitAt(1)
@@ -911,7 +937,7 @@ export const mInsertertableOverlappingRight: GenericListMacro = (t, emp) => {
 }
 mInsertertableOverlappingRight.title = titled("insertable-overlapping-right")
 
-export const mInsertertableSplittedBy: GenericListMacro = (t, emp) => {
+export const mInsertertableSplittedBy: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abef = seqA.insertAt(0, "abef")
     const [ab, ef] = abef.splitAt(2)
@@ -924,7 +950,7 @@ export const mInsertertableSplittedBy: GenericListMacro = (t, emp) => {
 }
 mInsertertableSplittedBy.title = titled("insertable-splitted-by")
 
-export const mInsertertableSplitting: GenericListMacro = (t, emp) => {
+export const mInsertertableSplitting: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abef = seqA.insertAt(0, "abef")
     const cd = seqA.insertAt(2, "cd") // split
@@ -936,7 +962,7 @@ export const mInsertertableSplitting: GenericListMacro = (t, emp) => {
 }
 mInsertertableSplitting.title = titled("insertable-splitting")
 
-export const mInsertertableAfterBefore: GenericListMacro = (t, emp) => {
+export const mInsertertableAfterBefore: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const cd = seqA.insertAt(0, "cd")
 
@@ -950,7 +976,7 @@ export const mInsertertableAfterBefore: GenericListMacro = (t, emp) => {
 }
 mInsertertableAfterBefore.title = titled("insertable-efter-before")
 
-export const mInsertertableAppednable: GenericListMacro = (t, emp) => {
+export const mInsertertableAppednable: GenericOpListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     const [a, bc] = abc.splitAt(1)
@@ -966,12 +992,12 @@ mInsertertableAppednable.title = titled("insertable-appendable")
 
 // applyDelta
 
-export const mApplyDeltaTwice: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mApplyDeltaTwice: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     seqA.applyDelta(abc)
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     seqB.applyDelta(abc)
     seqB.applyDelta(abc)
 
@@ -981,12 +1007,12 @@ export const mApplyDeltaTwice: GenericListMacro = (t, emp) => {
 }
 mApplyDeltaTwice.title = titled("apply-delta-twice")
 
-export const mApplyDeltaRemoveInsert: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mApplyDeltaRemoveInsert: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     seqA.applyDelta(abc.toLengthBlock())
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     seqB.applyDelta(abc.toLengthBlock())
     seqB.applyDelta(abc)
 
@@ -996,12 +1022,12 @@ export const mApplyDeltaRemoveInsert: GenericListMacro = (t, emp) => {
 }
 mApplyDeltaRemoveInsert.title = titled("apply-delta-remove-insert")
 
-export const mApplyDeltaInsertRemove: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mApplyDeltaInsertRemove: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     seqA.applyDelta(abc.toLengthBlock())
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     seqB.applyDelta(abc)
     seqB.applyDelta(abc.toLengthBlock())
 
@@ -1011,13 +1037,13 @@ export const mApplyDeltaInsertRemove: GenericListMacro = (t, emp) => {
 }
 mApplyDeltaInsertRemove.title = titled("apply-delta-insert-remove")
 
-export const mApplyDeltaPartRemoveInsert: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mApplyDeltaPartRemoveInsert: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
     const a = abc.leftSplitAt(1)
     seqA.applyDelta(a.toLengthBlock())
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     seqB.applyDelta(a.toLengthBlock())
     seqB.applyDelta(abc)
 
@@ -1029,11 +1055,11 @@ mApplyDeltaPartRemoveInsert.title = titled("apply-delta-part-remove-insert")
 
 // merge
 
-export const mMergeSimple: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mMergeSimple: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     const opB = seqB.merge(seqA)
 
     t.deepEqual(seqA.concatenated(""), "abc")
@@ -1043,12 +1069,12 @@ export const mMergeSimple: GenericListMacro = (t, emp) => {
 }
 mMergeSimple.title = titled("merge-simple")
 
-export const mMergeIdempotent: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mMergeIdempotent: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     seqA.insertAt(0, "abc")
     const opA = seqA.merge(seqA)
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     const opB = seqB.merge(seqA)
 
     t.deepEqual(seqA.concatenated(""), "abc")
@@ -1059,11 +1085,11 @@ export const mMergeIdempotent: GenericListMacro = (t, emp) => {
 }
 mMergeIdempotent.title = titled("merge-simple-idempotent")
 
-export const mMerge: GenericListMacro = (t, emp) => {
-    const seqA = new EditableDeltaReplicatedList(emp(Peer.A))
+export const mMerge: GenericDeltaListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
     const abc = seqA.insertAt(0, "abc")
 
-    const seqB = new EditableDeltaReplicatedList(emp(Peer.B))
+    const seqB = emp(Peer.B)
     seqB.applyDelta(abc)
     const def = seqB.insertAt(3, "def")
     seqB.insertAt(6, "g")

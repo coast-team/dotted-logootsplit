@@ -17,9 +17,10 @@ import {
     U32_BOTTOM,
     U32_TOP,
 } from "../../core/number"
-import { Pos, BaseOrdering, baseOrderingInversion } from "../../core/pos"
-import { SimplePosPart } from "./simple-pos-part"
+import { BaseOrdering, baseOrderingInversion } from "../../core/pos"
+import { SimpleDotPosPart } from "./simple-dot-pos-part"
 import { Ordering, orderingInversion } from "../../core/ordering"
+import { DotPos } from "../../core/dot-pos"
 
 /**
  * A position can be represented as a lexicographic list of
@@ -34,11 +35,11 @@ import { Ordering, orderingInversion } from "../../core/ordering"
  * int-successive positions (see {@link Pos}) by suffixing a new triplet
  * to the lower position.
  */
-export class SimplePos implements Pos<SimplePos> {
+export class SimpleDotPos implements DotPos<SimpleDotPos> {
     /**
      * @param parts {@link SimplePos#parts }
      */
-    protected constructor(parts: ReadonlyArray<SimplePosPart>) {
+    protected constructor(parts: ReadonlyArray<SimpleDotPosPart>) {
         assert(() => parts.length > 0, "parts must not be empty")
         this.parts = parts
     }
@@ -49,7 +50,7 @@ export class SimplePos implements Pos<SimplePos> {
      *  SimplePosPart.TOP.
      * @return Position with {@link parts } as {@link SimplePos#parts }.
      */
-    static from(parts: ReadonlyArray<SimplePosPart>): SimplePos {
+    static from(parts: ReadonlyArray<SimpleDotPosPart>): SimpleDotPos {
         const lastPart = parts[parts.length - 1]
         assert(
             () =>
@@ -61,16 +62,16 @@ export class SimplePos implements Pos<SimplePos> {
             () => lastPart.replica !== U32_TOP,
             "replica != U32_TOP. This is reserved for BOTTOM and TOP."
         )
-        return new SimplePos(parts)
+        return new SimpleDotPos(parts)
     }
 
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain(x: unknown): SimplePos | undefined {
-        if (isObject<SimplePos>(x) && Array.isArray(x.parts)) {
-            const parts = fromArray(x.parts, SimplePosPart.fromPlain)
+    static fromPlain(x: unknown): SimpleDotPos | undefined {
+        if (isObject<SimpleDotPos>(x) && Array.isArray(x.parts)) {
+            const parts = fromArray(x.parts, SimpleDotPosPart.fromPlain)
             if (parts !== undefined && parts.length > 0) {
                 const lastPart = parts[parts.length - 1]
                 if (
@@ -78,7 +79,7 @@ export class SimplePos implements Pos<SimplePos> {
                     lastPart.priority !== U32_TOP &&
                     lastPart.replica !== U32_TOP
                 ) {
-                    return SimplePos.from(parts)
+                    return SimpleDotPos.from(parts)
                 }
             }
         }
@@ -88,12 +89,12 @@ export class SimplePos implements Pos<SimplePos> {
     /**
      * Lowest position.
      */
-    static readonly BOTTOM = new SimplePos([SimplePosPart.BOTTOM])
+    static readonly BOTTOM = new SimpleDotPos([SimpleDotPosPart.BOTTOM])
 
     /**
      * Greatest position.
      */
-    static readonly TOP = new SimplePos([SimplePosPart.TOP])
+    static readonly TOP = new SimpleDotPos([SimpleDotPosPart.TOP])
 
     // Derivation
     /**
@@ -101,16 +102,16 @@ export class SimplePos implements Pos<SimplePos> {
      * @return Position with the same base as this,
      *  but with a different seq
      */
-    withSeq(seq: u32): SimplePos {
+    withSeq(seq: u32): SimpleDotPos {
         assert(() => isU32(seq), "seq ∈ u32")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
         parts[lastIndex] = parts[lastIndex].withSeq(seq)
-        return new SimplePos(parts)
+        return new SimpleDotPos(parts)
     }
 
     /** @override */
-    intSucc(n: u32): SimplePos {
+    intSucc(n: u32): SimpleDotPos {
         assert(() => isU32(n), "n ∈ u32")
         assert(() => this.hasIntSucc(n), "this has a n-th successor")
         return this.withSeq(this.seq() + n)
@@ -120,12 +121,12 @@ export class SimplePos implements Pos<SimplePos> {
     /**
      * Parts of this position.
      */
-    readonly parts: ReadonlyArray<SimplePosPart>
+    readonly parts: ReadonlyArray<SimpleDotPosPart>
 
     /**
      * Last part of {@link SimplePosPart#parts }.
      */
-    lastPart(): SimplePosPart {
+    lastPart(): SimpleDotPosPart {
         return this.parts[this.parts.length - 1]
     }
 
@@ -147,7 +148,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    intDistance(other: SimplePos): [u32, Ordering] {
+    intDistance(other: SimpleDotPos): [u32, Ordering] {
         if (this.depth() > other.depth()) {
             const [dist, order] = other.intDistance(this)
             return [dist, orderingInversion[order]]
@@ -182,7 +183,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    compareBase(other: SimplePos): BaseOrdering {
+    compareBase(other: SimpleDotPos): BaseOrdering {
         if (this.depth() > other.depth()) {
             return baseOrderingInversion[other.compareBase(this)]
         } else if (
@@ -218,12 +219,12 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    isBaseEqual(other: SimplePos): boolean {
+    isBaseEqual(other: SimpleDotPos): boolean {
         return this.compareBase(other) === BaseOrdering.EQUAL
     }
 
     /** @override */
-    compare(other: SimplePos): Ordering {
+    compare(other: SimpleDotPos): Ordering {
         if (this.depth() > other.depth()) {
             return orderingInversion[other.compare(this)]
         } else if (this.isEqual(other)) {
@@ -245,7 +246,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    isEqual(other: SimplePos): boolean {
+    isEqual(other: SimpleDotPos): boolean {
         return this.replica() === other.replica() && this.seq() === other.seq()
     }
 }

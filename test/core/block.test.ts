@@ -1,17 +1,17 @@
 import test from "ava"
 
-import { twinBlock } from "../pos/simple/pos.testutil"
+import { twinBlock } from "../dot-pos/simple/pos.testutil"
 
 import { Block, BlockOrdering } from "../../src/core/block"
-import { SimplePos } from "../../src/pos/simple/simple-pos"
-import { SimplePosPart } from "../../src/pos/simple/simple-pos-part"
+import { SimpleDotPos } from "../../src/dot-pos/simple/simple-dot-pos"
+import { SimpleDotPosPart } from "../../src/dot-pos/simple/simple-dot-pos-part"
 
-const part0 = SimplePosPart.from(1, 0, 0)
-const part3 = SimplePosPart.from(1, 0, 3)
-const prefixingPart1 = SimplePosPart.from(1, 1, 1)
+const part0 = SimpleDotPosPart.from(1, 0, 0)
+const part3 = SimpleDotPosPart.from(1, 0, 3)
+const prefixingPart1 = SimpleDotPosPart.from(1, 1, 1)
 
-const pos1 = SimplePos.from([prefixingPart1, part0])
-const pos10 = SimplePos.from([prefixingPart1, part0, part3])
+const pos1 = SimpleDotPos.from([prefixingPart1, part0])
+const pos10 = SimpleDotPos.from([prefixingPart1, part0, part3])
 
 const b1abc = new Block(pos1, "abc")
 const b1ab = new Block(pos1, "ab")

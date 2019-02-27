@@ -67,16 +67,6 @@ export interface Pos<P extends Pos<P>> {
 
     // Access
     /**
-     * Globally unique identifier of the author which generated this position.
-     */
-    readonly replica: () => u32
-
-    /**
-     * When was generated this position.
-     */
-    readonly seq: () => u32
-
-    /**
      * @example
      * p.intDistance(p.intSuccessor(n)) == [n, Ordering.BEFORE]
      * p.intDistance(p) == [0, Ordering.EQUAL]

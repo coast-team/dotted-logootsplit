@@ -6,22 +6,22 @@ import { twinPosition } from "./pos.testutil"
 import { U32_TOP } from "../../../src/core/number"
 import { BaseOrdering } from "../../../src/core/pos"
 import { Ordering } from "../../../src/core/ordering"
-import { SimplePosPart } from "../../../src/pos/simple/simple-pos-part"
-import { SimplePos } from "../../../src/pos/simple/simple-pos"
+import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
+import { SimpleDotPos } from "../../../src/dot-pos/simple/simple-dot-pos"
 
-const part0 = SimplePosPart.from(1, 0, 0)
-const part1 = SimplePosPart.from(1, 0, 1)
-const part2 = SimplePosPart.from(1, 0, 2)
-const part3 = SimplePosPart.from(1, 0, 3)
-const part4 = SimplePosPart.from(1, 0, 4)
-const part5 = SimplePosPart.from(1, 0, 5)
+const part0 = SimpleDotPosPart.from(1, 0, 0)
+const part1 = SimpleDotPosPart.from(1, 0, 1)
+const part2 = SimpleDotPosPart.from(1, 0, 2)
+const part3 = SimpleDotPosPart.from(1, 0, 3)
+const part4 = SimpleDotPosPart.from(1, 0, 4)
+const part5 = SimpleDotPosPart.from(1, 0, 5)
 
-const pos0 = SimplePos.from([part0])
-const pos1 = SimplePos.from([part1])
-const pos02 = SimplePos.from([part0, part2])
-const pos03 = SimplePos.from([part0, part3])
-const pos14 = SimplePos.from([part1, part4])
-const pos15 = SimplePos.from([part1, part5])
+const pos0 = SimpleDotPos.from([part0])
+const pos1 = SimpleDotPos.from([part1])
+const pos02 = SimpleDotPos.from([part0, part2])
+const pos03 = SimpleDotPos.from([part0, part3])
+const pos14 = SimpleDotPos.from([part1, part4])
+const pos15 = SimpleDotPos.from([part1, part5])
 
 test("hasIntSuccessor", (t) => {
     t.true(pos0.hasIntSucc(1))
@@ -102,11 +102,11 @@ test("isBaseEqual", (t) => {
 })
 
 test("from-plain", (t) => {
-    t.is(SimplePos.fromPlain(undefined), undefined)
-    t.deepEqual(SimplePos.fromPlain(pos0), pos0)
+    t.is(SimpleDotPos.fromPlain(undefined), undefined)
+    t.deepEqual(SimpleDotPos.fromPlain(pos0), pos0)
 
     const malformedPos1 = { parts: [] }
-    t.is(SimplePos.fromPlain(malformedPos1), undefined)
+    t.is(SimpleDotPos.fromPlain(malformedPos1), undefined)
     const malformedPos2 = {
         parts: [
             {
@@ -116,7 +116,7 @@ test("from-plain", (t) => {
             },
         ],
     }
-    t.is(SimplePos.fromPlain(malformedPos2), undefined)
+    t.is(SimpleDotPos.fromPlain(malformedPos2), undefined)
     const malformedPos3 = { parts: [undefined] }
-    t.is(SimplePos.fromPlain(malformedPos3), undefined)
+    t.is(SimpleDotPos.fromPlain(malformedPos3), undefined)
 })

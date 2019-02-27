@@ -3,11 +3,11 @@ import test from "ava"
 import { twinPositionPart } from "./pos.testutil"
 
 import { Ordering } from "../../../src/core/ordering"
-import { SimplePosPart } from "../../../src/pos/simple/simple-pos-part"
+import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 
-const part101 = SimplePosPart.from(1, 0, 1)
-const part110 = SimplePosPart.from(1, 1, 0)
-const part200 = SimplePosPart.from(2, 0, 0)
+const part101 = SimpleDotPosPart.from(1, 0, 1)
+const part110 = SimpleDotPosPart.from(1, 1, 0)
+const part200 = SimpleDotPosPart.from(2, 0, 0)
 
 test("compare", (t) => {
     // reflexivity
@@ -36,17 +36,17 @@ test("compareBase", (t) => {
 })
 
 test("with-seq", (t) => {
-    t.deepEqual(part101.withSeq(5), SimplePosPart.from(1, 0, 5))
+    t.deepEqual(part101.withSeq(5), SimpleDotPosPart.from(1, 0, 5))
 })
 
 test("asTuple", (t) => {
     const a = 1
     const b = 2
     const c = 3
-    t.deepEqual(SimplePosPart.from(a, b, c).asTuple(), [a, b, c])
+    t.deepEqual(SimpleDotPosPart.from(a, b, c).asTuple(), [a, b, c])
 })
 
 test("from-plain", (t) => {
-    t.is(SimplePosPart.fromPlain(undefined), undefined)
-    t.deepEqual(SimplePosPart.fromPlain(part101), part101)
+    t.is(SimpleDotPosPart.fromPlain(undefined), undefined)
+    t.deepEqual(SimpleDotPosPart.fromPlain(part101), part101)
 })

@@ -14,6 +14,7 @@ import { Pos, BaseOrdering } from "./pos"
 import { Concat, ConcatLength } from "./concat"
 import { RangeOrdering, U32Range } from "./u32-range"
 import { Ordering } from "./ordering"
+import { DotPos } from "./dot-pos"
 
 /**
  * Possible relation between two blocks.
@@ -170,14 +171,14 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     /**
      * Globally unique identifier of the author which generated this block.
      */
-    replica(): u32 {
+    replica<P extends DotPos<P>>(this: BaseBlockk<P>): u32 {
         return this.lowerPos.replica()
     }
 
     /**
      * When each position of this block were generated.
      */
-    seqs(): U32Range {
+    seqs<P extends DotPos<P>>(this: BaseBlockk<P>): U32Range {
         return U32Range.fromLength(this.lowerPos.seq(), this.length)
     }
 
