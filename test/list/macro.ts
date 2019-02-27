@@ -645,7 +645,7 @@ mRemoveEqual.title = titled("remove-equal")
 export const mRemoveIncludedLeftBy: GenericListMacro = (t, emp) => {
     const seqA = emp(Peer.A)
     const abcd = seqA.insertAt(0, "abcd")
-    const ab = abcd.rightSplitAt(2)
+    const ab = abcd.leftSplitAt(2)
 
     const abRmv = seqA.remove(ab.toLengthBlock())
 

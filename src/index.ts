@@ -23,3 +23,5 @@ export * from "./pos/simple/simple-pos"
 export * from "./pos/simple/simple-pos-part"
 
 export * from "./list/linked/op-linked-list"
+
+export * from "./list/avl/op-avl-list"
