@@ -9,12 +9,14 @@
 import { alea, AleaState } from "replayable-random"
 
 import { assert, heavyAssert } from "../../core/assert"
-import { isObject } from "../../core/data-validation"
+import { isObject, FromPlain } from "../../core/data-validation"
 import { SimplePos } from "./simple-pos"
 import { SimplePosPart } from "./simple-pos-part"
 import { isU32, u32, U32_TOP } from "../../core/number"
 import { Ordering } from "../../core/ordering"
 import { BlockFactory } from "../../core/block-factory"
+import { Concat } from "../../core/concat"
+import { Block } from "../../core/block"
 
 /**
  * @param values
@@ -47,12 +49,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
      */
     constructor(replica: u32, seq: u32, randState: AleaState) {
         assert(() => isU32(replica), "replica ∈ u32")
+        assert(() => isU32(seq), "seq ∈ u32")
         assert(
             () => replica !== U32_TOP,
             "replica != U32_TOP. This is reserved for BOTTOM and TOP pos."
         )
         super(SimplePos)
-        assert(() => isU32(seq), "seq ∈ u32")
         this.replica = replica
         this.seq = seq
         this.randState = randState
@@ -97,6 +99,15 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
         return undefined
     }
 
+    /**
+     * {@see BlockFactoryConstructor#blockFromPlain}
+     */
+    static blockFromPlain<E extends Concat<E>>(
+        g: FromPlain<E>
+    ): FromPlain<Block<SimplePos, E>> {
+        return Block.fromPlain(SimplePos.fromPlain, g)
+    }
+
     // Access
     /** @Override */
     readonly replica: u32
@@ -134,7 +145,7 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
 
         if (l.replica() === this.replica && l.seq() + 1 === this.seq) {
             // Appendable
-            this.increaseSeq(length)
+            this.seq = this.seq + length
             return l.intSucc(1)
         } else {
             const seqL = infiniteSequence(l.parts, SimplePosPart.BOTTOM)
@@ -145,11 +156,11 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
             let partU = seqU.next().value
             while (partU.priority - partL.priority < 2) {
                 // Cannot insert a new part between partL and partU
-                if (partU.replica === partL.replica) {
+                if (partL.replica === partU.replica) {
                     // Split
                     parts.push(partL)
                 } else {
-                    parts.push(partL.withSeq(U32_TOP))
+                    parts.push(partL.withSeq(U32_TOP)) // Let room for append
                 }
                 partL = seqL.next().value
                 partU = seqU.next().value
@@ -158,12 +169,12 @@ export class SimpleBlockFactory extends BlockFactory<SimplePos> {
                 partL.priority + 1,
                 partU.priority
             )(this.randState)
-            // priority ∈ ]tuple1.priority, tuple2.priority[
-            // tuple1.priority exclusion ensures a dense set
+            // priority ∈ ]partL.priority, partU.priority[
+            // partL.priority exclusion ensures a dense set
             parts.push(SimplePosPart.from(priority, this.replica, this.seq))
 
             this.randState = s
-            this.increaseSeq(length)
+            this.seq = this.seq + length
             return SimplePos.from(parts)
         }
     }

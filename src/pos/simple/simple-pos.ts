@@ -102,7 +102,7 @@ export class SimplePos implements Pos<SimplePos> {
      *  but with a different seq
      */
     withSeq(seq: u32): SimplePos {
-        assert(() => isU32(seq), "offset ∈ u32")
+        assert(() => isU32(seq), "seq ∈ u32")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
         parts[lastIndex] = parts[lastIndex].withSeq(seq)

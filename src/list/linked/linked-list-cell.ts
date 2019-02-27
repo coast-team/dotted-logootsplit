@@ -37,6 +37,48 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    insertable(iBlock: Block<P, E>): Block<P, E>[] {
+        if (this.right === undefined) {
+            return [iBlock]
+        } else {
+            const rBlock = this.right.block
+            switch (iBlock.compare(rBlock)) {
+                case BlockOrdering.PREPENDABLE:
+                case BlockOrdering.BEFORE:
+                case BlockOrdering.SPLITTING:
+                    return [iBlock]
+                case BlockOrdering.APPENDABLE:
+                case BlockOrdering.AFTER:
+                    return this.right.insertable(iBlock)
+                case BlockOrdering.SPLITTED_BY: {
+                    const [lSplit, rSplit] = iBlock.splitWith(rBlock)
+                    const rIns = this.right.insertable(rSplit)
+                    return [lSplit].concat(rIns)
+                }
+                case BlockOrdering.INCLUDING_RIGHT:
+                case BlockOrdering.OVERLAPPING_BEFORE:
+                    return [iBlock.prependable(rBlock)]
+                case BlockOrdering.INCLUDING_LEFT:
+                case BlockOrdering.OVERLAPPING_AFTER:
+                    return this.right.insertable(iBlock.appendable(rBlock))
+                case BlockOrdering.INCLUDING_MIDDLE: {
+                    const lIns = [iBlock.prependable(rBlock)]
+                    const rIns = this.right.insertable(
+                        iBlock.appendable(rBlock)
+                    )
+                    return lIns.concat(rIns)
+                }
+                case BlockOrdering.INCLUDED_MIDDLE_BY:
+                case BlockOrdering.INCLUDED_RIGHT_BY:
+                case BlockOrdering.INCLUDED_LEFT_BY:
+                case BlockOrdering.EQUAL:
+                    return []
+                default:
+                    throw new Error("non-exhaustive switch")
+            }
+        }
+    }
+
     // Modification
     /**
      * [Mutation]
@@ -104,43 +146,20 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         .insertRight(rSplit)
                     return [new Ins(index + lSplit.length, iBlock.items)]
                 }
-                case BlockOrdering.INCLUDED_LEFT_BY: {
-                    const appendable = iBlock.appendable(rBlock)
-                    this.right = this.right.right
-                    this.insertRight(rBlock.append(appendable))
-                    return [new Ins(index + rBlock.length, appendable.items)]
-                }
-                case BlockOrdering.INCLUDED_RIGHT_BY: {
-                    const prependable = iBlock.prependable(rBlock)
-                    this.right = this.right.right
-                    this.insertRight(prependable.append(rBlock))
-                    return [new Ins(index, prependable.items)]
-                }
-                case BlockOrdering.INCLUDED_MIDDLE_BY: {
-                    const prependable = iBlock.prependable(rBlock)
-                    const appendable = iBlock.appendable(rBlock)
-                    const b = prependable.append(rBlock).append(appendable)
-                    this.right = this.right.right
-                    this.insertRight(b)
-                    const lIndex = index + prependable.length + rBlock.length
-                    return [
-                        new Ins(index, prependable.items),
-                        new Ins(lIndex, appendable.items),
-                    ]
-                }
-                case BlockOrdering.OVERLAPPING_BEFORE: {
-                    const appendable = iBlock.appendable(rBlock)
-                    return this.insert(appendable, index) // Tail recursion
-                }
-                case BlockOrdering.OVERLAPPING_AFTER: {
-                    const prependable = iBlock.prependable(rBlock)
-                    this.right = this.right.right
-                    this.insertRight(prependable.append(rBlock))
-                    return [new Ins(index, prependable.items)]
-                }
+                case BlockOrdering.OVERLAPPING_BEFORE:
+                case BlockOrdering.OVERLAPPING_AFTER:
+                case BlockOrdering.INCLUDED_MIDDLE_BY:
+                case BlockOrdering.INCLUDED_RIGHT_BY:
+                case BlockOrdering.INCLUDED_LEFT_BY:
+                case BlockOrdering.INCLUDING_MIDDLE:
+                case BlockOrdering.INCLUDING_RIGHT:
+                case BlockOrdering.INCLUDING_LEFT:
+                case BlockOrdering.EQUAL:
+                    throw new Error(
+                        "inserted block intersects with one or more existing blocks"
+                    )
                 default:
-                    //case BlockOrdering.Including, BlockOrdering.Equal:
-                    return [] // already inserted
+                    throw new Error("non-exhaustive switch")
             }
         }
     }
@@ -330,10 +349,12 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.insertRight(remaining)
                     return [new Del(index, removed.length)]
                 }
-                //case BlockOrdering.After:
-                //case BlockOrdering.Appendable:
-                //case BlockOrdering.SplittedBy:
+                case BlockOrdering.AFTER:
+                case BlockOrdering.APPENDABLE:
+                case BlockOrdering.SPLITTED_BY:
+                    break
                 default:
+                    throw new Error("non-exhaustive switch")
             }
         }
         return [] // already removed or not already inserted

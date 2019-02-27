@@ -12,16 +12,40 @@ import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { u32 } from "../core/number"
 import { Anchor } from "./anchor"
+import { FromPlain } from "./data-validation"
+
+/**
+ * Common interface for {@see BlockFactory} constructors.
+ */
+export interface BlockFactoryConstructor<P extends Pos<P>> {
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    readonly fromPlain: FromPlain<BlockFactory<P>>
+
+    /**
+     * @param itemsFromPlain
+     * @return function that accepts a value and attempt to build a block.
+     *  It returns the built block if it succeeds, or undefined if it fails.
+     */
+    readonly blockFromPlain: <E extends Concat<E>>(
+        itemsFromPlain: FromPlain<E>
+    ) => FromPlain<Block<P, E>>
+}
 
 /**
  * Factory of blocks.
  * Implementations can implement different strategies of generation.
+ *
+ * Implementations should have at least two static function described in
+ * {@see BlockFactoryConstructor }.
  */
 export abstract class BlockFactory<P extends Pos<P>> {
     /**
      * @param posBounds bottom and top positions.
      */
-    constructor(protected readonly posBounds: { BOTTOM: P; TOP: P }) {
+    protected constructor(protected readonly posBounds: { BOTTOM: P; TOP: P }) {
         this.topAnchor = new Anchor(posBounds.TOP)
     }
 
@@ -98,13 +122,21 @@ export abstract class BlockFactory<P extends Pos<P>> {
      *  with {@link items } as {@link Block#items }.
      */
     between<E extends Concat<E>>(
-        l: Block<P, E>,
+        l: Block<P, E> | undefined,
         items: E,
-        u: Block<P, E>
+        u: Block<P, E> | undefined
     ): Block<P, E> {
         assert(() => items.length > 0, "items.length > 0")
-        heavyAssert(() => l.compare(u) <= BlockOrdering.PREPENDABLE, "l < u")
-        const pos = this.posBetween(l.upperPos(), items.length, u.lowerPos)
+        heavyAssert(
+            () =>
+                l === undefined ||
+                u === undefined ||
+                l.compare(u) <= BlockOrdering.PREPENDABLE,
+            "l < u"
+        )
+        const lPos = l !== undefined ? l.upperPos() : this.posBounds.BOTTOM
+        const uPos = u !== undefined ? u.lowerPos : this.posBounds.TOP
+        const pos = this.posBetween(lPos, items.length, uPos)
         return new Block(pos, items)
     }
 

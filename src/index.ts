@@ -16,11 +16,10 @@ export * from "./core/u32-range"
 export * from "./core/local-operation"
 export * from "./core/ordering"
 export * from "./core/pos"
-
-export { u32 } from "./core/number"
+export * from "./core/delta-replicated-list"
 
 export * from "./pos/simple/simple-block-factory"
 export * from "./pos/simple/simple-pos"
 export * from "./pos/simple/simple-pos-part"
 
-export * from "./list/linked/replicated-linked-list"
+export * from "./list/linked/op-linked-list"
