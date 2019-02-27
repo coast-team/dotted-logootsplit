@@ -15,9 +15,9 @@ export type Lazy<T> = () => T
  * @param msg reported message if {@link test } fails.
  */
 export function assert(test: Lazy<boolean>, msg: string): void {
-    if (flags.assertionsEnabled) {
+    if (flags.assertionsEnabled && !test()) {
         if (flags.failFastEnabled) {
-            console.assert(test(), msg)
+            throw new Error(msg)
         } else {
             console.error(`Assertion failed: ${msg}`)
         }
