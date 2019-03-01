@@ -1,6 +1,8 @@
 
 # Dotted LogootSplit: A delta-based sequence CRDT
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/coast-team/dotted-logootsplit.svg)](https://greenkeeper.io/)
+
 [![travis][travis-image]][travis-url]
 [![NPM version][npm-image]][npm-url]
 
