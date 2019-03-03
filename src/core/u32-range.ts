@@ -8,6 +8,7 @@
 
 import { assert, heavyAssert } from "./assert"
 import { isU32, u32 } from "./number"
+import { isObject } from "./data-validation"
 
 /**
  * Possible order relation between two intervals.
@@ -70,6 +71,22 @@ export class U32Range {
         assert(() => isU32(upper), "upper ∈ u32")
         assert(() => lower <= upper, "lower <= upper")
         return U32Range.fromLength(lower, upper - lower + 1)
+    }
+
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain(x: unknown): U32Range | undefined {
+        if (
+            isObject<U32Range>(x) &&
+            isU32(x.lower) &&
+            isU32(x.length) &&
+            x.length > 0
+        ) {
+            return new U32Range(x.lower, x.length)
+        }
+        return undefined
     }
 
     // Access
