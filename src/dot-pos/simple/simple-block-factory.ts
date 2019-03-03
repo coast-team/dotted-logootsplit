@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { alea, AleaState } from "replayable-random"
+import { alea, distrib, MutRand } from "replayable-random"
 
 import { assert, heavyAssert } from "../../core/assert"
 import { isObject, FromPlain } from "../../core/data-validation"
@@ -47,7 +47,7 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
      * @param seq {@link SimpleBlockFactory#seq }
      * @param randState random generator's state
      */
-    constructor(replica: u32, seq: u32, randState: AleaState) {
+    protected constructor(replica: u32, seq: u32, randState: MutRand) {
         assert(() => isU32(replica), "replica ∈ u32")
         assert(() => isU32(seq), "seq ∈ u32")
         assert(
@@ -74,7 +74,7 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
             "replica != U32_TOP. This is reserved for BOTTOM and TOP positions."
         )
         const seed = `${globalSeed}${replica}`
-        const randState = alea.from(seed)
+        const randState = alea.mutFrom(seed)
         return new SimpleBlockFactory(replica, 0, randState)
     }
 
@@ -89,18 +89,16 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
             x.replica !== U32_TOP &&
             isU32(x.seq)
         ) {
-            // FIXME: check randState
-            return new SimpleBlockFactory(
-                x.replica,
-                x.seq,
-                x.randState as AleaState
-            )
+            const mutRand = alea.mutFromPlain(x.randState)
+            if (mutRand !== undefined) {
+                return new SimpleBlockFactory(x.replica, x.seq, mutRand)
+            }
         }
         return undefined
     }
 
     /**
-     * {@see BlockFactoryConstructor#blockFromPlain}
+     * See {@link BlockFactoryConstructor#blockFromPlain}
      */
     static blockFromPlain<E extends Concat<E>>(
         g: FromPlain<E>
@@ -115,13 +113,14 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
     /** @Override */
     seq: u32
 
-    randState: AleaState
+    randState: MutRand
 
     /**
      * @return Deep copy of this.
      */
     copy(): SimpleBlockFactory {
-        return new SimpleBlockFactory(this.replica, this.seq, this.randState)
+        const copiedRand = alea.mutFromPlain(this.randState) as MutRand // FIXME
+        return new SimpleBlockFactory(this.replica, this.seq, copiedRand)
     }
 
     /**
@@ -135,6 +134,14 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
         this.seq = this.seq + by
     }
 
+    /**
+     * @param l
+     * @param Can `length` be appended to `l`?
+     */
+    isAppendable(l: SimpleDotPos, length: u32): boolean {
+        return l.replica() === this.replica && l.seq() + 1 === this.seq
+    }
+
     // Impl
     /** @override */
     posBetween(l: SimpleDotPos, length: u32, u: SimpleDotPos): SimpleDotPos {
@@ -143,8 +150,7 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
         assert(() => length > 0, "length is strictly positive")
         assert(() => isU32(this.seq + length), "no overflow")
 
-        if (l.replica() === this.replica && l.seq() + 1 === this.seq) {
-            // Appendable
+        if (this.isAppendable(l, length)) {
             this.seq = this.seq + length
             return l.intSucc(1)
         } else {
@@ -165,15 +171,13 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
                 partL = seqL.next().value
                 partU = seqU.next().value
             }
-            const [priority, s] = alea.u32Between(
-                partL.priority + 1,
+            const priority = distrib.mutU32Between(partL.priority + 1)(
                 partU.priority
             )(this.randState)
             // priority ∈ ]partL.priority, partU.priority[
             // partL.priority exclusion ensures a dense set
             parts.push(SimpleDotPosPart.from(priority, this.replica, this.seq))
 
-            this.randState = s
             this.seq = this.seq + length
             return SimpleDotPos.from(parts)
         }

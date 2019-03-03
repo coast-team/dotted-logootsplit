@@ -4,12 +4,11 @@ import {
     OpReplicatedList,
     EditableOpReplicatedList,
 } from "./op-replicated-list"
-import { u32 } from "replayable-random"
 import { BlockListContext } from "./block-list-context"
 import { Del, Ins } from "./local-operation"
 import { LengthBlock, Block } from "./block"
 import { assert } from "./assert"
-import { isU32 } from "./number"
+import { isU32, u32 } from "./number"
 
 export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     protected readonly list: OpReplicatedList<P, E>

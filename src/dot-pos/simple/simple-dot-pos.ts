@@ -23,10 +23,11 @@ import { Ordering, orderingInversion } from "../../core/ordering"
 import { DotPos } from "../../core/dot-pos"
 
 /**
+ * @final this class cannot be extended
+ *
  * A position can be represented as a lexicographic list of
  * lexicographic triplets (priority, replica, seq).
- * Theses triplets are the parts of the position. The depth of a triplet
- * correponds to its 0-based index in the list.
+ * Theses triplets are the parts of the position.
  *
  * The dot (replica, seq) uniquely identifies the position.
  *
@@ -37,18 +38,18 @@ import { DotPos } from "../../core/dot-pos"
  */
 export class SimpleDotPos implements DotPos<SimpleDotPos> {
     /**
-     * @param parts {@link SimplePos#parts }
+     * @param parts {@link SimpleDotPos#parts }
      */
-    protected constructor(parts: ReadonlyArray<SimpleDotPosPart>) {
+    private constructor(parts: ReadonlyArray<SimpleDotPosPart>) {
         assert(() => parts.length > 0, "parts must not be empty")
         this.parts = parts
     }
 
     /**
-     * @param parts {@link SimplePos#parts }
+     * @param parts {@link SimpleDotPos#parts }
      *  The last part must be distinct of SimplePosPart.BOTTOM and
      *  SimplePosPart.TOP.
-     * @return Position with {@link parts } as {@link SimplePos#parts }.
+     * @return Position with {@link parts } as {@link SimpleDotPos#parts }.
      */
     static from(parts: ReadonlyArray<SimpleDotPosPart>): SimpleDotPos {
         const lastPart = parts[parts.length - 1]
@@ -66,6 +67,9 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
     }
 
     /**
+     * @note {@link SimpleDotPos#BOTTOM } and {@link SimpleDotPos#TOP }
+     * are not valid candidates.
+     *
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
@@ -98,9 +102,8 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
 
     // Derivation
     /**
-     * @param seq The last seq of the new position
-     * @return Position with the same base as this,
-     *  but with a different seq
+     * @param seq The seq of the new position
+     * @return Position with the same base, but with a different seq.
      */
     withSeq(seq: u32): SimpleDotPos {
         assert(() => isU32(seq), "seq ∈ u32")
@@ -158,14 +161,14 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
                     ((cmp) =>
                         cmp === BaseOrdering.PREFIXING ||
                         cmp === BaseOrdering.EQUAL)(this.compareBase(other)),
-                "MARK"
+                "this prefix or is equal to other"
             )
 
-            const otherSeq = other.parts[this.depth() - 1].seq
+            const otherIntermediateSeq = other.parts[this.depth() - 1].seq
             const seq = this.seq()
             return [
-                absoluteSubstraction(seq, otherSeq),
-                compareU32(seq, otherSeq),
+                absoluteSubstraction(seq, otherIntermediateSeq),
+                compareU32(seq, otherIntermediateSeq),
             ]
         }
     }
@@ -186,10 +189,7 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
     compareBase(other: SimpleDotPos): BaseOrdering {
         if (this.depth() > other.depth()) {
             return baseOrderingInversion[other.compareBase(this)]
-        } else if (
-            this.replica() === other.replica() &&
-            this.seq() === other.seq()
-        ) {
+        } else if (this.isEqual(other)) {
             return BaseOrdering.EQUAL
         } else {
             let i = 0
@@ -198,7 +198,6 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
                 baseCmp = this.parts[i].compare(other.parts[i])
                 i++
             }
-
             if (baseCmp === Ordering.EQUAL) {
                 baseCmp = this.parts[i].compareBase(other.parts[i])
             }

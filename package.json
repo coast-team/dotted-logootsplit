@@ -72,18 +72,18 @@
     "@typescript-eslint/eslint-plugin": "^1.0.0",
     "@typescript-eslint/parser": "^1.0.0",
     "@typescript-eslint/typescript-estree": "^1.0.0",
-    "ava": "^1.0",
-    "eslint": "^5.12.1",
+    "ava": "^1.2.1",
+    "eslint": "^5.15.0",
     "eslint-config-conaclos": "^2.4.0",
     "husky": "^1.2.1",
     "lint-staged": "^8.1.0",
-    "nyc": "^13.1.0",
+    "nyc": "^13.3.0",
     "prettier": "^1.16.1",
     "standard-version": "^4.4.0",
     "typescript": "^3.2"
   },
   "dependencies": {
-    "replayable-random": "=0.1.0",
+    "replayable-random": "=0.3.0",
     "tslib": "^1.9.3"
   }
 }

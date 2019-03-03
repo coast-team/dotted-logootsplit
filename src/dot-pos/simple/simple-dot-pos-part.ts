@@ -19,18 +19,20 @@ import {
 import { lexCompareOrdering, Ordering } from "../../core/ordering"
 
 /**
- * Part of a {@link SimplePos}.
+ * @final this class cannot be extended
  *
- * A part if a lexicographic triplet (priority, replica, seq).
+ * Part of a {@link SimpleDotPos}.
+ *
+ * A part is a lexicographic triplet (priority, replica, seq).
  * The dot (replica, seq) uniquely identifies.
  */
 export class SimpleDotPosPart {
     /**
-     * @param priority {@link SimplePosPart#priority }
-     * @param replica {@link SimplePosPart#replica }
-     * @param seq {@link SimplePosPart#seq }
+     * @param priority {@link SimpleDotPosPart#priority }
+     * @param replica {@link SimpleDotPosPart#replica }
+     * @param seq {@link SimpleDotPosPart#seq }
      */
-    protected constructor(priority: u32, replica: u32, seq: u32) {
+    private constructor(priority: u32, replica: u32, seq: u32) {
         assert(() => isU32(priority), "random ∈ u32")
         assert(() => isU32(replica), "replica ∈ u32")
         assert(() => isU32(seq), "seq ∈ u32")
@@ -40,10 +42,11 @@ export class SimpleDotPosPart {
     }
 
     /**
-     * @param priority {@link SimplePosPart#priority }
+     * @param priority {@link SimpleDotPosPart#priority }
      *      ∉ {U32_BOTTOM, U32_TOP}
-     * @param replica {@link SimplePosPart#replica }
-     * @param seq {@link SimplePosPart#seq }
+     * @param replica {@link SimpleDotPosPart#replica }
+     *      !== U32_TOP
+     * @param seq {@link SimpleDotPosPart#seq }
      */
     static from(priority: u32, replica: u32, seq: u32): SimpleDotPosPart {
         assert(
@@ -58,6 +61,9 @@ export class SimpleDotPosPart {
     }
 
     /**
+     * @note {@link SimpleDotPosPart#BOTTOM} and {@link SimpleDotPosPart#TOP}
+     * are not valid candidates.
+     *
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
@@ -87,8 +93,8 @@ export class SimpleDotPosPart {
 
     // Derivation
     /**
-     * @param {u32} seq The seq of the new SimplePosPart
-     * @return {SimpleDotPosPart} with the same base,
+     * @param seq The seq of the new SimpleDotPosPart
+     * @return part with the same base,
      *  but with a different seq
      */
     withSeq(seq: u32): SimpleDotPosPart {
@@ -98,16 +104,14 @@ export class SimpleDotPosPart {
 
     // Access
     /**
-     * Priority of the part over another one. Lower is better.
-     *
+     * Priority of the part over another one.
      * If two parts have the same priority, the lexicographic pair
      * (replica, seq) is used as disambiguator.
      */
     readonly priority: u32
 
     /**
-     * Globally unique identifier of the
-     * author which generated this part.
+     * Globally unique identifier of the author which generated this part.
      */
     readonly replica: u32
 
@@ -134,15 +138,15 @@ export class SimpleDotPosPart {
     // Status
     /**
      * @example
-     * SimplePosPart(0, 0, _) == SimplePosPart(0, 0, _)
-     * SimplePosPart(0, 0, _) < SimplePosPart(1, 0, _)
-     * SimplePosPart(1, 0, _) < SimplePosPart(1, 1, _)
+     * SimpleDotPosPart(0, 0, _) == SimpleDotPosPart(0, 0, _)
+     * SimpleDotPosPart(0, 0, _) < SimpleDotPosPart(1, 0, _)
+     * SimpleDotPosPart(1, 0, _) < SimpleDotPosPart(1, 1, _)
      *
      * Lexicographic order of pair (priority, replica).
      *
      * @param other
-     * @return Compare this and {@link other } regardless their sequence
-     *  {@link SimplePosPart#seq}
+     * @return this [Order relation] {@link other }, regardless their seqs
+     *  ({@link SimpleDotPosPart#seq}).
      */
     compareBase(other: SimpleDotPosPart): Ordering {
         return lexCompareOrdering(
@@ -153,9 +157,9 @@ export class SimpleDotPosPart {
 
     /**
      * @example
-     * SimplePosPart(0, 0, 0) < SimplePosPart(1, 0, 0)
-     * SimplePosPart(1, 0, 0) < SimplePosPart(1, 1, 0)
-     * SimplePosPart(1, 1, 0) < SimplePosPart(1, 1, 1)
+     * SimpleDotPosPart(0, 0, 0) < SimpleDotPosPart(1, 0, 0)
+     * SimpleDotPosPart(1, 0, 0) < SimpleDotPosPart(1, 1, 0)
+     * SimpleDotPosPart(1, 1, 0) < SimpleDotPosPart(1, 1, 1)
      *
      * Lexicographic order of triple (priority, replica, seq).
      *

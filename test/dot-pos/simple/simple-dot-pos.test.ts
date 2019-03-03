@@ -2,7 +2,6 @@ import test from "ava"
 
 import { twinPosition } from "./pos.testutil"
 
-//import {INT32_TOP} from '../../src/core/number'
 import { U32_TOP } from "../../../src/core/number"
 import { BaseOrdering } from "../../../src/core/pos"
 import { Ordering } from "../../../src/core/ordering"
@@ -23,12 +22,13 @@ const pos03 = SimpleDotPos.from([part0, part3])
 const pos14 = SimpleDotPos.from([part1, part4])
 const pos15 = SimpleDotPos.from([part1, part5])
 
-test("hasIntSuccessor", (t) => {
+test("hasIntSucc", (t) => {
     t.true(pos0.hasIntSucc(1))
     t.true(pos0.hasIntSucc(U32_TOP))
+    t.false(pos1.hasIntSucc(U32_TOP))
 })
 
-test("intSuccessor", (t) => {
+test("intSucc", (t) => {
     t.deepEqual(pos0.intSucc(1), pos1)
 })
 

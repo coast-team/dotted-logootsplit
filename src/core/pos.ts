@@ -87,7 +87,7 @@ export interface Pos<P extends Pos<P>> {
 
     // Status
     /**
-     * hasIntSuccessor(0) is always true.
+     * hasIntSucc(0) is always true.
      *
      * See also {@link Pos#intSucc }.
      *
