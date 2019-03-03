@@ -41,7 +41,7 @@ function* infiniteSequence<T>(
  * The strategy of generation is to genearte random positions between two
  * defined positions.
  */
-export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
+export class SimpleDotBlockFactory extends BlockFactory<SimpleDotPos> {
     /**
      * @param posBounds {@link SimpleBlockFactory#replica }
      * @param seq {@link SimpleBlockFactory#seq }
@@ -67,7 +67,7 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
      * @param globalSeed Seed for predictable random generation.
      * @return New factory with 0 as {@link SimpleBlockFactory#seq }
      */
-    static from(replica: u32, globalSeed: string): SimpleBlockFactory {
+    static from(replica: u32, globalSeed: string): SimpleDotBlockFactory {
         assert(() => isU32(replica), "replica ∈ u32")
         assert(
             () => replica !== U32_TOP,
@@ -75,23 +75,23 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
         )
         const seed = `${globalSeed}${replica}`
         const randState = alea.mutFrom(seed)
-        return new SimpleBlockFactory(replica, 0, randState)
+        return new SimpleDotBlockFactory(replica, 0, randState)
     }
 
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain(x: unknown): SimpleBlockFactory | undefined {
+    static fromPlain(x: unknown): SimpleDotBlockFactory | undefined {
         if (
-            isObject<SimpleBlockFactory>(x) &&
+            isObject<SimpleDotBlockFactory>(x) &&
             isU32(x.replica) &&
             x.replica !== U32_TOP &&
             isU32(x.seq)
         ) {
             const mutRand = alea.mutFromPlain(x.randState)
             if (mutRand !== undefined) {
-                return new SimpleBlockFactory(x.replica, x.seq, mutRand)
+                return new SimpleDotBlockFactory(x.replica, x.seq, mutRand)
             }
         }
         return undefined
@@ -118,9 +118,9 @@ export class SimpleBlockFactory extends BlockFactory<SimpleDotPos> {
     /**
      * @return Deep copy of this.
      */
-    copy(): SimpleBlockFactory {
+    copy(): SimpleDotBlockFactory {
         const copiedRand = alea.mutFromPlain(this.randState) as MutRand // FIXME
-        return new SimpleBlockFactory(this.replica, this.seq, copiedRand)
+        return new SimpleDotBlockFactory(this.replica, this.seq, copiedRand)
     }
 
     /**

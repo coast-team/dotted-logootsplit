@@ -73,7 +73,7 @@ import {
     DeltaListMacros,
 } from "../macro"
 import {
-    SimpleBlockFactory,
+    SimpleDotBlockFactory,
     SimpleDotPos,
     EditableDeltaReplicatedList,
 } from "../../../src"
@@ -88,7 +88,7 @@ function emptyOpSeq(
     replica: number,
     seed: string = DEFAULT_SEED
 ): EditableOpReplicatedList<SimpleDotPos, string> {
-    const factory = SimpleBlockFactory.from(replica, seed)
+    const factory = SimpleDotBlockFactory.from(replica, seed)
     return EditableOpAvlList.emptyWith(factory, "")
 }
 

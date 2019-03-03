@@ -3,20 +3,20 @@ import test from "ava"
 import {
     EditableDeltaReplicatedList,
     EditableOpLinkedList,
-    SimpleBlockFactory,
+    SimpleDotBlockFactory,
 } from "../src/"
 
 const seed = "dotted-logootsplit"
 
 test("readme-example", (t) => {
     const replicaA = 0
-    const strategyA = SimpleBlockFactory.from(replicaA, seed)
+    const strategyA = SimpleDotBlockFactory.from(replicaA, seed)
     const stateA = new EditableDeltaReplicatedList(
         EditableOpLinkedList.emptyWith(strategyA, "")
     )
 
     const replicaB = 1
-    const strategyB = SimpleBlockFactory.from(replicaB, seed)
+    const strategyB = SimpleDotBlockFactory.from(replicaB, seed)
     const stateB = new EditableDeltaReplicatedList(
         EditableOpLinkedList.emptyWith(strategyB, "")
     )

@@ -19,9 +19,8 @@ export * from "./core/pos"
 export * from "./core/dot-pos"
 export * from "./core/delta-replicated-list"
 
-export * from "./dot-pos/simple/simple-block-factory"
+export * from "./dot-pos/simple/simple-dot-block-factory"
 export * from "./dot-pos/simple/simple-dot-pos"
-export * from "./dot-pos/simple/simple-dot-pos-part"
 
 export * from "./list/linked/op-linked-list"
 

@@ -1,15 +1,16 @@
 import test from "ava"
 
 import { BlockOrdering, Block } from "../../../src/core/block"
-import { SimpleBlockFactory } from "../../../src/dot-pos/simple/simple-block-factory"
-import { SimpleDotPos, SimpleDotPosPart } from "../../../src"
+import { SimpleDotBlockFactory } from "../../../src/"
+import { SimpleDotPos } from "../../../src"
 import { U32_BOTTOM } from "../../../src/core/number"
+import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 
 const seed = "dotted-logootsplit"
 
-const factoryA = SimpleBlockFactory.from(1, seed)
+const factoryA = SimpleDotBlockFactory.from(1, seed)
 const firstA = factoryA.from("ab")
-const factoryB = SimpleBlockFactory.from(2, seed)
+const factoryB = SimpleDotBlockFactory.from(2, seed)
 const firstB = factoryB.after(firstA, "rs")
 
 test("after_appendable-block", (t) => {
@@ -77,13 +78,13 @@ test("between_variable-sized-position", (t) => {
 })
 
 test("from-plain", (t) => {
-    t.is(SimpleBlockFactory.fromPlain(undefined), undefined)
-    t.is(SimpleBlockFactory.fromPlain(null), undefined)
-    t.is(SimpleBlockFactory.fromPlain({}), undefined)
-    t.is(SimpleBlockFactory.fromPlain([]), undefined)
+    t.is(SimpleDotBlockFactory.fromPlain(undefined), undefined)
+    t.is(SimpleDotBlockFactory.fromPlain(null), undefined)
+    t.is(SimpleDotBlockFactory.fromPlain({}), undefined)
+    t.is(SimpleDotBlockFactory.fromPlain([]), undefined)
 
     t.deepEqual(
-        SimpleBlockFactory.fromPlain(factoryA),
-        factoryA as SimpleBlockFactory
+        SimpleDotBlockFactory.fromPlain(factoryA),
+        factoryA as SimpleDotBlockFactory
     )
 })
