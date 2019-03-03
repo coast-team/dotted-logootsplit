@@ -165,6 +165,12 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     }
 
     /** @Override */
+    remove(delta: LengthBlock<P>): Del[] {
+        this.factory.garbageCollect(delta)
+        return super.remove(delta)
+    }
+
+    /** @Override */
     insertAt(index: u32, items: E): Block<P, E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => index <= this.length, "valid index")
@@ -192,6 +198,11 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
             const indexRange = U32Range.fromLength(index, length)
             const rmv = this.root.removeAt(indexRange, 0)
             this.root = this.root.updated()
+            if (this.factory.canGarbageCollect()) {
+                for (const dBlock of rmv) {
+                    this.factory.garbageCollect(dBlock)
+                }
+            }
             return rmv
         }
         return []

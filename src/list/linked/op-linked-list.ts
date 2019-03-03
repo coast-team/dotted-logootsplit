@@ -116,6 +116,12 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
         this.factory = factory
     }
 
+    /** @Override */
+    remove(delta: LengthBlock<P>): Del[] {
+        this.factory.garbageCollect(delta)
+        return super.remove(delta)
+    }
+
     // Modification
     /** @Override */
     insertAt(index: u32, items: E): Block<P, E> {
@@ -135,6 +141,12 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
         assert(() => index + length <= this.length, "valid end index")
 
         this.length = this.length - length
-        return this.root.removeAt(index, length)
+        const rmv = this.root.removeAt(index, length)
+        if (this.factory.canGarbageCollect()) {
+            for (const dBlock of rmv) {
+                this.factory.garbageCollect(dBlock)
+            }
+        }
+        return rmv
     }
 }

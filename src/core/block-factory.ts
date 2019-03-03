@@ -7,7 +7,7 @@
 */
 
 import { assert, heavyAssert } from "./assert"
-import { Block, BlockOrdering } from "./block"
+import { Block, BlockOrdering, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { u32 } from "./number"
@@ -139,6 +139,37 @@ export abstract class BlockFactory<P extends Pos<P>> {
         const pos = this.posBetween(lPos, items.length, uPos)
         return new Block(pos, items)
     }
+
+    /**
+     * See {@link BlockFactory#garbageCollect }
+     *
+     * @param dBlock
+     * @return Is there stored positions in this factory?
+     */
+    canGarbageCollect(): boolean {
+        return (
+            this.garbageCollectPos !== BlockFactory.prototype.garbageCollectPos
+        )
+    }
+
+    /**
+     * Some factories can store generated positions for differents purposes.
+     * This method enables to garbage collect these positions when they
+     * are removed from the main data structure.
+     *
+     * @param dBlock
+     */
+    garbageCollect(dBlock: LengthBlock<P>): void {
+        this.garbageCollectPos(dBlock.lowerPos, dBlock.length)
+    }
+
+    /**
+     * See {@link BlockFactory#garbageCollect }
+     *
+     * @param l lower position
+     * @param length number of positions after l (including l) to remove
+     */
+    protected garbageCollectPos(l: P, length: u32): void {}
 
     // Impl
     /**

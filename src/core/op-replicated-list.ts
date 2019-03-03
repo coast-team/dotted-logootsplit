@@ -114,7 +114,7 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
  * An operation must be delivered exactly once.
  * An insertion must be delivered before a removal that depends on.
  */
-export abstract class EditableOpReplicatedList<
+export interface EditableOpReplicatedList<
     P extends Pos<P>,
     E extends Concat<E>
 > extends OpReplicatedList<P, E> {
@@ -126,7 +126,7 @@ export abstract class EditableOpReplicatedList<
      * @param items elements to insert.
      * @return Delta which represents the insertion.
      */
-    abstract insertAt(index: u32, items: E): Block<P, E>
+    insertAt(index: u32, items: E): Block<P, E>
 
     /**
      * [Mutation]
@@ -136,5 +136,5 @@ export abstract class EditableOpReplicatedList<
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    abstract removeAt(index: u32, length: u32): LengthBlock<P>[]
+    removeAt(index: u32, length: u32): LengthBlock<P>[]
 }
