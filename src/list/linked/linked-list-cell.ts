@@ -106,7 +106,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
 
         if (this.right === undefined) {
             this.insertRight(iBlock)
-            return [new Ins(index, iBlock.items)]
+            return [new Ins(index, iBlock.content)]
         } else {
             const rBlock = this.right.block
             switch (rBlock.compare(iBlock)) {
@@ -124,11 +124,11 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 }
                 case BlockOrdering.AFTER:
                     this.insertRight(iBlock)
-                    return [new Ins(index, iBlock.items)]
+                    return [new Ins(index, iBlock.content)]
                 case BlockOrdering.APPENDABLE:
                     this.right = this.right.right
                     this.insertRight(iBlock.append(rBlock))
-                    return [new Ins(index, iBlock.items)]
+                    return [new Ins(index, iBlock.content)]
                 case BlockOrdering.SPLITTING: {
                     const [lSplit, rSplit] = iBlock.splitWith(rBlock)
                     const rInsertions = this.right.insert(
@@ -136,7 +136,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         index + lSplit.length + rBlock.length
                     )
                     this.insertRight(lSplit)
-                    return [new Ins(index, lSplit.items), ...rInsertions]
+                    return [new Ins(index, lSplit.content), ...rInsertions]
                 }
                 case BlockOrdering.SPLITTED_BY: {
                     const [lSplit, rSplit] = rBlock.splitWith(iBlock)
@@ -144,7 +144,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.insertRight(lSplit)
                         .insertRight(iBlock)
                         .insertRight(rSplit)
-                    return [new Ins(index + lSplit.length, iBlock.items)]
+                    return [new Ins(index + lSplit.length, iBlock.content)]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE:
                 case BlockOrdering.OVERLAPPING_AFTER:

@@ -16,13 +16,13 @@ import { isU32, u32 } from "./number"
 export class Ins<E extends Concat<E>> {
     /**
      * @param index Insertion index.
-     * @param items Inserted elements.
+     * @param content Inserted elements.
      */
-    constructor(readonly index: u32, readonly items: E) {
+    constructor(readonly index: u32, readonly content: E) {
         assert(() => isU32(index), "index ∈ u32")
-        assert(() => items.length > 0, "length ∈ u32")
+        assert(() => content.length > 0, "length ∈ u32")
         this.index = index
-        this.items = items
+        this.content = content
     }
 
     // Access
@@ -30,7 +30,7 @@ export class Ins<E extends Concat<E>> {
      * Number of inserted elements.
      */
     get length(): u32 {
-        return this.items.length
+        return this.content.length
     }
 
     endIndex(): u32 {

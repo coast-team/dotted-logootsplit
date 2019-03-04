@@ -22,7 +22,7 @@ const b1c = new Block(pos1.intSucc(2), "c")
 const b10xyz = new Block(pos10, "xyz")
 
 test("length", (t) => {
-    t.is(b1abc.length, b1abc.items.length)
+    t.is(b1abc.length, b1abc.content.length)
 })
 
 test("nthPosition", (t) => {

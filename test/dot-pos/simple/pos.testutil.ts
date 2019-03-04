@@ -14,5 +14,5 @@ export function twinPosition(ref: SimpleDotPos): SimpleDotPos {
 export function twinBlock<E extends Concat<E>>(
     ref: Block<SimpleDotPos, E>
 ): Block<SimpleDotPos, E> {
-    return new Block(twinPosition(ref.lowerPos), ref.items)
+    return new Block(twinPosition(ref.lowerPos), ref.content)
 }

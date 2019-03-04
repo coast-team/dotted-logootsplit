@@ -92,7 +92,7 @@ export class OpAvlList<
             return ins
         } else {
             this.root = ValuedNode.leaf(delta)
-            return [new Ins(0, delta.items)]
+            return [new Ins(0, delta.content)]
         }
     }
 

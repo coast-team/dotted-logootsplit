@@ -158,7 +158,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
                 this.replace(iBlock)
                 const iBlockIndex = currIndex + lSplit.length
                 this.insertSuccessor(rSplit)
-                return [new Ins(iBlockIndex, iBlock.items)]
+                return [new Ins(iBlockIndex, iBlock.content)]
             }
             case BlockOrdering.OVERLAPPING_BEFORE:
             case BlockOrdering.OVERLAPPING_AFTER:

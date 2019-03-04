@@ -143,7 +143,7 @@ export const mInsertSingle: GenericOpListMacro = (t, emp) => {
     const seqB = emp(Peer.B)
     const ins = seqB.insert(ab)
 
-    t.is(ab.items, "ab")
+    t.is(ab.content, "ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(ins, [new Ins(0, "ab")])
     t.is(seqA.structuralDigest(), seqB.structuralDigest())
@@ -244,7 +244,7 @@ export const mInsertSplitted: GenericOpListMacro = (t, emp) => {
     t.is(seqA.length, 3)
 
     let exepctedIns
-    if (acIns.length > 1 && acIns[0].items === "c") {
+    if (acIns.length > 1 && acIns[0].content === "c") {
         exepctedIns = [new Ins(1, "c"), new Ins(0, "a")]
     } else {
         exepctedIns = [new Ins(0, "a"), new Ins(2, "c")]
@@ -269,7 +269,7 @@ export const mInsertDoublySplitted: GenericOpListMacro = (t, emp) => {
     t.is(seqA.structuralDigest(), seqB.structuralDigest())
 
     let exepctedIns
-    if (aceIns.length > 1 && aceIns[0].items === "e") {
+    if (aceIns.length > 1 && aceIns[0].content === "e") {
         exepctedIns = [new Ins(2, "e"), new Ins(1, "c"), new Ins(0, "a")]
     } else {
         exepctedIns = [new Ins(0, "a"), new Ins(2, "c"), new Ins(4, "e")]
@@ -293,7 +293,7 @@ export const mInsertAppendSplitted: GenericOpListMacro = (t, emp) => {
     t.is(seqA.structuralDigest(), seqB.structuralDigest())
 
     let exepctedIns
-    if (ceIns.length > 1 && ceIns[0].items === "e") {
+    if (ceIns.length > 1 && ceIns[0].content === "e") {
         exepctedIns = [new Ins(3, "e"), new Ins(2, "c")]
     } else {
         exepctedIns = [new Ins(2, "c"), new Ins(4, "e")]
@@ -317,7 +317,7 @@ export const mInsertPrependSplitted: GenericOpListMacro = (t, emp) => {
     t.is(seqA.structuralDigest(), seqB.structuralDigest())
 
     let exepctedIns
-    if (acIns.length > 1 && acIns[0].items === "c") {
+    if (acIns.length > 1 && acIns[0].content === "c") {
         exepctedIns = [new Ins(1, "c"), new Ins(0, "a")]
     } else {
         exepctedIns = [new Ins(0, "a"), new Ins(2, "c")]

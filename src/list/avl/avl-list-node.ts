@@ -286,7 +286,7 @@ export class ValuedNode<
             this.setLeft(this.left.balance())
         } else {
             this.setLeft(ValuedNode.leaf(iBlock))
-            ins = [new Ins(minIndex, iBlock.items)]
+            ins = [new Ins(minIndex, iBlock.content)]
         }
         // delegate balance to parent
         return ins
@@ -301,7 +301,7 @@ export class ValuedNode<
         } else {
             // should not happen
             this.setRight(ValuedNode.leaf(iBlock))
-            ins = [new Ins(minIndex, iBlock.items)]
+            ins = [new Ins(minIndex, iBlock.content)]
         }
         // delegate balance to parent
         return ins

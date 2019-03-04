@@ -39,7 +39,7 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      * @return Concatenated version prefixed by `prefix`.
      */
     concatenated(prefix: E): E {
-        return this.reduceBlock((acc, b) => acc.concat(b.items), prefix)
+        return this.reduceBlock((acc, b) => acc.concat(b.content), prefix)
     }
 
     /**
