@@ -6,8 +6,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "./assert"
-import { isU32, u32 } from "./number"
+import { assert } from "../util/assert"
+import { isU32, u32 } from "../util/number"
 
 /**
  * Concatenable and sliceable types.

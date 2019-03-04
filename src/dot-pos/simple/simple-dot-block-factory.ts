@@ -8,12 +8,12 @@
 
 import { alea, distrib, MutRand } from "replayable-random"
 
-import { assert, heavyAssert } from "../../core/assert"
-import { isObject, FromPlain } from "../../core/data-validation"
+import { assert, heavyAssert } from "../../util/assert"
+import { isObject, FromPlain } from "../../util/data-validation"
 import { SimpleDotPos } from "./simple-dot-pos"
 import { SimpleDotPosPart } from "./simple-dot-pos-part"
-import { isU32, u32, U32_TOP } from "../../core/number"
-import { Ordering } from "../../core/ordering"
+import { isU32, u32, U32_TOP } from "../../util/number"
+import { Ordering } from "../../util/ordering"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Block } from "../../core/block"

@@ -3,7 +3,7 @@ import test from "ava"
 import { BlockOrdering, Block } from "../../../src/core/block"
 import { SimpleDotBlockFactory } from "../../../src/"
 import { SimpleDotPos } from "../../../src"
-import { U32_BOTTOM } from "../../../src/core/number"
+import { U32_BOTTOM } from "../../../src/util/number"
 import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 
 const seed = "dotted-logootsplit"

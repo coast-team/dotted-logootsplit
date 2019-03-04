@@ -1,13 +1,13 @@
-import { u32, i32 } from "../../core/number"
+import { u32, i32 } from "../../util/number"
 import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import { U32Range } from "../../core/u32-range"
 import { Del, Ins } from "../../core/local-operation"
-import { heavyAssert } from "../../core/assert"
+import { heavyAssert } from "../../util/assert"
 import { BlockListContext } from "../../core/block-list-context"
 import { BlockFactory } from "../../core/block-factory"
-import { FromPlain, isObject } from "../../core/data-validation"
+import { FromPlain, isObject } from "../../util/data-validation"
 
 export type Node<P extends Pos<P>, E extends Concat<E>> =
     | ValuedNode<P, E>

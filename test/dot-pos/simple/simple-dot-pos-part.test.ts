@@ -2,7 +2,7 @@ import test from "ava"
 
 import { twinPositionPart } from "./pos.testutil"
 
-import { Ordering } from "../../../src/core/ordering"
+import { Ordering } from "../../../src/util/ordering"
 import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 
 const part101 = SimpleDotPosPart.from(1, 0, 1)

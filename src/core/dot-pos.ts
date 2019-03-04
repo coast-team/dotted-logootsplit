@@ -1,4 +1,4 @@
-import { u32 } from "./number"
+import { u32 } from "../util/number"
 import { Pos } from "./pos"
 
 /**

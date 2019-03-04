@@ -6,8 +6,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "../../core/assert"
-import { isObject, fromArray } from "../../core/data-validation"
+import { assert, heavyAssert } from "../../util/assert"
+import { isObject, fromArray } from "../../util/data-validation"
 import {
     absoluteSubstraction,
     compareU32,
@@ -16,10 +16,10 @@ import {
     u32,
     U32_BOTTOM,
     U32_TOP,
-} from "../../core/number"
+} from "../../util/number"
 import { BaseOrdering, baseOrderingInversion } from "../../core/pos"
 import { SimpleDotPosPart } from "./simple-dot-pos-part"
-import { Ordering, orderingInversion } from "../../core/ordering"
+import { Ordering, orderingInversion } from "../../util/ordering"
 import { DotPos } from "../../core/dot-pos"
 
 /**

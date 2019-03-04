@@ -7,7 +7,7 @@
 */
 
 import { Pos } from "./pos"
-import { Ordering } from "./ordering"
+import { Ordering } from "../util/ordering"
 
 /**
  * An anchor can be used to model the cursor, the selection of a participant in

@@ -6,14 +6,14 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "./assert"
-import { isObject, FromPlain } from "../core/data-validation"
-import { digestOf, isU32, u32 } from "./number"
+import { assert, heavyAssert } from "../util/assert"
+import { isObject, FromPlain } from "../util/data-validation"
+import { digestOf, isU32, u32 } from "../util/number"
 import { Anchor } from "./anchor"
 import { Pos, BaseOrdering } from "./pos"
 import { Concat, ConcatLength } from "./concat"
 import { RangeOrdering, U32Range } from "./u32-range"
-import { Ordering } from "./ordering"
+import { Ordering } from "../util/ordering"
 import { DotPos } from "./dot-pos"
 
 /**

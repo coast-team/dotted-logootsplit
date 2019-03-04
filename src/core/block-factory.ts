@@ -6,13 +6,13 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "./assert"
+import { assert, heavyAssert } from "../util/assert"
 import { Block, BlockOrdering, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { u32 } from "./number"
+import { u32 } from "../util/number"
 import { Anchor } from "./anchor"
-import { FromPlain } from "./data-validation"
+import { FromPlain } from "../util/data-validation"
 
 /**
  * Common interface for {@see BlockFactory} constructors.

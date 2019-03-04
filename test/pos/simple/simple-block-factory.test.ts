@@ -2,7 +2,7 @@ import test from "ava"
 
 import { BlockOrdering, Block } from "../../../src/core/block"
 import { SimpleBlockFactory } from "../../../src/pos/simple/simple-block-factory"
-import { U32_BOTTOM } from "../../../src/core/number"
+import { U32_BOTTOM } from "../../../src/util/number"
 import { SimplePosPart } from "../../../src/pos/simple/simple-pos-part"
 import { SimplePos } from "../../../src/pos/simple/simple-pos"
 

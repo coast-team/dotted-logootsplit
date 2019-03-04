@@ -14,7 +14,6 @@ export * from "./core/block-factory"
 export * from "./core/concat"
 export * from "./core/u32-range"
 export * from "./core/local-operation"
-export * from "./core/ordering"
 export * from "./core/pos"
 export * from "./core/dot-pos"
 export * from "./core/delta-replicated-list"
@@ -25,3 +24,5 @@ export * from "./dot-pos/simple/simple-dot-pos"
 export * from "./list/linked/op-linked-list"
 
 export * from "./list/avl/op-avl-list"
+
+export * from "./util/ordering"

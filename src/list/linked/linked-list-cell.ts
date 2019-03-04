@@ -6,13 +6,13 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "../../core/assert"
+import { assert, heavyAssert } from "../../util/assert"
 import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
 import { Ins, Del } from "../../core/local-operation"
-import { isU32, u32 } from "../../core/number"
+import { isU32, u32 } from "../../util/number"
 
 export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     /**

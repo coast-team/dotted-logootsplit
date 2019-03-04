@@ -6,9 +6,9 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "./assert"
-import { isU32, u32 } from "./number"
-import { isObject } from "./data-validation"
+import { assert, heavyAssert } from "../util/assert"
+import { isU32, u32 } from "../util/number"
+import { isObject } from "../util/data-validation"
 
 /**
  * Possible order relation between two intervals.

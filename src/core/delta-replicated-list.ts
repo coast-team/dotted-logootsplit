@@ -7,8 +7,8 @@ import {
 import { BlockListContext } from "./block-list-context"
 import { Del, Ins } from "./local-operation"
 import { LengthBlock, Block } from "./block"
-import { assert } from "./assert"
-import { isU32, u32 } from "./number"
+import { assert } from "../util/assert"
+import { isU32, u32 } from "../util/number"
 
 export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     protected readonly list: OpReplicatedList<P, E>

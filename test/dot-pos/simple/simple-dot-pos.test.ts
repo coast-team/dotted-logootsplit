@@ -2,9 +2,9 @@ import test from "ava"
 
 import { twinPosition } from "./pos.testutil"
 
-import { U32_TOP } from "../../../src/core/number"
+import { U32_TOP } from "../../../src/util/number"
 import { BaseOrdering } from "../../../src/core/pos"
-import { Ordering } from "../../../src/core/ordering"
+import { Ordering } from "../../../src/util/ordering"
 import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 import { SimpleDotPos } from "../../../src/dot-pos/simple/simple-dot-pos"
 

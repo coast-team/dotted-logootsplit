@@ -6,9 +6,9 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "./assert"
+import { assert } from "../util/assert"
 import { Concat } from "./concat"
-import { isU32, u32 } from "./number"
+import { isU32, u32 } from "../util/number"
 
 /**
  * Model an insertion in a single-user list.

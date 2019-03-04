@@ -6,8 +6,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { u32 } from "./number"
-import { Ordering } from "./ordering"
+import { u32 } from "../util/number"
+import { Ordering } from "../util/ordering"
 
 /**
  * Possible relation between two position bases.

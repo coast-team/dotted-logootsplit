@@ -10,7 +10,7 @@ import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { Ins, Del } from "./local-operation"
-import { u32, digestOf } from "./number"
+import { u32, digestOf } from "../util/number"
 
 /**
  * List which can only be remotely updated using operations.

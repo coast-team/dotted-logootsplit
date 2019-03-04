@@ -5,13 +5,13 @@ import {
     EditableOpReplicatedList,
 } from "../../core/op-replicated-list"
 import { Node, ValuedNode, lengthOf } from "./avl-list-node"
-import { u32, isU32 } from "../../core/number"
+import { u32, isU32 } from "../../util/number"
 import { Block, LengthBlock } from "../../core/block"
 import { Ins, Del } from "../../core/local-operation"
 import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
-import { assert } from "../../core/assert"
+import { assert } from "../../util/assert"
 import { U32Range } from "../../core/u32-range"
-import { FromPlain, isObject } from "../../core/data-validation"
+import { FromPlain, isObject } from "../../util/data-validation"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
