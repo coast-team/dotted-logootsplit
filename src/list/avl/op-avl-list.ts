@@ -119,10 +119,8 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
      * @return new empty list.
      */
     static emptyWith<P extends Pos<P>, E extends Concat<E>>(
-        factory: BlockFactory<P>,
-        v: E
+        factory: BlockFactory<P>
     ): EditableOpAvlList<P, E> {
-        assert(() => v.length === 0, "emptyVal must be empty")
         return new EditableOpAvlList(undefined, factory)
     }
 

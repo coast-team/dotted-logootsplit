@@ -92,10 +92,8 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
      * @return new empty list.
      */
     static emptyWith<P extends Pos<P>, E extends Concat<E>>(
-        factory: BlockFactory<P>,
-        v: E
+        factory: BlockFactory<P>
     ): EditableOpLinkedList<P, E> {
-        assert(() => v.length === 0, "emptyVal must be empty")
         return new EditableOpLinkedList(new Sentinel<P, E>(), 0, factory)
     }
 

@@ -21,8 +21,11 @@ export * from "./core/delta-replicated-list"
 export * from "./dot-pos/simple/simple-dot-block-factory"
 export * from "./dot-pos/simple/simple-dot-pos"
 
-export * from "./list/linked/op-linked-list"
+import * as linked from "./list/linked/linked"
+export { linked }
 
 export * from "./list/avl/op-avl-list"
+import * as avl from "./list/avl/avl"
+export { avl }
 
 export * from "./util/ordering"

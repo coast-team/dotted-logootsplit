@@ -78,7 +78,7 @@ import {
     EditableDeltaReplicatedList,
 } from "../../../src"
 import { EditableOpReplicatedList } from "../../../src/core/op-replicated-list"
-import { EditableOpAvlList } from "../../../src/list/avl/op-avl-list"
+import { avl } from "../../../src/"
 
 const DEFAULT_SEED = "dotted-logootsplit"
 
@@ -89,7 +89,7 @@ function emptyOpSeq(
     seed: string = DEFAULT_SEED
 ): EditableOpReplicatedList<SimpleDotPos, string> {
     const factory = SimpleDotBlockFactory.from(replica, seed)
-    return EditableOpAvlList.emptyWith(factory, "")
+    return avl.opEditableList(factory, "")
 }
 
 function emptyODeltaSeq(
