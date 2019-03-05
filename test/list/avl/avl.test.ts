@@ -96,7 +96,7 @@ function emptyODeltaSeq(
     replica: number,
     seed: string = DEFAULT_SEED
 ): EditableDeltaReplicatedList<SimpleDotPos, string> {
-    return new EditableDeltaReplicatedList(emptyOpSeq(replica, seed))
+    return EditableDeltaReplicatedList.from(emptyOpSeq(replica, seed))
 }
 
 test([mEmpty] as OpListMacros<SimpleDotPos>, emptyOpSeq, ID)
@@ -212,3 +212,43 @@ test(
     emptyODeltaSeq,
     ID
 )
+
+test("from-plain_op-editable", (t) => {
+    const seq = emptyOpSeq(0)
+    seq.insertAt(0, "ac")
+    seq.insertAt(1, "b")
+
+    const plain = JSON.parse(JSON.stringify(seq))
+    t.deepEqual(
+        avl.opEditableListFromPlain(
+            SimpleDotBlockFactory,
+            (x: unknown): string | undefined => {
+                if (typeof x === "string") {
+                    return x
+                }
+                return undefined
+            }
+        )(plain),
+        seq
+    )
+})
+
+test("from-plain_delta-editable", (t) => {
+    const seq = emptyODeltaSeq(0)
+    seq.insertAt(0, "ac")
+    seq.insertAt(1, "b")
+
+    const plain = JSON.parse(JSON.stringify(seq))
+    t.deepEqual(
+        avl.deltaEditableListFromPlain(
+            SimpleDotBlockFactory,
+            (x: unknown): string | undefined => {
+                if (typeof x === "string") {
+                    return x
+                }
+                return undefined
+            }
+        )(plain),
+        seq
+    )
+})

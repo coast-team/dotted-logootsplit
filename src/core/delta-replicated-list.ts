@@ -9,8 +9,47 @@ import { Del, Ins } from "./local-operation"
 import { LengthBlock, Block } from "./block"
 import { assert } from "../util/assert"
 import { isU32, u32 } from "../util/number"
+import { FromPlain, isObject } from "../util/data-validation"
 
 export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
+    static from<P extends DotPos<P>, E extends Concat<E>>(
+        list: OpReplicatedList<P, E>
+    ): DeltaReplicatedList<P, E> {
+        assert(() => list.length === 0, "list must be empty")
+        return new DeltaReplicatedList(list, Object.create(null))
+    }
+
+    /**
+     * @param opFromPlain
+     * @return function that accepts a value and attempt to build a list.
+     *  It returns the built list if it succeeds, or undefined if it fails.
+     */
+    static fromPlain<P extends DotPos<P>, E extends Concat<E>>(
+        opFromPlain: FromPlain<OpReplicatedList<P, E>>
+    ): FromPlain<DeltaReplicatedList<P, E>> {
+        return (x) => {
+            if (
+                isObject<{ list: unknown; versionVector: unknown }>(x) &&
+                isObject<{ [r: string]: unknown }>(x.versionVector)
+            ) {
+                const versionVector: { [r: string]: u32 } = Object.create(null)
+                for (const replica in x.versionVector) {
+                    if (x.versionVector.hasOwnProperty(replica)) {
+                        const seq = x.versionVector[replica]
+                        if (isU32(seq)) {
+                            versionVector[replica] = seq
+                        }
+                    }
+                }
+                const list = opFromPlain(x.list)
+                if (list !== undefined) {
+                    return new DeltaReplicatedList(list, versionVector)
+                }
+            }
+            return undefined
+        }
+    }
+
     protected readonly list: OpReplicatedList<P, E>
 
     // Access
@@ -19,9 +58,12 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      */
     protected readonly versionVector: { [replica: string]: u32 | undefined }
 
-    constructor(list: OpReplicatedList<P, E>) {
+    protected constructor(
+        list: OpReplicatedList<P, E>,
+        vv: { [r: string]: u32 }
+    ) {
         this.list = list
-        this.versionVector = Object.create(null)
+        this.versionVector = vv
     }
 
     readonlyVersionvector(): { readonly [replica: string]: u32 | undefined } {
@@ -229,10 +271,51 @@ export class EditableDeltaReplicatedList<
     P extends DotPos<P>,
     E extends Concat<E>
 > extends DeltaReplicatedList<P, E> {
+    static from<P extends DotPos<P>, E extends Concat<E>>(
+        list: EditableOpReplicatedList<P, E>
+    ): EditableDeltaReplicatedList<P, E> {
+        assert(() => list.length === 0, "list must be empty")
+        return new EditableDeltaReplicatedList(list, Object.create(null))
+    }
+
+    /**
+     * @param opFromPlain
+     * @return function that accepts a value and attempt to build a list.
+     *  It returns the built list if it succeeds, or undefined if it fails.
+     */
+    static fromPlain<P extends DotPos<P>, E extends Concat<E>>(
+        opFromPlain: FromPlain<EditableOpReplicatedList<P, E>>
+    ): FromPlain<EditableDeltaReplicatedList<P, E>> {
+        return (x) => {
+            if (
+                isObject<{ list: unknown; versionVector: unknown }>(x) &&
+                isObject<{ [r: string]: unknown }>(x.versionVector)
+            ) {
+                const versionVector: { [r: string]: u32 } = Object.create(null)
+                for (const replica in x.versionVector) {
+                    if (x.versionVector.hasOwnProperty(replica)) {
+                        const seq = x.versionVector[replica]
+                        if (isU32(seq)) {
+                            versionVector[replica] = seq
+                        }
+                    }
+                }
+                const list = opFromPlain(x.list)
+                if (list !== undefined) {
+                    return new EditableDeltaReplicatedList(list, versionVector)
+                }
+            }
+            return undefined
+        }
+    }
+
     protected readonly list: EditableOpReplicatedList<P, E>
 
-    constructor(list: EditableOpReplicatedList<P, E>) {
-        super(list)
+    protected constructor(
+        list: EditableOpReplicatedList<P, E>,
+        vv: { [r: string]: u32 }
+    ) {
+        super(list, vv)
         this.list = list
     }
 

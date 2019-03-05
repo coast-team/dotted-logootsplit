@@ -26,3 +26,9 @@ test("concat", (t) => {
 
     t.deepEqual(length1.concat(length1), length2)
 })
+
+test("fromPlain", (t) => {
+    t.is(ConcatLength.fromPlain(undefined), undefined)
+    t.is(ConcatLength.fromPlain({}), undefined)
+    t.deepEqual(ConcatLength.fromPlain(length0), length0)
+})

@@ -8,7 +8,7 @@
 
 import { assert } from "../../util/assert"
 import { Block, LengthBlock } from "../../core/block"
-import { BlockFactory } from "../../core/block-factory"
+import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
 import { Ins, Del } from "../../core/local-operation"
@@ -18,6 +18,7 @@ import {
     OpReplicatedList,
     EditableOpReplicatedList,
 } from "../../core/op-replicated-list"
+import { FromPlain, isObject } from "../../util/data-validation"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
@@ -32,6 +33,31 @@ export class OpLinkedList<
      */
     static empty<P extends Pos<P>, E extends Concat<E>>(): OpLinkedList<P, E> {
         return new OpLinkedList(new Sentinel<P, E>(), 0)
+    }
+
+    /**
+     * @param f
+     * @param itemsFromPlain
+     * @return function that accepts a value and attempt to build a list.
+     *  It returns the built list if it succeeds, or undefined if it fails.
+     */
+    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
+        f: BlockFactoryConstructor<P>,
+        itemsFromPlain: FromPlain<E>
+    ): FromPlain<OpReplicatedList<P, E>> {
+        return (x: unknown) => {
+            if (
+                isObject<{ root: unknown; length: u32 }>(x) &&
+                isU32(x.length)
+            ) {
+                const blockFromPlain = f.blockFromPlain(itemsFromPlain)
+                const root = Sentinel.fromPlain(blockFromPlain)(x.root)
+                if (root !== undefined) {
+                    return new OpLinkedList(root, x.length)
+                }
+            }
+            return undefined
+        }
     }
 
     /**
@@ -86,6 +112,32 @@ export class OpLinkedList<
 export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
     extends OpLinkedList<P, E>
     implements EditableOpReplicatedList<P, E> {
+    /**
+     * @param f
+     * @param itemsFromPlain
+     * @return function that accepts a value and attempt to build a list.
+     *  It returns the built list if it succeeds, or undefined if it fails.
+     */
+    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
+        f: BlockFactoryConstructor<P>,
+        itemsFromPlain: FromPlain<E>
+    ): FromPlain<EditableOpReplicatedList<P, E>> {
+        return (x: unknown) => {
+            if (
+                isObject<{ root: unknown; factory: unknown; length: u32 }>(x) &&
+                isU32(x.length)
+            ) {
+                const blockFromPlain = f.blockFromPlain(itemsFromPlain)
+                const factory = f.fromPlain(x.factory)
+                const root = Sentinel.fromPlain(blockFromPlain)(x.root)
+                if (root !== undefined && factory !== undefined) {
+                    return new EditableOpLinkedList(root, x.length, factory)
+                }
+            }
+            return undefined
+        }
+    }
+
     /**
      * @param factory factory of blocks
      * @param v empty value of type E (only used for type inference)

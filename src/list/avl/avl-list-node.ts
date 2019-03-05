@@ -39,14 +39,19 @@ export class ValuedNode<
         return new ValuedNode(undefined, block, undefined)
     }
 
+    /**
+     * @param blockFromPlain
+     * @return function that accepts a value and returns a Node from
+     *  the value, or undefined if the value is mal-formed
+     */
     static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        f: FromPlain<Block<P, E>>
+        blockFromPlain: FromPlain<Block<P, E>>
     ): FromPlain<ValuedNode<P, E>> {
         return (x: unknown) => {
             if (isObject<ValuedNode<P, E>>(x)) {
-                const left = ValuedNode.fromPlain(f)(x.left)
-                const right = ValuedNode.fromPlain(f)(x.right)
-                const block = f(x.block)
+                const left = ValuedNode.fromPlain(blockFromPlain)(x.left)
+                const right = ValuedNode.fromPlain(blockFromPlain)(x.right)
+                const block = blockFromPlain(x.block)
                 if (block !== undefined) {
                     return new ValuedNode(left, block, right)
                 }

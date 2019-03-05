@@ -13,13 +13,14 @@ import {
     EditableOpReplicatedList,
 } from "../../core/op-replicated-list"
 import { OpLinkedList, EditableOpLinkedList } from "./op-linked-list"
-import { BlockFactory } from "../../core/block-factory"
+import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { assert } from "../../util/assert"
 import {
     DeltaReplicatedList,
     EditableDeltaReplicatedList,
 } from "../../core/delta-replicated-list"
 import { DotPos } from "../../core/dot-pos"
+import { FromPlain } from "../../util/data-validation"
 
 export function opList<
     P extends Pos<P>,
@@ -27,6 +28,14 @@ export function opList<
 >(): OpReplicatedList<P, E> {
     return OpLinkedList.empty<P, E>()
 }
+
+/**
+ * @param f
+ * @param itemsFromPlain
+ * @param x candidate
+ * @return operation-based AVL list from `x`, or undefined if `x` is mal-formed
+ */
+export const opListFromPlain = OpLinkedList.fromPlain
 
 /**
  * @param factory block factory
@@ -42,13 +51,34 @@ export function OpEditableList<P extends Pos<P>, E extends Concat<E>>(
 }
 
 /**
+ * @param f
+ * @param itemsFromPlain
+ * @return function that accepts a value and attempt to build a list.
+ *  It returns the built list if it succeeds, or undefined if it fails.
+ */
+export const opEditableListFromPlain = EditableOpLinkedList.fromPlain
+
+/**
  * @return operation-based empty linked list that can be locally modified
  */
 export function deltaList<
     P extends DotPos<P>,
     E extends Concat<E>
 >(): DeltaReplicatedList<P, E> {
-    return new DeltaReplicatedList(opList())
+    return DeltaReplicatedList.from(opList())
+}
+
+/**
+ * @param f
+ * @param itemsFromPlain
+ * @return function that accepts a value and attempt to build a list.
+ *  It returns the built list if it succeeds, or undefined if it fails.
+ */
+export function deltaListFromPlain<P extends DotPos<P>, E extends Concat<E>>(
+    f: BlockFactoryConstructor<P>,
+    itemsFromPlain: FromPlain<E>
+): FromPlain<DeltaReplicatedList<P, E>> {
+    return DeltaReplicatedList.fromPlain(opListFromPlain(f, itemsFromPlain))
 }
 
 /**
@@ -61,5 +91,23 @@ export function deltaEditableList<P extends DotPos<P>, E extends Concat<E>>(
     v: E
 ): EditableDeltaReplicatedList<P, E> {
     assert(() => v.length === 0, "v must be empty")
-    return new EditableDeltaReplicatedList(OpEditableList(factory, v))
+    return EditableDeltaReplicatedList.from(OpEditableList(factory, v))
+}
+
+/**
+ * @param f
+ * @param itemsFromPlain
+ * @return function that accepts a value and attempt to build a list.
+ *  It returns the built list if it succeeds, or undefined if it fails.
+ */
+export function deltaEditableListFromPlain<
+    P extends DotPos<P>,
+    E extends Concat<E>
+>(
+    f: BlockFactoryConstructor<P>,
+    itemsFromPlain: FromPlain<E>
+): FromPlain<EditableDeltaReplicatedList<P, E>> {
+    return EditableDeltaReplicatedList.fromPlain(
+        opEditableListFromPlain(f, itemsFromPlain)
+    )
 }

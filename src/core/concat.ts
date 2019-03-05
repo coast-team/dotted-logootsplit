@@ -8,6 +8,7 @@
 
 import { assert } from "../util/assert"
 import { isU32, u32 } from "../util/number"
+import { isObject } from "../util/data-validation"
 
 /**
  * Concatenable and sliceable types.
@@ -44,6 +45,17 @@ export interface Concat<E extends Concat<E>> {
  * 3-elements list.
  */
 export class ConcatLength implements Concat<ConcatLength> {
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain(x: unknown): ConcatLength | undefined {
+        if (isObject<ConcatLength>(x) && isU32(x.length)) {
+            return new ConcatLength(x.length)
+        }
+        return undefined
+    }
+
     /** Nominal typing */
     private readonly brandConcatenableLength: undefined
 

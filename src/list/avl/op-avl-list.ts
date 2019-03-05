@@ -29,7 +29,6 @@ export class OpAvlList<
     }
 
     /**
-     *
      * @param f
      * @param itemsFromPlain
      * @return function that accepts a value and attempt to build a list.
@@ -38,7 +37,7 @@ export class OpAvlList<
     static fromPlain<P extends Pos<P>, E extends Concat<E>>(
         f: BlockFactoryConstructor<P>,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<OpAvlList<P, E>> {
+    ): FromPlain<OpReplicatedList<P, E>> {
         return (x: unknown) => {
             if (isObject<{ root: unknown }>(x)) {
                 const blockFromPlain = f.blockFromPlain(itemsFromPlain)
@@ -134,7 +133,7 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     static fromPlain<P extends Pos<P>, E extends Concat<E>>(
         f: BlockFactoryConstructor<P>,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<EditableOpAvlList<P, E>> {
+    ): FromPlain<EditableOpReplicatedList<P, E>> {
         return (x: unknown) => {
             if (isObject<{ root: unknown; factory: unknown }>(x)) {
                 const factory = f.fromPlain(x.factory)

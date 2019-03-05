@@ -13,6 +13,7 @@ import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
 import { Ins, Del } from "../../core/local-operation"
 import { isU32, u32 } from "../../util/number"
+import { FromPlain, isObject } from "../../util/data-validation"
 
 export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     /**
@@ -364,12 +365,61 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
 export class Sentinel<P extends Pos<P>, E extends Concat<E>> extends Linkable<
     P,
     E
-> {}
+> {
+    /**
+     * @param blockFromPlain
+     * @return function that accepts a value and returns a Sentinel from
+     *  the value, or undefined if the value is mal-formed
+     */
+    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
+        blockFromPlain: FromPlain<Block<P, E>>
+    ): FromPlain<Sentinel<P, E>> {
+        return (x) => {
+            if (isObject<Linkable<P, E>>(x)) {
+                let right: Cell<P, E> | undefined
+                if (x.right !== undefined) {
+                    right = Cell.fromPlain(blockFromPlain)(x.right)
+                    if (right === undefined) {
+                        return undefined
+                    }
+                }
+                return new Sentinel(right)
+            }
+            return undefined
+        }
+    }
+}
 
 export class Cell<P extends Pos<P>, E extends Concat<E>> extends Linkable<
     P,
     E
 > {
+    /**
+     * @param blockFromPlain
+     * @return function that accepts a value and returns a Cell from
+     *  the value, or undefined if the value is mal-formed
+     */
+    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
+        blockFromPlain: FromPlain<Block<P, E>>
+    ): FromPlain<Cell<P, E>> {
+        return (x) => {
+            if (isObject<Cell<P, E>>(x)) {
+                const block = blockFromPlain(x.block)
+                let right: Cell<P, E> | undefined
+                if (x.right !== undefined) {
+                    right = Cell.fromPlain(blockFromPlain)(x.right)
+                    if (right === undefined) {
+                        return undefined
+                    }
+                }
+                if (block !== undefined) {
+                    return new Cell(block, right)
+                }
+            }
+            return undefined
+        }
+    }
+
     /**
      * @param block {@link Cell#block }
      * @param right {@link Linkable#right }

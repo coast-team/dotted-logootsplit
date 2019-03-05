@@ -96,7 +96,7 @@ function emptyODeltaSeq(
     replica: number,
     seed: string = DEFAULT_SEED
 ): EditableDeltaReplicatedList<SimpleDotPos, string> {
-    return new EditableDeltaReplicatedList(emptyOpSeq(replica, seed))
+    return EditableDeltaReplicatedList.from(emptyOpSeq(replica, seed))
 }
 
 test([mEmpty] as OpListMacros<SimpleDotPos>, emptyOpSeq, ID)
