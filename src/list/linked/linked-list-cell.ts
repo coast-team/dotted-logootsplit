@@ -29,6 +29,14 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     }
 
     // Access
+    /**
+     * @param f reducer that respectively accepts the accumulated value and
+     *  the current block as first and second parameters. It returns the next
+     *  accumulated value.
+     * @param prefix initial value
+     * @return accumulated value by reducing blocks from left to right
+     *  in the list.
+     */
     reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
         if (this.right === undefined) {
             return prefix
@@ -38,6 +46,11 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param iBlock
+     * @return segments of `iBlock` that can be inserted in the current
+     *  sub-list.
+     */
     insertable(iBlock: Block<P, E>): Block<P, E>[] {
         if (this.right === undefined) {
             return [iBlock]

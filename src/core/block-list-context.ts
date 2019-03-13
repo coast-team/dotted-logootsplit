@@ -7,47 +7,164 @@ import { Ins, Del } from "./local-operation"
 import { BlockFactory } from "./block-factory"
 import { U32Range, RangeOrdering } from "./u32-range"
 
+/**
+ * Abstraction for block insertion and block removal.
+ * The abstraction assume a dichotomic traversal of the list.
+ * The abstraction can be implemented by an iterator or a recursive data
+ * structure.
+ *
+ * For example, assume we have the list of blocks [A, C, D, E, F] and we insert
+ * the block B (A < B < C < D < E < F).
+ * B is first compared to D. Because B < D, we attempt to insert in the
+ * left "sub-list" [A, C]. C is compared with A then C or C then A, and is
+ * finally inserted between A and C.
+ */
 export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
+    /**
+     * Current block
+     */
     abstract current(): Block<P, E>
 
+    /**
+     * Starting index of the current block in the current sub-list
+     */
     abstract currentRelativeIndex(): u32
 
+    /**
+     * @return predecessor of the current block, if any
+     */
     abstract predecessor(): Block<P, E> | undefined
 
+    /**
+     * @return successor of the current block, if any
+     */
     abstract successor(): Block<P, E> | undefined
 
+    /**
+     * Make `iBlock` the predecessor of the current block.
+     * @param iBlock
+     */
     abstract insertPredecessor(iBlock: Block<P, E>): void
 
+    /**
+     * Make `iBlock` the successor of the current block.
+     * @param iBlock
+     */
     abstract insertSuccessor(iBlock: Block<P, E>): void
 
+    /**
+     * @param iBlock
+     * @return segments of `Iblock` that can eb inserted in the left sub-list.
+     */
     abstract insertableLeft(iBlock: Block<P, E>): Block<P, E>[]
 
+    /**
+     * @param iBlock
+     * @return segments of `Iblock` that can eb inserted in the right sub-list.
+     */
     abstract insertableRight(iBlock: Block<P, E>): Block<P, E>[]
 
+    /**
+     * @param iBlock block to insert.
+     * @param minIndex minimal index in the left sub-list.
+     *  This index should be the same that the minimal index of the current
+     *  sub-list.
+     * @return Performed modifications in terms of local insertions.
+     *  The n+1 -th insertion depends on the effect of the n -th insertion.
+     */
     abstract insertLeft(iBlock: Block<P, E>, minIndex: u32): Ins<E>[]
 
+    /**
+     * @param iBlock block to insert.
+     * @param minIndex minimal index in the left sub-list.
+     *  This index should the minimal index of the current sub-list +
+     *  the relative index of the current block +
+     *  the length of the current block
+     * @return Performed modifications in terms of local insertions.
+     *  The n+1 -th insertion depends on the effect of the n -th insertion.
+     */
     abstract insertRight(iBlock: Block<P, E>, minIndex: u32): Ins<E>[]
 
+    /**
+     * @param relIndex relative index
+     *  This relative index should be the same as in the current sub-list.
+     * @param items elements to insert
+     * @param factory [mutated] block factory
+     * @return block generated with `factory` that contains `items` as content,
+     *  and was inserted at `relIndex` in the left sub-list.
+     */
     abstract insertAtLeft(idx: u32, items: E, f: BlockFactory<P>): Block<P, E>
 
+    /**
+     * @param relIndex relative index
+     *  This relative index should be the current relative index minus
+     *  the ending index of the current block.
+     * @param items elements to insert
+     * @param factory [mutated] block factory
+     * @return block generated with `factory` that contains `items` as content,
+     *  and was inserted at `relIndex` in the current sub-list.
+     */
     abstract insertAtRight(idx: u32, items: E, f: BlockFactory<P>): Block<P, E>
 
+    /**
+     * Replace the current block with `current`
+     * @param block
+     */
     abstract replace(block: Block<P, E>): void
 
+    /**
+     * Remove the current sub-list
+     */
     abstract removeCurrent(): void
 
+    /**
+     * Remove the predecessor of the current block, if any
+     */
     abstract removePredecessor(): void
 
+    /**
+     * Remove the successor of the current block, if any
+     */
     abstract removeSuccessor(): void
 
+    /**
+     * @param dBlock block to remove.
+     * @param minIndex minimal index in the left sub-list.
+     *  This index should be the same that the minimal index of the current
+     *  sub-list.
+     * @return Performed modifications in terms of local deletions.
+     *  The n+1 -th deletion depends on the n -th deletion.
+     */
     abstract removeLeft(dBlock: LengthBlock<P>, minIndex: u32): Del[]
 
+    /**
+     * @param dBlock block to remove.
+     * @param minIndex minimal index in the right sub-list.
+     *  This index should the minimal index of the current sub-list +
+     *  the relative index of the current block +
+     *  the length of the current block
+     * @return Performed modifications in terms of local deletions.
+     *  The n+1 -th deletion depends on the n -th deletion.
+     */
     abstract removeRight(dBlock: LengthBlock<P>, minIndex: u32): Del[]
 
+    /**
+     * @param dRange range of indexes to remove
+     * @param minIndex minimal index in the current sub-list.
+     * @return segments of removed block in the left sub-list
+     */
     abstract removeAtLeft(dRange: U32Range, minIndex: u32): LengthBlock<P>[]
 
+    /**
+     * @param dRange range of indexes to remove
+     * @param minIndex minimal index in the current sub-list.
+     * @return segments of removed block in the right sub-list
+     */
     abstract removeAtRight(dRange: U32Range, minIndex: u32): LengthBlock<P>[]
 
+    /**
+     * Attempt to merge the current block with its predecessor.
+     */
     mergeLeft(): void {
         const curr = this.current()
         const prev = this.predecessor()
@@ -60,6 +177,9 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * Attempt to merge the current block with its successor.
+     */
     mergeRight(): void {
         const curr = this.current()
         const succ = this.successor()
@@ -72,6 +192,10 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * Remove current block and attempt to merge its predecessor with
+     * its successor.
+     */
     removeCurrentMerge(): void {
         const succ = this.successor()
         if (succ !== undefined) {
@@ -89,6 +213,11 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param iBlock
+     * @return segments of `iBlock` that can be inserted in the current
+     *  sub-list.
+     */
     insertable(iBlock: Block<P, E>): Block<P, E>[] {
         const curr = this.current()
         switch (iBlock.compare(curr)) {
@@ -125,6 +254,12 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param iBlock block to insert.
+     * @param minIndex minimal index in the current sub-list.
+     * @return Performed modifications in terms of local insertions.
+     *  The n+1 -th insertion depends on the effect of the n -th insertion.
+     */
     insert(iBlock: Block<P, E>, minIndex: u32): Ins<E>[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
@@ -175,6 +310,13 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param relIndex relative index
+     * @param items elements to insert
+     * @param factory [mutated] block factory
+     * @return block generated with `factory` that contains `items` as content,
+     *  and was inserted at `relIndex` in the current sub-list.
+     */
     insertAt(relIndex: u32, items: E, factory: BlockFactory<P>): Block<P, E> {
         assert(() => isU32(relIndex), "index ∈ u32")
         assert(() => items.length > 0, "items.length > 0")
@@ -203,6 +345,12 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param dBlock block to remove.
+     * @param minIndex minimal index in the current sub-list.
+     * @return Performed modifications in terms of local deletions.
+     *  The n+1 -th deletion depends on the n -th deletion.
+     */
     remove(dBlock: LengthBlock<P>, minIndex: u32): Del[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
@@ -285,6 +433,11 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
         }
     }
 
+    /**
+     * @param dRange range of indexes to remove
+     * @param minIndex minimal index in the current sub-list.
+     * @return segments of removed block
+     */
     removeAt(dRange: U32Range, minIndex: u32): LengthBlock<P>[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
