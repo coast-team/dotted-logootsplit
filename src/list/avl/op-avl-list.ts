@@ -2,7 +2,7 @@ import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import {
     OpReplicatedList,
-    EditableOpReplicatedList,
+    OpEditableReplicatedList,
 } from "../../core/op-replicated-list"
 import { Node, ValuedNode, lengthOf } from "./avl-list-node"
 import { u32, isU32 } from "../../util/number"
@@ -111,7 +111,7 @@ export class OpAvlList<
  */
 export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     extends OpAvlList<P, E>
-    implements EditableOpReplicatedList<P, E> {
+    implements OpEditableReplicatedList<P, E> {
     /**
      * @param factory factory of blocks
      * @param v empty value of type E (only used for type inference)
@@ -133,7 +133,7 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     static fromPlain<P extends Pos<P>, E extends Concat<E>>(
         f: BlockFactoryConstructor<P>,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<EditableOpReplicatedList<P, E>> {
+    ): FromPlain<OpEditableReplicatedList<P, E>> {
         return (x: unknown) => {
             if (isObject<{ root: unknown; factory: unknown }>(x)) {
                 const factory = f.fromPlain(x.factory)

@@ -114,7 +114,7 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
  * An operation must be delivered exactly once.
  * An insertion must be delivered before a removal that depends on.
  */
-export interface EditableOpReplicatedList<
+export interface OpEditableReplicatedList<
     P extends Pos<P>,
     E extends Concat<E>
 > extends OpReplicatedList<P, E> {

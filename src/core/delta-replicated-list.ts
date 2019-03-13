@@ -2,7 +2,7 @@ import { DotPos } from "./dot-pos"
 import { Concat } from "./concat"
 import {
     OpReplicatedList,
-    EditableOpReplicatedList,
+    OpEditableReplicatedList,
 } from "./op-replicated-list"
 import { BlockListContext } from "./block-list-context"
 import { Del, Ins } from "./local-operation"
@@ -257,15 +257,15 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     }
 }
 
-export class EditableDeltaReplicatedList<
+export class DeltaEditableReplicatedList<
     P extends DotPos<P>,
     E extends Concat<E>
 > extends DeltaReplicatedList<P, E> {
     static from<P extends DotPos<P>, E extends Concat<E>>(
-        list: EditableOpReplicatedList<P, E>
-    ): EditableDeltaReplicatedList<P, E> {
+        list: OpEditableReplicatedList<P, E>
+    ): DeltaEditableReplicatedList<P, E> {
         assert(() => list.length === 0, "list must be empty")
-        return new EditableDeltaReplicatedList(list, Object.create(null))
+        return new DeltaEditableReplicatedList(list, Object.create(null))
     }
 
     /**
@@ -274,8 +274,8 @@ export class EditableDeltaReplicatedList<
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
     static fromPlain<P extends DotPos<P>, E extends Concat<E>>(
-        opFromPlain: FromPlain<EditableOpReplicatedList<P, E>>
-    ): FromPlain<EditableDeltaReplicatedList<P, E>> {
+        opFromPlain: FromPlain<OpEditableReplicatedList<P, E>>
+    ): FromPlain<DeltaEditableReplicatedList<P, E>> {
         return (x) => {
             if (
                 isObject<{ list: unknown; versionVector: unknown }>(x) &&
@@ -292,17 +292,17 @@ export class EditableDeltaReplicatedList<
                 }
                 const list = opFromPlain(x.list)
                 if (list !== undefined) {
-                    return new EditableDeltaReplicatedList(list, versionVector)
+                    return new DeltaEditableReplicatedList(list, versionVector)
                 }
             }
             return undefined
         }
     }
 
-    protected readonly list: EditableOpReplicatedList<P, E>
+    protected readonly list: OpEditableReplicatedList<P, E>
 
     protected constructor(
-        list: EditableOpReplicatedList<P, E>,
+        list: OpEditableReplicatedList<P, E>,
         vv: { [r: string]: u32 }
     ) {
         super(list, vv)

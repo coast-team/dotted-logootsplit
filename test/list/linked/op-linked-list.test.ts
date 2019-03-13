@@ -75,9 +75,9 @@ import {
 import {
     SimpleDotBlockFactory,
     SimpleDotPos,
-    EditableDeltaReplicatedList,
+    DeltaEditableReplicatedList,
 } from "../../../src"
-import { EditableOpReplicatedList } from "../../../src/core/op-replicated-list"
+import { OpEditableReplicatedList } from "../../../src/core/op-replicated-list"
 import { linked } from "../../../src/"
 
 const DEFAULT_SEED = "dotted-logootsplit"
@@ -87,7 +87,7 @@ const ID = "linked"
 function emptyOpSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): EditableOpReplicatedList<SimpleDotPos, string> {
+): OpEditableReplicatedList<SimpleDotPos, string> {
     const factory = SimpleDotBlockFactory.from(replica, seed)
     return linked.OpEditableList(factory, "")
 }
@@ -95,8 +95,8 @@ function emptyOpSeq(
 function emptyODeltaSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): EditableDeltaReplicatedList<SimpleDotPos, string> {
-    return EditableDeltaReplicatedList.from(emptyOpSeq(replica, seed))
+): DeltaEditableReplicatedList<SimpleDotPos, string> {
+    return DeltaEditableReplicatedList.from(emptyOpSeq(replica, seed))
 }
 
 test([mEmpty] as OpListMacros<SimpleDotPos>, emptyOpSeq, ID)

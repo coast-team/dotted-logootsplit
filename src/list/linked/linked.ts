@@ -10,14 +10,14 @@ import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import {
     OpReplicatedList,
-    EditableOpReplicatedList,
+    OpEditableReplicatedList,
 } from "../../core/op-replicated-list"
 import { OpLinkedList, EditableOpLinkedList } from "./op-linked-list"
 import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { assert } from "../../util/assert"
 import {
     DeltaReplicatedList,
-    EditableDeltaReplicatedList,
+    DeltaEditableReplicatedList,
 } from "../../core/delta-replicated-list"
 import { DotPos } from "../../core/dot-pos"
 import { FromPlain } from "../../util/data-validation"
@@ -45,7 +45,7 @@ export const opListFromPlain = OpLinkedList.fromPlain
 export function OpEditableList<P extends Pos<P>, E extends Concat<E>>(
     factory: BlockFactory<P>,
     v: E
-): EditableOpReplicatedList<P, E> {
+): OpEditableReplicatedList<P, E> {
     assert(() => v.length === 0, "v must be empty")
     return EditableOpLinkedList.emptyWith<P, E>(factory)
 }
@@ -89,9 +89,9 @@ export function deltaListFromPlain<P extends DotPos<P>, E extends Concat<E>>(
 export function deltaEditableList<P extends DotPos<P>, E extends Concat<E>>(
     factory: BlockFactory<P>,
     v: E
-): EditableDeltaReplicatedList<P, E> {
+): DeltaEditableReplicatedList<P, E> {
     assert(() => v.length === 0, "v must be empty")
-    return EditableDeltaReplicatedList.from(OpEditableList(factory, v))
+    return DeltaEditableReplicatedList.from(OpEditableList(factory, v))
 }
 
 /**
@@ -106,8 +106,8 @@ export function deltaEditableListFromPlain<
 >(
     f: BlockFactoryConstructor<P>,
     itemsFromPlain: FromPlain<E>
-): FromPlain<EditableDeltaReplicatedList<P, E>> {
-    return EditableDeltaReplicatedList.fromPlain(
+): FromPlain<DeltaEditableReplicatedList<P, E>> {
+    return DeltaEditableReplicatedList.fromPlain(
         opEditableListFromPlain(f, itemsFromPlain)
     )
 }

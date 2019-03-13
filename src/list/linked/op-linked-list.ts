@@ -16,7 +16,7 @@ import { isU32, u32 } from "../../util/number"
 import { Sentinel } from "./linked-list-cell"
 import {
     OpReplicatedList,
-    EditableOpReplicatedList,
+    OpEditableReplicatedList,
 } from "../../core/op-replicated-list"
 import { FromPlain, isObject } from "../../util/data-validation"
 
@@ -111,7 +111,7 @@ export class OpLinkedList<
  */
 export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
     extends OpLinkedList<P, E>
-    implements EditableOpReplicatedList<P, E> {
+    implements OpEditableReplicatedList<P, E> {
     /**
      * @param f
      * @param itemsFromPlain
@@ -121,7 +121,7 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
     static fromPlain<P extends Pos<P>, E extends Concat<E>>(
         f: BlockFactoryConstructor<P>,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<EditableOpReplicatedList<P, E>> {
+    ): FromPlain<OpEditableReplicatedList<P, E>> {
         return (x: unknown) => {
             if (
                 isObject<{ root: unknown; factory: unknown; length: u32 }>(x) &&

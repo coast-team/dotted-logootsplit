@@ -1,11 +1,11 @@
 import { ExecutionContext, Macro } from "ava"
 import { Pos, Ins, Del } from "../../src"
-import { EditableOpReplicatedList } from "../../src/core/op-replicated-list"
-import { EditableDeltaReplicatedList } from "../../src/core/delta-replicated-list"
+import { OpEditableReplicatedList } from "../../src/core/op-replicated-list"
+import { DeltaEditableReplicatedList } from "../../src/core/delta-replicated-list"
 import { DotPos } from "../../src/core/dot-pos"
 
 export interface OpListFactory<P extends Pos<P>> {
-    (replica: number, seed?: string): EditableOpReplicatedList<P, string>
+    (replica: number, seed?: string): OpEditableReplicatedList<P, string>
 }
 
 export interface GenericOpListMacro {
@@ -26,7 +26,7 @@ export type OpListMacros<P extends Pos<P>> = [
 ]
 
 export interface DeltaListFactory<P extends DotPos<P>> {
-    (replica: number, seed?: string): EditableDeltaReplicatedList<P, string>
+    (replica: number, seed?: string): DeltaEditableReplicatedList<P, string>
 }
 
 export interface GenericDeltaListMacro {
