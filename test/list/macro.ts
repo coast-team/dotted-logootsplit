@@ -146,7 +146,7 @@ export const mInsertSingle: GenericOpListMacro = (t, emp) => {
     t.is(ab.content, "ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(ins, [new Ins(0, "ab")])
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertSingle.title = titled("insert-single")
 
@@ -170,7 +170,7 @@ export const mInsertAppend: GenericOpListMacro = (t, emp) => {
     const cdIns = seqB.insert(cd)
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(abIns, [new Ins(0, "ab")])
     t.deepEqual(cdIns, [new Ins(2, "cd")])
 }
@@ -185,7 +185,7 @@ export const mInsertPrepend: GenericOpListMacro = (t, emp) => {
     const abIns = seqB.insert(ab)
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(cdIns, [new Ins(0, "cd")])
     t.deepEqual(abIns, [new Ins(0, "ab")])
 }
@@ -202,7 +202,7 @@ export const mInsertAppendPrepend: GenericOpListMacro = (t, emp) => {
     const cdIns = seqB.insert(cd)
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(abIns, [new Ins(0, "ab")])
     t.deepEqual(efIns, [new Ins(2, "ef")])
     t.deepEqual(cdIns, [new Ins(2, "cd")])
@@ -224,7 +224,7 @@ export const mInsertSplitting: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcde")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.is(seqA.length, 5)
     t.deepEqual(cIns, [new Ins(2, "c")])
 }
@@ -240,7 +240,7 @@ export const mInsertSplitted: GenericOpListMacro = (t, emp) => {
     const acIns = seqB.insert(ac)
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.is(seqA.length, 3)
 
     let exepctedIns
@@ -266,7 +266,7 @@ export const mInsertDoublySplitted: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcde")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 
     let exepctedIns
     if (aceIns.length > 1 && aceIns[0].content === "e") {
@@ -290,7 +290,7 @@ export const mInsertAppendSplitted: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcde")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 
     let exepctedIns
     if (ceIns.length > 1 && ceIns[0].content === "e") {
@@ -314,7 +314,7 @@ export const mInsertPrependSplitted: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcde")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 
     let exepctedIns
     if (acIns.length > 1 && acIns[0].content === "c") {
@@ -391,7 +391,7 @@ export const mInsertAfter: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "ab12")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertAfter.title = titled("insert-after")
 
@@ -407,7 +407,7 @@ export const mInsertBefore: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "12ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertBefore.title = titled("insert-before")
 
@@ -427,7 +427,7 @@ export const mInsertConcurrent: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "ab12")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertConcurrent.title = titled("insert-concurrent")
 
@@ -448,7 +448,7 @@ export const mInsertConcurrentAppend: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcd1234")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertConcurrentAppend.title = titled("insert-concurrent-append")
 
@@ -469,7 +469,7 @@ export const mInsertConcurrentPrepend: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abcd1234")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertConcurrentPrepend.title = titled("insert-concurrent-prepend")
 
@@ -495,7 +495,7 @@ export const mRemoveAtEqualMerge: GenericOpListMacro = (t, emp) => {
     seqB.removeAt(2, 2) // remove "12"
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveAtEqualMerge.title = titled("remove-at-equal-merge")
 
@@ -510,7 +510,7 @@ export const mRemoveAtJustBefore: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveAtJustBefore.title = titled("remove-at-just-before")
 
@@ -538,7 +538,7 @@ export const mRemoveAtJustAfter: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveAtJustAfter.title = titled("remove-at-just-after")
 
@@ -652,7 +652,7 @@ export const mRemoveNothing: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(abLocalRemoval, [])
 }
 mRemoveNothing.title = titled("remove-nothing")
@@ -791,7 +791,7 @@ export const mRemoveSplitting: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abef")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveSplitting.title = titled("remove-splitting")
 
@@ -810,7 +810,7 @@ export const mRemoveSplittedBy: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "cd")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveSplittedBy.title = titled("remove-splitted-by")
 
@@ -832,7 +832,7 @@ export const mRemoveAfterBeforeMerge: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), "abefij")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.is(seqA.structuralDigest(), seqB.structuralDigest())
+    t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mRemoveAfterBeforeMerge.title = titled("remove-efter-before-merge")
 
@@ -1003,7 +1003,7 @@ export const mApplyDeltaTwice: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "abc")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mApplyDeltaTwice.title = titled("apply-delta-twice")
 
@@ -1018,7 +1018,7 @@ export const mApplyDeltaRemoveInsert: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mApplyDeltaRemoveInsert.title = titled("apply-delta-remove-insert")
 
@@ -1033,7 +1033,7 @@ export const mApplyDeltaInsertRemove: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mApplyDeltaInsertRemove.title = titled("apply-delta-insert-remove")
 
@@ -1049,7 +1049,7 @@ export const mApplyDeltaPartRemoveInsert: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "bc")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mApplyDeltaPartRemoveInsert.title = titled("apply-delta-part-remove-insert")
 
@@ -1064,7 +1064,7 @@ export const mMergeSimple: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "abc")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(opB, [new Ins(0, "abc")])
 }
 mMergeSimple.title = titled("merge-simple")
@@ -1079,7 +1079,7 @@ export const mMergeIdempotent: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "abc")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(opA, [])
     t.deepEqual(opB, [new Ins(0, "abc")])
 }
@@ -1103,7 +1103,7 @@ export const mMerge: GenericDeltaListMacro = (t, emp) => {
 
     t.deepEqual(seqA.concatenated(""), "bcdeg")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(seqA.structuralDigest(), seqB.structuralDigest())
+    t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(opA, [new Ins(5, "g"), new Del(0, 1)])
     t.deepEqual(opB, [new Del(4, 1)])
 }

@@ -11,7 +11,7 @@ import { isObject, fromArray } from "../../util/data-validation"
 import {
     absoluteSubstraction,
     compareU32,
-    digestOf,
+    hashCodeOf,
     isU32,
     u32,
     U32_BOTTOM,
@@ -196,8 +196,8 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    digest(): u32 {
-        return digestOf(this.parts.map((part) => part.digest()))
+    hashCode(): u32 {
+        return hashCodeOf(this.parts.map((part) => part.hashCode()))
     }
 
     // Status

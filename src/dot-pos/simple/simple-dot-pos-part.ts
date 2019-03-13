@@ -10,7 +10,7 @@ import { assert } from "../../util/assert"
 import { isObject } from "../../util/data-validation"
 import {
     compareU32,
-    digestOf,
+    hashCodeOf,
     isU32,
     u32,
     U32_BOTTOM,
@@ -131,10 +131,10 @@ export class SimpleDotPosPart {
     }
 
     /**
-     * Hash code.
+     * Non-cryptographic way to approximate object identity.
      */
-    digest(): u32 {
-        return digestOf(this.asTuple())
+    hashCode(): u32 {
+        return hashCodeOf(this.asTuple())
     }
 
     // Status

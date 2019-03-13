@@ -8,7 +8,7 @@
 
 import { assert, heavyAssert } from "../util/assert"
 import { isObject, FromPlain } from "../util/data-validation"
-import { digestOf, isU32, u32 } from "../util/number"
+import { hashCodeOf, isU32, u32 } from "../util/number"
 import { Anchor } from "./anchor"
 import { Pos, BaseOrdering } from "./pos"
 import { Concat, ConcatLength } from "./concat"
@@ -206,11 +206,11 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     }
 
     /**
-     * Hash code.
-     * Note that the content is not take into account.
+     * Non-cryptographic way to approximate object identity.
+     * Do not take the content into account.
      */
-    structuralDigest(): u32 {
-        return digestOf([this.lowerPos.digest(), this.length])
+    structuralHashCode(): u32 {
+        return hashCodeOf([this.lowerPos.hashCode(), this.length])
     }
 
     // Status

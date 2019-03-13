@@ -87,11 +87,11 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     }
 
     /**
-     * Hash code.
-     * Note that the content is not take into account.
+     * Non-cryptographic way to approximate object identity.
+     * Do not take the blocks' content into account.
      */
-    structuralDigest(): u32 {
-        return this.list.structuralDigest()
+    structuralHashCode(): u32 {
+        return this.list.structuralHashCode()
     }
 
     private lastSeq(replica: string): u32 {

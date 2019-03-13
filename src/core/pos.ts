@@ -81,9 +81,9 @@ export interface Pos<P extends Pos<P>> {
     readonly intDistance: (other: P) => [u32, Ordering]
 
     /**
-     * Hash code.
+     * Non-cryptographic way to approximate object identity.
      */
-    readonly digest: () => u32
+    readonly hashCode: () => u32
 
     // Status
     /**

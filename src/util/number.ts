@@ -45,9 +45,9 @@ export function compareU32(n1: u32, n2: u32): Ordering {
 
 /**
  * @param values
- * @return hash code of {@link values }.
+ * @return Non-cryptographic way to approximate identity of {@link values }.
  */
-export const digestOf = (values: ReadonlyArray<u32>): u32 =>
+export const hashCodeOf = (values: ReadonlyArray<u32>): u32 =>
     values.reduce((acc, v) => (((acc * 17) >>> 0) + v) >>> 0)
 
 export const absoluteSubstraction = (a: u32, b: u32): u32 => {

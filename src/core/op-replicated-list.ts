@@ -10,7 +10,7 @@ import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { Ins, Del } from "./local-operation"
-import { u32, digestOf } from "../util/number"
+import { u32, hashCodeOf } from "../util/number"
 
 /**
  * List which can only be remotely updated using operations.
@@ -43,12 +43,12 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
     }
 
     /**
-     * Hash code.
-     * Note that the content is not take into account.
+     * Non-cryptographic way to approximate object identity.
+     * Do not take the blocks' content into account.
      */
-    structuralDigest(): u32 {
+    structuralHashCode(): u32 {
         return this.reduceBlock(
-            (acc, b) => digestOf([acc, b.structuralDigest()]),
+            (acc, b) => hashCodeOf([acc, b.structuralHashCode()]),
             0
         )
     }
