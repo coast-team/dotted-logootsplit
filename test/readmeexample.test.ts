@@ -1,17 +1,21 @@
 import test from "ava"
 
-import { linked, SimpleDotBlockFactory } from "../src/"
+import { avl, SimpleDotBlockFactory } from "../src/"
 
 const seed = "dotted-logootsplit"
 
 test("readme-example", (t) => {
     const replicaA = 0
     const strategyA = SimpleDotBlockFactory.from(replicaA, seed)
-    const stateA = linked.deltaEditableList(strategyA, "")
+    const stateA = avl.deltaEditableList(strategyA, "")
 
     const replicaB = 1
     const strategyB = SimpleDotBlockFactory.from(replicaB, seed)
-    const stateB = linked.deltaEditableList(strategyB, "")
+    const stateB = avl.deltaEditableList(strategyB, "")
+
+    const replicaC = 1
+    const strategyC = SimpleDotBlockFactory.from(replicaC, seed)
+    const stateC = avl.deltaEditableList(strategyC, "")
 
     const deltaA1 = stateA.insertAt(0, "Helo  ")
     const deltaA2 = stateA.insertAt(6, "world!")
