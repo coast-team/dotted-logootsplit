@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/coast-team/dotted-logootsplit/compare/v0.0.2...v0.1.0) (2019-03-13)
+
+
+### Bug Fixes
+
+* fix hasAPenndable / hasPrependable ([f47a41c](https://github.com/coast-team/dotted-logootsplit/commit/f47a41c))
+
+
+### Features
+
+* add AVL list impl ([f4d44a6](https://github.com/coast-team/dotted-logootsplit/commit/f4d44a6))
+* add dot-pos abstraction ([86139b7](https://github.com/coast-team/dotted-logootsplit/commit/86139b7))
+* add factories for AVL and linked list ([5da84cb](https://github.com/coast-team/dotted-logootsplit/commit/5da84cb))
+* add fromPlain factories ([e9304a7](https://github.com/coast-team/dotted-logootsplit/commit/e9304a7))
+* add garbage collector facility for block factories ([907de61](https://github.com/coast-team/dotted-logootsplit/commit/907de61))
+* add op/delta replicated list ([51272d5](https://github.com/coast-team/dotted-logootsplit/commit/51272d5))
+* add original LogootSplit positions ([653566b](https://github.com/coast-team/dotted-logootsplit/commit/653566b))
+* assert can now throw errors ([638e0d5](https://github.com/coast-team/dotted-logootsplit/commit/638e0d5))
+* reproducible block generation ([5d8a32b](https://github.com/coast-team/dotted-logootsplit/commit/5d8a32b))
+* update TypeScript ([f63dcfa](https://github.com/coast-team/dotted-logootsplit/commit/f63dcfa))
+
+
+### BREAKING CHANGES
+
+* - remove ReadonlyReplicatedList and ReplicatedList
+  Use {Op,Delta}ReplicatedList and
+  Editable{Op,Delta}ReplicatedList instead.
+
+
+
 <a name="0.0.2"></a>
 ## [0.0.2](https://github.com/coast-team/dotted-logootsplit/compare/v0.0.1...v0.0.2) (2018-05-29)
 
