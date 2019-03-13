@@ -8,12 +8,12 @@ import { Ordering } from "../../../src/util/ordering"
 import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 import { SimpleDotPos } from "../../../src/dot-pos/simple/simple-dot-pos"
 
-const part0 = SimpleDotPosPart.from(1, 0, 0)
-const part1 = SimpleDotPosPart.from(1, 0, 1)
-const part2 = SimpleDotPosPart.from(1, 0, 2)
-const part3 = SimpleDotPosPart.from(1, 0, 3)
-const part4 = SimpleDotPosPart.from(1, 0, 4)
-const part5 = SimpleDotPosPart.from(1, 0, 5)
+const part0 = SimpleDotPosPart.from(1, 0, 1)
+const part1 = SimpleDotPosPart.from(1, 0, 2)
+const part2 = SimpleDotPosPart.from(1, 0, 3)
+const part3 = SimpleDotPosPart.from(1, 0, 4)
+const part4 = SimpleDotPosPart.from(1, 0, 5)
+const part5 = SimpleDotPosPart.from(1, 0, 6)
 
 const pos0 = SimpleDotPos.from([part0])
 const pos1 = SimpleDotPos.from([part1])
@@ -24,8 +24,8 @@ const pos15 = SimpleDotPos.from([part1, part5])
 
 test("hasIntSucc", (t) => {
     t.true(pos0.hasIntSucc(1))
-    t.true(pos0.hasIntSucc(U32_TOP))
-    t.false(pos1.hasIntSucc(U32_TOP))
+    t.true(pos0.hasIntSucc(U32_TOP - 1))
+    t.false(pos0.hasIntSucc(U32_TOP))
 })
 
 test("intSucc", (t) => {

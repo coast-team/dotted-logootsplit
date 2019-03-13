@@ -45,7 +45,7 @@ test("between_surrounded-block", (t) => {
 test("between_dense-set-appendable", (t) => {
     const B = 2
     const priority = firstA.lowerPos.parts[0].priority
-    const part2 = SimpleDotPosPart.from(priority + 1, B, 0)
+    const part2 = SimpleDotPosPart.from(priority + 1, B, 1)
     const block2 = new Block(SimpleDotPos.from([part2]), "x")
 
     const surrounded = factoryB.copy().between(firstA, "1", block2)
@@ -58,9 +58,9 @@ test("between_dense-set-appendable", (t) => {
 
 test("between_variable-sized-position", (t) => {
     const [A, B] = [1, 2]
-    const partA1 = SimpleDotPosPart.from(5, A, 0)
+    const partA1 = SimpleDotPosPart.from(5, A, 1)
     const blockA = new Block(SimpleDotPos.from([partA1]), "a")
-    const partB1 = SimpleDotPosPart.from(6, B, 0)
+    const partB1 = SimpleDotPosPart.from(6, B, 1)
     const partB2 = SimpleDotPosPart.from(U32_BOTTOM + 1, B, 1)
     const blockB = new Block(SimpleDotPos.from([partB1, partB2]), "2")
     const partA2 = SimpleDotPosPart.from(7, A, 1)

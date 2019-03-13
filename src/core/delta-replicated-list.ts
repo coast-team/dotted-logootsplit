@@ -94,6 +94,14 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         return this.list.structuralDigest()
     }
 
+    private lastSeq(replica: string): u32 {
+        const maybeLastSeq = this.versionVector[replica]
+        if (maybeLastSeq !== undefined) {
+            return maybeLastSeq
+        }
+        return 0
+    }
+
     /**
      * Complexity: O(1)
      *
@@ -101,21 +109,15 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @return parts of `delta` that can be inserted.
      */
     insertable(delta: Block<P, E>): Block<P, E>[] {
-        const lastSeq = this.versionVector[delta.replica()]
-        if (lastSeq === undefined) {
+        const lastSeq = this.lastSeq(String(delta.replica()))
+        const deltaSeqs = delta.seqs()
+        if (deltaSeqs.lower > lastSeq) {
             return [delta]
-        } else {
-            const deltaSeqs = delta.seqs()
-            if (deltaSeqs.lower > lastSeq) {
-                return [delta]
-            } else if (deltaSeqs.upper() > lastSeq) {
-                const remaining = delta.rightSplitAt(
-                    lastSeq + 1 - deltaSeqs.lower
-                )
-                return [remaining]
-            }
-            return []
+        } else if (deltaSeqs.upper() > lastSeq) {
+            const remaining = delta.rightSplitAt(lastSeq + 1 - deltaSeqs.lower)
+            return [remaining]
         }
+        return []
     }
 
     /**
@@ -126,44 +128,32 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @return parts of `delta` that was removed.
      */
     removed(delta: Block<P, E>): LengthBlock<P>[] {
-        const lastSeq = this.versionVector[delta.replica()]
-        if (lastSeq === undefined) {
+        const lastSeq = this.lastSeq(String(delta.replica()))
+        const deltaSeqs = delta.seqs()
+        if (deltaSeqs.lower > lastSeq) {
             return []
-        } else {
-            const deltaSeqs = delta.seqs()
-            if (deltaSeqs.lower > lastSeq) {
-                return []
-            } else if (deltaSeqs.upper() > lastSeq) {
-                const splittingIndex = lastSeq + 1 - deltaSeqs.lower
-                const remaining = delta.leftSplitAt(splittingIndex)
-                return this.list.insertable(remaining).map((block) => {
-                    return block.toLengthBlock()
-                })
-            }
-            return this.list.insertable(delta).map((block) => {
+        } else if (deltaSeqs.upper() > lastSeq) {
+            const splittingIndex = lastSeq + 1 - deltaSeqs.lower
+            const remaining = delta.leftSplitAt(splittingIndex)
+            return this.list.insertable(remaining).map((block) => {
                 return block.toLengthBlock()
             })
         }
+        return this.list.insertable(delta).map((block) => {
+            return block.toLengthBlock()
+        })
     }
 
     protected bumpVersion(delta: Block<P, E> | LengthBlock<P>): void {
+        const lastSeq = this.lastSeq(String(delta.replica()))
         const deltaSeqs = delta.seqs()
-        const lastSeq = this.versionVector[delta.replica()]
-        if (lastSeq === undefined) {
-            if (deltaSeqs.lower > 0) {
-                throw new Error("FIFO violation")
-            } else {
-                this.versionVector[delta.replica()] = deltaSeqs.upper()
-            }
+        if (deltaSeqs.lower > lastSeq + 1) {
+            throw new Error("FIFO violation")
         } else {
-            if (deltaSeqs.lower > lastSeq + 1) {
-                throw new Error("FIFO violation")
-            } else {
-                this.versionVector[delta.replica()] = Math.max(
-                    lastSeq,
-                    deltaSeqs.upper()
-                )
-            }
+            this.versionVector[delta.replica()] = Math.max(
+                lastSeq,
+                deltaSeqs.upper()
+            )
         }
     }
 

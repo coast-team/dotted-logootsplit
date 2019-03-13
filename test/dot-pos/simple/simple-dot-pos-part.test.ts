@@ -6,8 +6,8 @@ import { Ordering } from "../../../src/util/ordering"
 import { SimpleDotPosPart } from "../../../src/dot-pos/simple/simple-dot-pos-part"
 
 const part101 = SimpleDotPosPart.from(1, 0, 1)
-const part110 = SimpleDotPosPart.from(1, 1, 0)
-const part200 = SimpleDotPosPart.from(2, 0, 0)
+const part111 = SimpleDotPosPart.from(1, 1, 1)
+const part201 = SimpleDotPosPart.from(2, 0, 1)
 
 test("asTuple", (t) => {
     const a = 1
@@ -23,33 +23,33 @@ test("with-seq", (t) => {
 test("compare", (t) => {
     // reflexivity
     t.is(part101.compare(twinPositionPart(part101)), Ordering.EQUAL)
-    t.is(part110.compare(twinPositionPart(part110)), Ordering.EQUAL)
-    t.is(part200.compare(twinPositionPart(part200)), Ordering.EQUAL)
+    t.is(part111.compare(twinPositionPart(part111)), Ordering.EQUAL)
+    t.is(part201.compare(twinPositionPart(part201)), Ordering.EQUAL)
 
     t.is(part101.compare(part101.withSeq(5)), Ordering.BEFORE)
-    t.is(part110.compare(part110.withSeq(5)), Ordering.BEFORE)
+    t.is(part111.compare(part111.withSeq(5)), Ordering.BEFORE)
 
-    t.is(part101.compare(part110), Ordering.BEFORE)
-    t.is(part110.compare(part200), Ordering.BEFORE)
+    t.is(part101.compare(part111), Ordering.BEFORE)
+    t.is(part111.compare(part201), Ordering.BEFORE)
 
-    t.is(part110.compare(part101), Ordering.AFTER)
-    t.is(part200.compare(part110), Ordering.AFTER)
+    t.is(part111.compare(part101), Ordering.AFTER)
+    t.is(part201.compare(part111), Ordering.AFTER)
 })
 
 test("compareBase", (t) => {
     // reflexivity
     t.is(part101.compareBase(twinPositionPart(part101)), Ordering.EQUAL)
-    t.is(part110.compareBase(twinPositionPart(part110)), Ordering.EQUAL)
-    t.is(part200.compareBase(twinPositionPart(part200)), Ordering.EQUAL)
+    t.is(part111.compareBase(twinPositionPart(part111)), Ordering.EQUAL)
+    t.is(part201.compareBase(twinPositionPart(part201)), Ordering.EQUAL)
 
     t.is(part101.compareBase(part101.withSeq(5)), Ordering.EQUAL)
-    t.is(part110.compareBase(part110.withSeq(5)), Ordering.EQUAL)
+    t.is(part111.compareBase(part111.withSeq(5)), Ordering.EQUAL)
 
-    t.is(part101.compareBase(part110), Ordering.BEFORE)
-    t.is(part110.compareBase(part200), Ordering.BEFORE)
+    t.is(part101.compareBase(part111), Ordering.BEFORE)
+    t.is(part111.compareBase(part201), Ordering.BEFORE)
 
-    t.is(part110.compareBase(part101), Ordering.AFTER)
-    t.is(part200.compareBase(part110), Ordering.AFTER)
+    t.is(part111.compareBase(part101), Ordering.AFTER)
+    t.is(part201.compareBase(part111), Ordering.AFTER)
 })
 
 test("from-plain", (t) => {

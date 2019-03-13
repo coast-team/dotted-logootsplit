@@ -61,7 +61,7 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
         )
         assert(
             () => lastPart.replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP."
+            "replica != U32_TOP. Reserved for BOTTOM and TOP."
         )
         return new SimpleDotPos(parts)
     }
@@ -107,6 +107,7 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
      */
     withSeq(seq: u32): SimpleDotPos {
         assert(() => isU32(seq), "seq ∈ u32")
+        assert(() => seq !== 0, "seq != 0. Reserved for convenience")
         const parts = [...this.parts]
         const lastIndex = parts.length - 1
         parts[lastIndex] = parts[lastIndex].withSeq(seq)

@@ -35,6 +35,8 @@ function* infiniteSequence<T>(
     }
 }
 
+const DEFAULT_SEQ = 1
+
 /**
  * Factory of block with {@link SimplePos } as implementation of
  * {@link Pos}.
@@ -50,6 +52,7 @@ export class SimpleDotBlockFactory extends BlockFactory<SimpleDotPos> {
     protected constructor(replica: u32, seq: u32, randState: MutRand) {
         assert(() => isU32(replica), "replica ∈ u32")
         assert(() => isU32(seq), "seq ∈ u32")
+        assert(() => seq !== 0, "seq != 0. Reserved for convenience")
         assert(
             () => replica !== U32_TOP,
             "replica != U32_TOP. This is reserved for BOTTOM and TOP pos."
@@ -75,7 +78,7 @@ export class SimpleDotBlockFactory extends BlockFactory<SimpleDotPos> {
         )
         const seed = `${globalSeed}${replica}`
         const randState = alea.mutFrom(seed)
-        return new SimpleDotBlockFactory(replica, 0, randState)
+        return new SimpleDotBlockFactory(replica, DEFAULT_SEQ, randState)
     }
 
     /**
@@ -87,7 +90,8 @@ export class SimpleDotBlockFactory extends BlockFactory<SimpleDotPos> {
             isObject<SimpleDotBlockFactory>(x) &&
             isU32(x.replica) &&
             x.replica !== U32_TOP &&
-            isU32(x.seq)
+            isU32(x.seq) &&
+            x.seq !== 0
         ) {
             const mutRand = alea.mutFromPlain(x.randState)
             if (mutRand !== undefined) {

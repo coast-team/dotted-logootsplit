@@ -55,8 +55,9 @@ export class SimpleDotPosPart {
         )
         assert(
             () => replica !== U32_TOP,
-            "replica != U32_TOP. This is reserved for BOTTOM and TOP."
+            "replica != U32_TOP. Reserved for BOTTOM and TOP."
         )
+        assert(() => seq !== 0, "seq != 0. Reserved for convenience.")
         return new SimpleDotPosPart(priority, replica, seq)
     }
 
@@ -72,7 +73,8 @@ export class SimpleDotPosPart {
             isObject<SimpleDotPosPart>(x) &&
             isU32(x.priority) &&
             isU32(x.replica) &&
-            isU32(x.seq)
+            isU32(x.seq) &&
+            x.seq !== 0
         ) {
             return new SimpleDotPosPart(x.priority, x.replica, x.seq)
         }
@@ -83,13 +85,13 @@ export class SimpleDotPosPart {
      * Lowest part.
      * Here the pair (replica, seq) has no meaning.
      */
-    static readonly BOTTOM = new SimpleDotPosPart(U32_BOTTOM, U32_TOP, 0)
+    static readonly BOTTOM = new SimpleDotPosPart(U32_BOTTOM, U32_TOP, 1)
 
     /**
      * Greatest part.
      * Here the pair (replica, seq) has no meaning.
      */
-    static readonly TOP = new SimpleDotPosPart(U32_TOP, U32_TOP, 1)
+    static readonly TOP = new SimpleDotPosPart(U32_TOP, U32_TOP, 2)
 
     // Derivation
     /**
