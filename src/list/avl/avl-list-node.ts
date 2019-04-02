@@ -102,7 +102,7 @@ export class ValuedNode<
     update(): void {
         this.length =
             lengthOf(this.left) + this.block.length + lengthOf(this.right)
-        this.rank = Math.max(rankOf(this.left), rankOf(this.right))
+        this.rank = 1 + Math.max(rankOf(this.left), rankOf(this.right))
     }
 
     // Balancing
