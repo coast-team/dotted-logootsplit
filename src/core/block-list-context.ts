@@ -6,6 +6,8 @@ import { assert } from "../util/assert"
 import { Ins, Del } from "./local-operation"
 import { BlockFactory } from "./block-factory"
 import { U32Range, RangeOrdering } from "./u32-range"
+import { Anchor } from "./anchor"
+import { Ordering } from "../util/ordering"
 
 /**
  * Abstraction for block insertion and block removal.
@@ -53,14 +55,56 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
     abstract insertSuccessor(iBlock: Block<P, E>): void
 
     /**
+     * @param anchor
+     * @param minIndex minimal index in the current left sub-list.
+     * @return index of `anchor`.
+     */
+    abstract indexFromLeft(anchor: Anchor<P>, minIndex: u32): u32
+
+    /**
+     * @param anchor
+     * @param minIndex minimal index in the current right sub-list.
+     * @return index of `anchor`.
+     */
+    abstract indexFromRight(anchor: Anchor<P>, minIndex: u32): u32
+
+    /**
+     * @param relIndex relative index where the anchor is
+     * @param isAfter Is the anchor after `relIndex`?
+     * @param f factory
+     * @return anchor at `relIndex` in the current left sub-list.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    abstract anchorAtLeft(
+        relIndex: u32,
+        isAfter: boolean,
+        f: BlockFactory<P>
+    ): Anchor<P>
+
+    /**
+     * @param relIndex relative index where the anchor is
+     * @param isAfter Is the anchor after `relIndex`?
+     * @param f factory
+     * @return anchor at `relIndex` in the current right sub-list.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    abstract anchorAtRight(
+        relIndex: u32,
+        isAfter: boolean,
+        f: BlockFactory<P>
+    ): Anchor<P>
+
+    /**
      * @param iBlock
-     * @return segments of `Iblock` that can eb inserted in the left sub-list.
+     * @return segments of `iBlock` that can be inserted in the left sub-list.
      */
     abstract insertableLeft(iBlock: Block<P, E>): Block<P, E>[]
 
     /**
      * @param iBlock
-     * @return segments of `Iblock` that can eb inserted in the right sub-list.
+     * @return segments of `iBlock` that can be inserted in the right sub-list.
      */
     abstract insertableRight(iBlock: Block<P, E>): Block<P, E>[]
 
@@ -210,6 +254,60 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
             } else {
                 this.removeCurrent()
             }
+        }
+    }
+
+    /**
+     * @param anchor
+     * @param minIndex minimal index in the current sub-list.
+     * @return index of `anchor`.
+     */
+    indexFrom(anchor: Anchor<P>, minIndex: u32): u32 {
+        assert(() => isU32(minIndex), "minIndex ∈ u32")
+
+        const curr = this.current()
+        const currIndex = minIndex + this.currentRelativeIndex()
+        const currEndIndex = currIndex + curr.length
+
+        const blockIndex = curr.indexFrom(anchor)
+        if (blockIndex === 0) {
+            return this.indexFromLeft(anchor, minIndex)
+        } else if (blockIndex === curr.length) {
+            return this.indexFromRight(anchor, currEndIndex)
+        } else {
+            return currIndex + blockIndex
+        }
+    }
+
+    /**
+     * @param relIndex relative index where the anchor is
+     * @param isAfter Is the anchor after `relIndex`?
+     * @param f factory
+     * @return anchor at `relIndex` in the current list.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    anchorAt(relIndex: u32, isAfter: boolean, f: BlockFactory<P>): Anchor<P> {
+        assert(() => isU32(relIndex), "relIndex ∈ u32")
+
+        const curr = this.current()
+        const currRelIndex = this.currentRelativeIndex()
+        const currRelEndIndex = currRelIndex + curr.length
+        if (relIndex < currRelIndex) {
+            return this.anchorAtLeft(relIndex, isAfter, f)
+        } else if (relIndex === currRelIndex) {
+            if (isAfter) {
+                return curr.lowerAnchor()
+            } else {
+                return this.anchorAtLeft(relIndex, isAfter, f)
+            }
+        } else if (relIndex < currRelEndIndex) {
+            return curr.anchor(relIndex - currRelIndex, !isAfter)
+        } else if (relIndex === currRelEndIndex && !isAfter) {
+            return curr.upperAnchor()
+        } else {
+            const subRelIndex = relIndex - currRelEndIndex
+            return this.anchorAtRight(subRelIndex, isAfter, f)
         }
     }
 

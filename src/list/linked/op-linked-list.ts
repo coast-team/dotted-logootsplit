@@ -19,6 +19,7 @@ import {
     OpEditableReplicatedList,
 } from "../../core/op-replicated-list"
 import { FromPlain, isObject } from "../../util/data-validation"
+import { Anchor } from "../../core/anchor"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
@@ -83,6 +84,11 @@ export class OpLinkedList<
             return this.root.reduceBlock(f, prefix)
         }
         return prefix
+    }
+
+    /** @Override */
+    indexFrom(anchor: Anchor<P>): u32 {
+        return this.root.indexFrom(anchor, 0)
     }
 
     /** @Override */
@@ -164,6 +170,12 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
     ) {
         super(root, length)
         this.factory = factory
+    }
+
+    /** @Override */
+    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
+        assert(() => isU32(index), "index ∈ u32")
+        return this.root.anchorAt(index, isAfter, this.factory)
     }
 
     /** @Override */

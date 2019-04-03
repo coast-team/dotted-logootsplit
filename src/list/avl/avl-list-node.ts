@@ -8,6 +8,7 @@ import { heavyAssert } from "../../util/assert"
 import { BlockListContext } from "../../core/block-list-context"
 import { BlockFactory } from "../../core/block-factory"
 import { FromPlain, isObject } from "../../util/data-validation"
+import { Anchor } from "../../core/anchor"
 
 export type Node<P extends Pos<P>, E extends Concat<E>> =
     | ValuedNode<P, E>
@@ -244,6 +245,50 @@ export class ValuedNode<
             this.setRight(ValuedNode.leaf(iBlock))
         }
         return this.balance()
+    }
+
+    // Anchor
+    /** @Override */
+    indexFromLeft(anchor: Anchor<P>, minIndex: u32): u32 {
+        if (this.left !== undefined) {
+            return this.left.indexFrom(anchor, minIndex)
+        }
+        return minIndex
+    }
+
+    /** @Override */
+    indexFromRight(anchor: Anchor<P>, minIndex: u32): u32 {
+        if (this.right !== undefined) {
+            return this.right.indexFrom(anchor, minIndex)
+        }
+        return minIndex
+    }
+
+    /** @Override */
+    anchorAtLeft(
+        relIndex: u32,
+        isAfter: boolean,
+        f: BlockFactory<P>
+    ): Anchor<P> {
+        if (this.left !== undefined) {
+            return this.left.anchorAt(relIndex, isAfter, f)
+        }
+        return f.bottomAnchor
+    }
+
+    /** @Override */
+    anchorAtRight(
+        relIndex: u32,
+        isAfter: boolean,
+        f: BlockFactory<P>
+    ): Anchor<P> {
+        if (this.right !== undefined) {
+            return this.right.anchorAt(relIndex, isAfter, f)
+        } else if (isAfter) {
+            return f.topAnchor
+        } else {
+            return this.block.upperAnchor()
+        }
     }
 
     // Insertion

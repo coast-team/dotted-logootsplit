@@ -14,6 +14,7 @@ import { Pos } from "../../core/pos"
 import { Ins, Del } from "../../core/local-operation"
 import { isU32, u32 } from "../../util/number"
 import { FromPlain, isObject } from "../../util/data-validation"
+import { Anchor } from "../../core/anchor"
 
 export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     /**
@@ -43,6 +44,55 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
         } else {
             const rBlock = this.right.block
             return this.right.reduceBlock(f, f(prefix, rBlock)) // Tail recursion
+        }
+    }
+
+    /**
+     * @param anchor
+     * @param minIndex minimal index in the current sub-list.
+     * @return index of `anchor`.
+     */
+    indexFrom(anchor: Anchor<P>, minIndex: u32): u32 {
+        assert(() => isU32(minIndex), "minIndex ∈ u32")
+
+        if (this.right !== undefined) {
+            const rBlock = this.right.block
+            const rBlockIndex = rBlock.indexFrom(anchor)
+            if (rBlockIndex === rBlock.length) {
+                return this.right.indexFrom(anchor, minIndex + rBlock.length)
+            }
+            return minIndex + rBlockIndex
+        }
+        return minIndex
+    }
+
+    /**
+     * @param relIndex relative index where the anchor is
+     * @param isAfter Is the anchor after or before `relIndex`?
+     * @param f factory
+     * @return anchor at `index` in the current list.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    anchorAt(index: u32, isAfter: boolean, f: BlockFactory<P>): Anchor<P> {
+        assert(() => isU32(index), "index ∈ u32")
+
+        if (this.right !== undefined) {
+            const rBlock = this.right.block
+
+            if (index >= rBlock.length) {
+                return this.right.anchorAt(index - rBlock.length, isAfter, f)
+            } else if (index !== 0 || isAfter) {
+                return rBlock.anchor(index, !isAfter)
+            }
+        } else if (isAfter) {
+            return f.topAnchor
+        }
+
+        if (this instanceof Cell) {
+            return this.block.upperAnchor()
+        } else {
+            return f.bottomAnchor
         }
     }
 

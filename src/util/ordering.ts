@@ -28,6 +28,22 @@ export const orderingInversion = Object.freeze({
 })
 
 /**
+ * compareBoolean(false, true) === Ordering.EQUAL
+ * @param a
+ * @param b
+ * @return a [ordering relation] b
+ */
+export const compareBoolean = (a: boolean, b: boolean): Ordering => {
+    if (a === b) {
+        return Ordering.EQUAL
+    } else if (b) {
+        return Ordering.AFTER
+    } else {
+        return Ordering.BEFORE
+    }
+}
+
+/**
  * @example
  * lexCompareOrdering(Ordering.Equal, r2) == r2
  * lexCompareOrdering(Ordering.Before, _) == Ordering.Before

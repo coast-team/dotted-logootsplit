@@ -11,6 +11,7 @@ import { Concat } from "./concat"
 import { Pos } from "./pos"
 import { Ins, Del } from "./local-operation"
 import { u32, hashCodeOf } from "../util/number"
+import { Anchor } from "./anchor"
 
 /**
  * List which can only be remotely updated using operations.
@@ -52,6 +53,12 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
             0
         )
     }
+
+    /**
+     * @param anchor
+     * @return index of `anchor`.
+     */
+    abstract indexFrom(anchor: Anchor<P>): u32
 
     /**
      * @param delta operation of insertion insertion
@@ -118,6 +125,15 @@ export interface OpEditableReplicatedList<
     P extends Pos<P>,
     E extends Concat<E>
 > extends OpReplicatedList<P, E> {
+    /**
+     * @param index index where the anchor is
+     * @param isAfter Is the anchor after `index`?
+     * @return anchor at `index`.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    anchorAt(index: u32, isAfter: boolean): Anchor<P>
+
     /**
      * [Mutation]
      * Insert {@link items } at {@link index}.

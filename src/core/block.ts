@@ -158,14 +158,28 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     }
 
     /**
-     * @param index 0-based index
-     *      {@link index } < {@link Block#length }
-     * @return Anchor at {@link index }
+     * @return anchor just before the lower position
      */
-    anchorAt(index: u32): Anchor<P> {
-        assert(() => isU32(index), "index ∈ u32")
-        assert(() => index < this.length, "index < this.length")
-        return new Anchor(this.nthPos(index))
+    lowerAnchor(): Anchor<P> {
+        return this.anchor(0, false)
+    }
+
+    /**
+     * @param nth 0-based index
+     * @param isAfter is the anchor after the `nth` position?
+     * @return Anchor relative to the `nth` psoyion of the block.
+     */
+    anchor(nth: u32, isAfter: boolean): Anchor<P> {
+        assert(() => isU32(nth), "nth ∈ u32")
+        assert(() => nth < this.length, "nth < this.length")
+        return Anchor.from(this.nthPos(nth), isAfter)
+    }
+
+    /**
+     * @return anchor just after the upper position
+     */
+    upperAnchor(): Anchor<P> {
+        return this.anchor(this.length - 1, true)
     }
 
     /**
@@ -257,6 +271,37 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
             cmp === BlockOrdering.INCLUDING_RIGHT ||
             cmp === BlockOrdering.INCLUDING_MIDDLE
         )
+    }
+
+    /**
+     * @param anchor
+     * @return A pair that includes the index of `anchor` in the block and
+     *  its order relation.
+     *  Ordering.EQUAL means that {@link anchor} is realted to a position
+     *  of this block.
+     */
+    indexFrom(anchor: Anchor<P>): u32 {
+        const baseCmp = this.lowerPos.compareBase(anchor.ref)
+
+        if (baseCmp === BaseOrdering.BEFORE) {
+            return this.length
+        } else if (baseCmp === BaseOrdering.AFTER) {
+            return 0
+        } else {
+            const [dist, order] = this.lowerPos.intDistance(anchor.ref)
+
+            if (order === Ordering.BEFORE) {
+                return this.length
+            } else if (dist >= this.length) {
+                return 0
+            } else {
+                if (anchor.isAfter) {
+                    return dist + 1
+                } else {
+                    return dist
+                }
+            }
+        }
     }
 
     /**

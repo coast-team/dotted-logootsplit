@@ -12,6 +12,7 @@ import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { assert } from "../../util/assert"
 import { U32Range } from "../../core/u32-range"
 import { FromPlain, isObject } from "../../util/data-validation"
+import { Anchor } from "../../core/anchor"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
@@ -64,6 +65,15 @@ export class OpAvlList<
     /** @Override */
     get length(): u32 {
         return lengthOf(this.root)
+    }
+
+    /** @Override */
+    indexFrom(anchor: Anchor<P>): u32 {
+        if (this.root !== undefined) {
+            return this.root.indexFrom(anchor, 0)
+        } else {
+            return 0
+        }
     }
 
     /** @Override */
@@ -159,6 +169,19 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     protected constructor(root: Node<P, E>, factory: BlockFactory<P>) {
         super(root)
         this.factory = factory
+    }
+
+    /** @Override */
+    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
+        assert(() => isU32(index), "index ∈ u32")
+
+        if (this.root !== undefined) {
+            return this.root.anchorAt(index, isAfter, this.factory)
+        } else if (isAfter) {
+            return this.factory.topAnchor
+        } else {
+            return this.factory.bottomAnchor
+        }
     }
 
     /** @Override */

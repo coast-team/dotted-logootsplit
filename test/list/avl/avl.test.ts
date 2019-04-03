@@ -71,6 +71,9 @@ import {
     mMergeSimple,
     mMergeIdempotent,
     DeltaListMacros,
+    mAnchor,
+    mTopBottomAnchor,
+    mAnchorOutOfBound,
 } from "../macro"
 import {
     SimpleDotBlockFactory,
@@ -192,6 +195,14 @@ test(
         mInsertertableAfterBefore,
         mInsertertableAppednable,
     ] as OpListMacros<SimpleDotPos>,
+    emptyOpSeq,
+    ID
+)
+
+test(
+    [mTopBottomAnchor, mAnchorOutOfBound, mAnchor] as OpListMacros<
+        SimpleDotPos
+    >,
     emptyOpSeq,
     ID
 )

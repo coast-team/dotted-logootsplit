@@ -7,19 +7,53 @@
 */
 
 import { Pos } from "./pos"
-import { Ordering } from "../util/ordering"
+import { Ordering, lexCompareOrdering, compareBoolean } from "../util/ordering"
+import { FromPlain, isObject } from "../util/data-validation"
 
 /**
- * An anchor can be used to model the cursor, the selection of a participant in
- * a coeditable list.
- *
- * An anchor is always just before a given {@link Pos }.
+ * An anchor can be used to model the cursor of a participant in a
+ * repliacted list.
  */
 export class Anchor<P extends Pos<P>> {
+    /**
+     * @example
+     * Anchor(p, false) is just before p
+     * Anchor(p, true) is just after p
+     * There does not exist a position between Anchor(p) and p
+     *
+     * @param ref position to which this anchor is relative to
+     * @param isAfter is the anchor after `ref`?
+     */
+    static from<P extends Pos<P>>(ref: P, isAfter: boolean): Anchor<P> {
+        return new Anchor(ref, isAfter)
+    }
+
+    static fromPlain<P extends Pos<P>>(
+        posFromPlain: FromPlain<P>
+    ): FromPlain<Anchor<P>> {
+        return (x) => {
+            if (
+                isObject<{ ref: unknown; isAfter: boolean }>(x) &&
+                typeof x.isAfter === "boolean"
+            ) {
+                const ref = posFromPlain(x.ref)
+                if (ref !== undefined) {
+                    return Anchor.from(ref, x.isAfter)
+                }
+            }
+            return undefined
+        }
+    }
+
     /**
      * Position to which this anchor is relative to
      */
     readonly ref: P
+
+    /**
+     * Is the anchor after {@link Anchor#ref}?
+     */
+    readonly isAfter: boolean
 
     /**
      * @example
@@ -27,9 +61,11 @@ export class Anchor<P extends Pos<P>> {
      * There not exists another position between Anchor(p) and p
      *
      * @param ref position to which this anchor is relative to
+     * @param isAfter is the anchor after `ref`?
      */
-    constructor(ref: P) {
+    protected constructor(ref: P, isAfter: boolean) {
         this.ref = ref
+        this.isAfter = isAfter
     }
 
     /**
@@ -37,7 +73,10 @@ export class Anchor<P extends Pos<P>> {
      * @return this [Order relation] other
      */
     compare(other: Anchor<P>): Ordering {
-        return this.ref.compare(other.ref)
+        return lexCompareOrdering(
+            this.ref.compare(other.ref),
+            compareBoolean(other.isAfter, this.isAfter)
+        )
     }
 
     /**
@@ -47,12 +86,12 @@ export class Anchor<P extends Pos<P>> {
      * @param pos
      * @return Is before or after {@link pos}?
      */
-    compareTo(pos: P): Ordering.BEFORE | Ordering.AFTER {
-        // TODO: avoid union type.
-        // use a specific enum type? or just Ordering?
+    compareWith(pos: P): Ordering.BEFORE | Ordering.AFTER {
         const rel = this.ref.compare(pos)
         if (rel !== Ordering.EQUAL) {
             return rel
+        } else if (this.isAfter) {
+            return Ordering.AFTER
         } else {
             return Ordering.BEFORE
         }

@@ -46,10 +46,16 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @param posBounds bottom and top positions.
      */
     protected constructor(protected readonly posBounds: { BOTTOM: P; TOP: P }) {
-        this.topAnchor = new Anchor(posBounds.TOP)
+        this.bottomAnchor = Anchor.from(posBounds.BOTTOM, true)
+        this.topAnchor = Anchor.from(posBounds.TOP, false)
     }
 
     // Factory
+    /**
+     * Lowest Anchor. All generated block are after this anchor.
+     */
+    readonly bottomAnchor: Anchor<P>
+
     /**
      * Greatest Anchor. All generated block are before this anchor.
      */

@@ -10,6 +10,7 @@ import { LengthBlock, Block } from "./block"
 import { assert } from "../util/assert"
 import { isU32, u32 } from "../util/number"
 import { FromPlain, isObject } from "../util/data-validation"
+import { Anchor } from "./anchor"
 
 export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     static from<P extends DotPos<P>, E extends Concat<E>>(
@@ -100,6 +101,14 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
             return maybeLastSeq
         }
         return 0
+    }
+
+    /**
+     * @param anchor
+     * @return index of `anchor`.
+     */
+    indexFrom(anchor: Anchor<P>): u32 {
+        return this.list.indexFrom(anchor)
     }
 
     /**
@@ -307,6 +316,18 @@ export class DeltaEditableReplicatedList<
     ) {
         super(list, vv)
         this.list = list
+    }
+
+    /**
+     * @param index index where the anchor is
+     * @param isAfter Is the anchor after `index`?
+     * @return anchor at `index`.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
+        assert(() => isU32(index), "index ∈ u32")
+        return this.list.anchorAt(index, isAfter)
     }
 
     /**

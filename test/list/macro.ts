@@ -1,5 +1,5 @@
 import { ExecutionContext, Macro } from "ava"
-import { Pos, Ins, Del } from "../../src"
+import { Pos, Ins, Del, Ordering } from "../../src"
 import { OpEditableReplicatedList } from "../../src/core/op-replicated-list"
 import { DeltaEditableReplicatedList } from "../../src/core/delta-replicated-list"
 import { DotPos } from "../../src/core/dot-pos"
@@ -1108,3 +1108,58 @@ export const mMerge: GenericDeltaListMacro = (t, emp) => {
     t.deepEqual(opB, [new Del(4, 1)])
 }
 mMerge.title = titled("merge")
+
+// anchorAt / indexFrom
+
+export const mTopBottomAnchor: GenericOpListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
+
+    const bottomAnchor = seqA.anchorAt(0, false)
+    const topAnchor = seqA.anchorAt(0, true)
+
+    t.is(bottomAnchor.compare(topAnchor), Ordering.BEFORE)
+    t.is(seqA.indexFrom(bottomAnchor), 0)
+    t.is(seqA.indexFrom(topAnchor), 0)
+
+    seqA.insertAt(0, "ab")
+
+    t.deepEqual(seqA.anchorAt(0, false), bottomAnchor)
+    t.deepEqual(seqA.anchorAt(2, true), topAnchor)
+    t.is(seqA.indexFrom(bottomAnchor), 0)
+    t.is(seqA.indexFrom(topAnchor), 2)
+}
+mTopBottomAnchor.title = titled("anchor_top-bottom")
+
+export const mAnchorOutOfBound: GenericOpListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
+    seqA.insertAt(0, "ab")
+
+    const bAnchorAfter = seqA.anchorAt(5, false)
+    const topAnchor = seqA.anchorAt(5, true)
+
+    t.is(bAnchorAfter.compare(topAnchor), Ordering.BEFORE)
+    t.is(seqA.indexFrom(bAnchorAfter), 2)
+    t.is(seqA.indexFrom(topAnchor), 2)
+}
+mAnchorOutOfBound.title = titled("anchor_out-of-bound")
+
+export const mAnchor: GenericOpListMacro = (t, emp) => {
+    const seqA = emp(Peer.A)
+
+    seqA.insertAt(0, "ce")
+
+    const cAnchorBefore = seqA.anchorAt(0, true)
+    const eAnchorAfter = seqA.anchorAt(2, false)
+
+    t.is(cAnchorBefore.compare(eAnchorAfter), Ordering.BEFORE)
+    t.is(seqA.indexFrom(cAnchorBefore), 0)
+    t.is(seqA.indexFrom(eAnchorAfter), 2)
+
+    seqA.insertAt(2, "fg")
+    seqA.insertAt(1, "d") // split
+    seqA.insertAt(0, "ab")
+
+    t.is(seqA.indexFrom(cAnchorBefore), 2)
+    t.is(seqA.indexFrom(eAnchorAfter), 5)
+}
+mAnchor.title = titled("anchor")
