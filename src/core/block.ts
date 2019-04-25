@@ -45,7 +45,7 @@ export const enum BlockOrdering {
 /**
  * Map IntervalOrdering to BlockOrdering.
  */
-const rangeOrderingAsBlockOrdering = Object.freeze({
+const rangeOrderingAsBlockOrdering = {
     [RangeOrdering.BEFORE]: BlockOrdering.BEFORE,
     [RangeOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
     [RangeOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,
@@ -59,7 +59,7 @@ const rangeOrderingAsBlockOrdering = Object.freeze({
     [RangeOrdering.OVERLAPPING_AFTER]: BlockOrdering.OVERLAPPING_AFTER,
     [RangeOrdering.APPENDABLE]: BlockOrdering.APPENDABLE,
     [RangeOrdering.AFTER]: BlockOrdering.AFTER,
-})
+} as const
 
 /**
  * A {@see Block} or a {@see LengthBlock}.

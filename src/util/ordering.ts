@@ -21,11 +21,11 @@ export const enum Ordering {
  * @example
  * orderingInversion[Ordering.BEFORE] === Ordering.AFTER
  */
-export const orderingInversion = Object.freeze({
+export const orderingInversion = {
     [Ordering.BEFORE]: Ordering.AFTER,
     [Ordering.EQUAL]: Ordering.EQUAL,
     [Ordering.AFTER]: Ordering.BEFORE,
-})
+} as const
 
 /**
  * compareBoolean(false, true) === Ordering.EQUAL

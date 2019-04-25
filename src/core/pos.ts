@@ -23,13 +23,13 @@ export const enum BaseOrdering {
 /**
  * Inversion of BaseOrdering.
  */
-export const baseOrderingInversion = Object.freeze({
+export const baseOrderingInversion = {
     [BaseOrdering.BEFORE]: BaseOrdering.AFTER,
     [BaseOrdering.PREFIXING]: BaseOrdering.PREFIXED_BY,
     [BaseOrdering.EQUAL]: BaseOrdering.EQUAL,
     [BaseOrdering.PREFIXED_BY]: BaseOrdering.PREFIXING,
     [BaseOrdering.AFTER]: BaseOrdering.BEFORE,
-})
+} as const
 
 /**
  * The set of positions is a dense totally ordered set.
