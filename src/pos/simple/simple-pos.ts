@@ -53,7 +53,7 @@ export class SimplePos implements Pos<SimplePos> {
      *  SimplePosPart.TOP.
      * @return Position with {@link parts } as {@link SimplePos#parts }.
      */
-    static from(parts: ReadonlyArray<SimplePosPart>): SimplePos {
+    static from(parts: readonly SimplePosPart[]): SimplePos {
         const lastPart = parts[parts.length - 1]
         assert(
             () =>
@@ -95,12 +95,12 @@ export class SimplePos implements Pos<SimplePos> {
     /**
      * Parts of this position.
      */
-    readonly parts: ReadonlyArray<SimplePosPart>
+    readonly parts: readonly SimplePosPart[]
 
     /**
      * @param parts {@link SimplePos#parts }
      */
-    private constructor(parts: ReadonlyArray<SimplePosPart>) {
+    private constructor(parts: readonly SimplePosPart[]) {
         assert(() => parts.length > 0, "parts must not be empty")
         this.parts = parts
     }
@@ -173,7 +173,7 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    intDistance(other: SimplePos): [u32, Ordering] {
+    intDistance(other: SimplePos): readonly [u32, Ordering] {
         if (this.depth() > other.depth()) {
             const [dist, order] = other.intDistance(this)
             return [dist, orderingInversion[order]]

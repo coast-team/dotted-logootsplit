@@ -27,7 +27,7 @@ const U32_MID = 0x7fff_ffff
  * @return Infinite stream of values.
  */
 function* infiniteSequence<T>(
-    values: ReadonlyArray<T>,
+    values: readonly T[],
     defaultValue: T
 ): IterableIterator<T> {
     for (const v of values) {
@@ -45,7 +45,7 @@ export interface SimpleBlockFactoryJSON {
 
     readonly randState: MutRand
 
-    readonly generated: Array<[u32, [U32Range, u32]]>
+    readonly generated: ReadonlyArray<readonly [u32, [U32Range, u32]]>
 }
 
 /**

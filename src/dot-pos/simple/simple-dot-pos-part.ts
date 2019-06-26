@@ -126,7 +126,7 @@ export class SimpleDotPosPart {
     /**
      * @return [priority, replica, seq]
      */
-    asTuple(): [u32, u32, u32] {
+    asTuple(): readonly [u32, u32, u32] {
         return [this.priority, this.replica, this.seq]
     }
 

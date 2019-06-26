@@ -411,7 +411,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      0 < {@link index } < {@link Block#length }
      * @return Left and right splits.
      */
-    splitAt(index: u32): [Block<P, E>, Block<P, E>] {
+    splitAt(index: u32): readonly [Block<P, E>, Block<P, E>] {
         assert(() => isU32(index), "index ∈ u32")
         assert(
             () => 0 < index && index < this.length,
@@ -425,7 +425,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
      *      {@link other } must split this
      * @return Left and right splits.
      */
-    splitWith(other: BaseBlockk<P>): [Block<P, E>, Block<P, E>] {
+    splitWith(other: BaseBlockk<P>): readonly [Block<P, E>, Block<P, E>] {
         assert(
             () => this.compare(other) === BlockOrdering.SPLITTED_BY,
             "other splits this"

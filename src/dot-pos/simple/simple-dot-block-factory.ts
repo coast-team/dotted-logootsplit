@@ -24,7 +24,7 @@ import { Block } from "../../core/block"
  * @return Infinite stream of values.
  */
 function* infiniteSequence<T>(
-    values: ReadonlyArray<T>,
+    values: readonly T[],
     defaultValue: T
 ): IterableIterator<T> {
     for (const v of values) {

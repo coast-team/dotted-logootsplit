@@ -137,7 +137,7 @@ export class SimplePosPart {
     /**
      * @return [priority, replica, nth, offset]
      */
-    asTuple(): [u32, u32, u32, u32] {
+    asTuple(): readonly [u32, u32, u32, u32] {
         return [this.priority, this.replica, this.nth, this.offset]
     }
 

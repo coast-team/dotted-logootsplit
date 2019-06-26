@@ -78,7 +78,7 @@ export interface Pos<P extends Pos<P>> {
      * @return Integer distance from this to {@link other } and
      *  order between this and {@link other }.
      */
-    readonly intDistance: (other: P) => [u32, Ordering]
+    readonly intDistance: (other: P) => readonly [u32, Ordering]
 
     /**
      * Non-cryptographic way to approximate object identity.
