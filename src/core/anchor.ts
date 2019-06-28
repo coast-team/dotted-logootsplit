@@ -9,6 +9,7 @@
 import { Pos } from "./pos"
 import { Ordering, lexCompareOrdering, compareBoolean } from "../util/ordering"
 import { FromPlain, isObject } from "../util/data-validation"
+import { u32 } from "../util/number"
 
 /**
  * An anchor can be used to model the cursor of a participant in a
@@ -66,6 +67,13 @@ export class Anchor<P extends Pos<P>> {
     protected constructor(ref: P, isAfter: boolean) {
         this.ref = ref
         this.isAfter = isAfter
+    }
+
+    /**
+     * Globally unique identifier of the author which generated this block.
+     */
+    replica(): ReturnType<P["replica"]> {
+        return this.ref.replica()
     }
 
     /**

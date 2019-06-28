@@ -185,7 +185,7 @@ export class Block<P extends Pos<P>, E extends Concat<E>> {
     /**
      * Globally unique identifier of the author which generated this block.
      */
-    replica<P extends DotPos<P>>(this: BaseBlockk<P>): u32 {
+    replica(this: BaseBlockk<P>): ReturnType<P["replica"]> {
         return this.lowerPos.replica()
     }
 

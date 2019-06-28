@@ -150,9 +150,7 @@ export class SimplePos implements Pos<SimplePos> {
         return this.parts.length
     }
 
-    /**
-     * Globally unique identifier of the author which generated this position.
-     */
+    /** @override */
     replica(): u32 {
         return this.lastPart().replica
     }
