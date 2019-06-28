@@ -82,7 +82,7 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
-    "replayable-random": "=0.3.0",
+    "replayable-random": "=0.4.1",
     "tslib": "^1.9.3"
   }
 }
