@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/coast-team/dotted-logootsplit/compare/v0.2.1...v0.3.0) (2019-07-02)
+
+
+### Bug Fixes
+
+* weaken stronger assertions ([0369943](https://github.com/coast-team/dotted-logootsplit/commit/0369943))
+
+
+### Features
+
+* add generated replica id for all pos ([4270639](https://github.com/coast-team/dotted-logootsplit/commit/4270639))
+
+
+
 ### [0.2.1](https://github.com/coast-team/dotted-logootsplit/compare/v0.2.0...v0.2.1) (2019-06-06)
 
 
