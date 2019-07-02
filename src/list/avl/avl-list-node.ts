@@ -222,26 +222,26 @@ export class ValuedNode<
     }
 
     insertMin(iBlock: Block<P, E>): ValuedNode<P, E> {
-        heavyAssert(
-            () => this.block.compare(iBlock) === BlockOrdering.AFTER,
-            "iBlock < block"
-        )
         if (this.left !== undefined) {
             this.setLeft(this.left.insertMin(iBlock))
         } else {
+            heavyAssert(
+                () => this.block.compare(iBlock) === BlockOrdering.AFTER,
+                "iBlock < block"
+            )
             this.setLeft(ValuedNode.leaf(iBlock))
         }
         return this.balance()
     }
 
     insertMax(iBlock: Block<P, E>): ValuedNode<P, E> {
-        heavyAssert(
-            () => this.block.compare(iBlock) === BlockOrdering.BEFORE,
-            "block < iBlock"
-        )
         if (this.right !== undefined) {
             this.setRight(this.right.insertMax(iBlock))
         } else {
+            heavyAssert(
+                () => this.block.compare(iBlock) === BlockOrdering.BEFORE,
+                "block < iBlock"
+            )
             this.setRight(ValuedNode.leaf(iBlock))
         }
         return this.balance()
