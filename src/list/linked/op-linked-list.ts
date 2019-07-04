@@ -11,7 +11,6 @@ import { Block, LengthBlock } from "../../core/block"
 import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Ins, Del } from "../../core/local-operation"
 import { isU32, u32 } from "../../util/number"
 import { Sentinel } from "./linked-list-cell"
 import {
@@ -20,6 +19,8 @@ import {
 } from "../../core/op-replicated-list"
 import { FromPlain, isObject } from "../../util/data-validation"
 import { Anchor } from "../../core/anchor"
+import { Ins } from "../../core/ins"
+import { Del } from "../../core/del"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
@@ -100,7 +101,10 @@ export class OpLinkedList<
     /** @Override */
     insert(block: Block<P, E>): Ins<E>[] {
         const result = this.root.insert(block, 0)
-        this.length = result.reduce((acc, v) => acc + v.length, this.length)
+        this.length = result.reduce(
+            (acc, v) => acc + v.content.length,
+            this.length
+        )
         return result
     }
 

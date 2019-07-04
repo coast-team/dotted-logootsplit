@@ -11,10 +11,11 @@ import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
 import { Pos } from "../../core/pos"
-import { Ins, Del } from "../../core/local-operation"
 import { isU32, u32 } from "../../util/number"
 import { FromPlain, isObject } from "../../util/data-validation"
 import { Anchor } from "../../core/anchor"
+import { Ins } from "../../core/ins"
+import { Del } from "../../core/del"
 
 export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     /**
@@ -170,7 +171,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
 
         if (this.right === undefined) {
             this.insertRight(iBlock)
-            return [new Ins(index, iBlock.content)]
+            return [Ins.from(index, iBlock.content)]
         } else {
             const rBlock = this.right.block
             switch (rBlock.compare(iBlock)) {
@@ -188,11 +189,11 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 }
                 case BlockOrdering.AFTER:
                     this.insertRight(iBlock)
-                    return [new Ins(index, iBlock.content)]
+                    return [Ins.from(index, iBlock.content)]
                 case BlockOrdering.APPENDABLE:
                     this.right = this.right.right
                     this.insertRight(iBlock.append(rBlock))
-                    return [new Ins(index, iBlock.content)]
+                    return [Ins.from(index, iBlock.content)]
                 case BlockOrdering.SPLITTING: {
                     const [lSplit, rSplit] = iBlock.splitWith(rBlock)
                     const rInsertions = this.right.insert(
@@ -200,7 +201,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                         index + lSplit.length + rBlock.length
                     )
                     this.insertRight(lSplit)
-                    return [new Ins(index, lSplit.content), ...rInsertions]
+                    return [Ins.from(index, lSplit.content), ...rInsertions]
                 }
                 case BlockOrdering.SPLITTED_BY: {
                     const [lSplit, rSplit] = rBlock.splitWith(iBlock)
@@ -208,7 +209,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.insertRight(lSplit)
                         .insertRight(iBlock)
                         .insertRight(rSplit)
-                    return [new Ins(index + lSplit.length, iBlock.content)]
+                    return [Ins.from(index + lSplit.length, iBlock.content)]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE:
                 case BlockOrdering.OVERLAPPING_AFTER:
@@ -369,31 +370,31 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     const rRemaning = rBlock.appendable(dBlock)
                     this.right = this.right.right
                     this.insertRight(rRemaning)
-                    return [new Del(index, dBlock.length)]
+                    return [Del.from(index, dBlock.length)]
                 }
                 case BlockOrdering.INCLUDING_RIGHT: {
                     const lRemaning = rBlock.prependable(dBlock)
                     this.right = this.right.right
                     this.insertRight(lRemaning)
-                    return [new Del(index + lRemaning.length, dBlock.length)]
+                    return [Del.from(index + lRemaning.length, dBlock.length)]
                 }
                 case BlockOrdering.INCLUDING_MIDDLE: {
                     const rRemaning = rBlock.appendable(dBlock)
                     const lRemaning = rBlock.prependable(dBlock)
                     this.right = this.right.right
                     this.insertRight(lRemaning).insertRight(rRemaning)
-                    return [new Del(index + lRemaning.length, dBlock.length)]
+                    return [Del.from(index + lRemaning.length, dBlock.length)]
                 }
                 case BlockOrdering.EQUAL:
                     this.right = this.right.right
-                    return [new Del(index, rBlock.length)]
+                    return [Del.from(index, rBlock.length)]
                 case BlockOrdering.INCLUDED_LEFT_BY:
                 case BlockOrdering.INCLUDED_RIGHT_BY:
                 case BlockOrdering.INCLUDED_MIDDLE_BY: {
                     // Append of the current block is handled in the first switch-case
                     this.right = this.right.right
                     const rRemovals = this.remove(dBlock, index)
-                    return [new Del(index, rBlock.length), ...rRemovals]
+                    return [Del.from(index, rBlock.length), ...rRemovals]
                 }
                 case BlockOrdering.OVERLAPPING_BEFORE: {
                     const removed = rBlock.intersection(dBlock)
@@ -403,7 +404,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     this.right = this.right.right
                     this.insertRight(remaining)
                     this.remove(dBlock, index + remaining.length)
-                    return [new Del(index + remaining.length, removed.length)]
+                    return [Del.from(index + remaining.length, removed.length)]
                 }
                 case BlockOrdering.OVERLAPPING_AFTER: {
                     const removed = rBlock.intersection(dBlock)
@@ -411,7 +412,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                     //const [, remaining] = rBlock.remove(block) as [undefined, Block<P, E>]
                     this.right = this.right.right
                     this.insertRight(remaining)
-                    return [new Del(index, removed.length)]
+                    return [Del.from(index, removed.length)]
                 }
                 case BlockOrdering.AFTER:
                 case BlockOrdering.APPENDABLE:
