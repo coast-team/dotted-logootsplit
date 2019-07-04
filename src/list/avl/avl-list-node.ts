@@ -3,12 +3,13 @@ import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import { U32Range } from "../../core/u32-range"
-import { Del, Ins } from "../../core/local-operation"
 import { heavyAssert } from "../../util/assert"
 import { BlockListContext } from "../../core/block-list-context"
 import { BlockFactory } from "../../core/block-factory"
 import { FromPlain, isObject } from "../../util/data-validation"
 import { Anchor } from "../../core/anchor"
+import { Ins } from "../../core/ins"
+import { Del } from "../../core/del"
 
 export type Node<P extends Pos<P>, E extends Concat<E>> =
     | ValuedNode<P, E>
@@ -336,7 +337,7 @@ export class ValuedNode<
             this.setLeft(this.left.balance())
         } else {
             this.setLeft(ValuedNode.leaf(iBlock))
-            ins = [new Ins(minIndex, iBlock.content)]
+            ins = [Ins.from(minIndex, iBlock.content)]
         }
         // delegate balance to parent
         return ins
@@ -351,7 +352,7 @@ export class ValuedNode<
         } else {
             // should not happen
             this.setRight(ValuedNode.leaf(iBlock))
-            ins = [new Ins(minIndex, iBlock.content)]
+            ins = [Ins.from(minIndex, iBlock.content)]
         }
         // delegate balance to parent
         return ins

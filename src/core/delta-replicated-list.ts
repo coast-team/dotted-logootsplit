@@ -5,12 +5,13 @@ import {
     OpEditableReplicatedList,
 } from "./op-replicated-list"
 import { BlockListContext } from "./block-list-context"
-import { Del, Ins } from "./local-operation"
 import { LengthBlock, Block } from "./block"
 import { assert } from "../util/assert"
 import { isU32, u32 } from "../util/number"
 import { FromPlain, isObject } from "../util/data-validation"
 import { Anchor } from "./anchor"
+import { Ins } from "./ins"
+import { Del } from "./del"
 
 export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     static from<P extends DotPos<P>, E extends Concat<E>>(

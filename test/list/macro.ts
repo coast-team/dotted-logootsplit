@@ -145,7 +145,7 @@ export const mInsertSingle: GenericOpListMacro = (t, emp) => {
 
     t.is(ab.content, "ab")
     t.is(seqA.concatenated(""), seqB.concatenated(""))
-    t.deepEqual(ins, [new Ins(0, "ab")])
+    t.deepEqual(ins, [Ins.from(0, "ab")])
     t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
 }
 mInsertSingle.title = titled("insert-single")
@@ -171,8 +171,8 @@ export const mInsertAppend: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
-    t.deepEqual(abIns, [new Ins(0, "ab")])
-    t.deepEqual(cdIns, [new Ins(2, "cd")])
+    t.deepEqual(abIns, [Ins.from(0, "ab")])
+    t.deepEqual(cdIns, [Ins.from(2, "cd")])
 }
 mInsertAppend.title = titled("insert-append")
 
@@ -186,8 +186,8 @@ export const mInsertPrepend: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
-    t.deepEqual(cdIns, [new Ins(0, "cd")])
-    t.deepEqual(abIns, [new Ins(0, "ab")])
+    t.deepEqual(cdIns, [Ins.from(0, "cd")])
+    t.deepEqual(abIns, [Ins.from(0, "ab")])
 }
 mInsertPrepend.title = titled("insert-prepend")
 
@@ -203,9 +203,9 @@ export const mInsertAppendPrepend: GenericOpListMacro = (t, emp) => {
 
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
-    t.deepEqual(abIns, [new Ins(0, "ab")])
-    t.deepEqual(efIns, [new Ins(2, "ef")])
-    t.deepEqual(cdIns, [new Ins(2, "cd")])
+    t.deepEqual(abIns, [Ins.from(0, "ab")])
+    t.deepEqual(efIns, [Ins.from(2, "ef")])
+    t.deepEqual(cdIns, [Ins.from(2, "cd")])
 }
 mInsertAppendPrepend.title = titled("insert-append-prepend")
 
@@ -226,7 +226,7 @@ export const mInsertSplitting: GenericOpListMacro = (t, emp) => {
     t.is(seqA.concatenated(""), seqB.concatenated(""))
     t.is(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.is(seqA.length, 5)
-    t.deepEqual(cIns, [new Ins(2, "c")])
+    t.deepEqual(cIns, [Ins.from(2, "c")])
 }
 mInsertSplitting.title = titled("insert-splitting")
 
@@ -245,9 +245,9 @@ export const mInsertSplitted: GenericOpListMacro = (t, emp) => {
 
     let exepctedIns
     if (acIns.length > 1 && acIns[0].content === "c") {
-        exepctedIns = [new Ins(1, "c"), new Ins(0, "a")]
+        exepctedIns = [Ins.from(1, "c"), Ins.from(0, "a")]
     } else {
-        exepctedIns = [new Ins(0, "a"), new Ins(2, "c")]
+        exepctedIns = [Ins.from(0, "a"), Ins.from(2, "c")]
     }
     t.deepEqual(acIns, exepctedIns)
 }
@@ -270,9 +270,9 @@ export const mInsertDoublySplitted: GenericOpListMacro = (t, emp) => {
 
     let exepctedIns
     if (aceIns.length > 1 && aceIns[0].content === "e") {
-        exepctedIns = [new Ins(2, "e"), new Ins(1, "c"), new Ins(0, "a")]
+        exepctedIns = [Ins.from(2, "e"), Ins.from(1, "c"), Ins.from(0, "a")]
     } else {
-        exepctedIns = [new Ins(0, "a"), new Ins(2, "c"), new Ins(4, "e")]
+        exepctedIns = [Ins.from(0, "a"), Ins.from(2, "c"), Ins.from(4, "e")]
     }
     t.deepEqual(aceIns, exepctedIns)
 }
@@ -294,9 +294,9 @@ export const mInsertAppendSplitted: GenericOpListMacro = (t, emp) => {
 
     let exepctedIns
     if (ceIns.length > 1 && ceIns[0].content === "e") {
-        exepctedIns = [new Ins(3, "e"), new Ins(2, "c")]
+        exepctedIns = [Ins.from(3, "e"), Ins.from(2, "c")]
     } else {
-        exepctedIns = [new Ins(2, "c"), new Ins(4, "e")]
+        exepctedIns = [Ins.from(2, "c"), Ins.from(4, "e")]
     }
     t.deepEqual(ceIns, exepctedIns)
 }
@@ -318,9 +318,9 @@ export const mInsertPrependSplitted: GenericOpListMacro = (t, emp) => {
 
     let exepctedIns
     if (acIns.length > 1 && acIns[0].content === "c") {
-        exepctedIns = [new Ins(1, "c"), new Ins(0, "a")]
+        exepctedIns = [Ins.from(1, "c"), Ins.from(0, "a")]
     } else {
-        exepctedIns = [new Ins(0, "a"), new Ins(2, "c")]
+        exepctedIns = [Ins.from(0, "a"), Ins.from(2, "c")]
     }
     t.deepEqual(acIns, exepctedIns)
 }
@@ -664,7 +664,7 @@ export const mRemoveEqual: GenericOpListMacro = (t, emp) => {
     const cdRmv = seqA.remove(abcd.toLengthBlock())
 
     t.is(seqA.concatenated(""), "")
-    t.deepEqual(cdRmv, [new Del(0, 4)])
+    t.deepEqual(cdRmv, [Del.from(0, 4)])
 }
 mRemoveEqual.title = titled("remove-equal")
 
@@ -676,7 +676,7 @@ export const mRemoveIncludedLeftBy: GenericOpListMacro = (t, emp) => {
     const abRmv = seqA.remove(ab.toLengthBlock())
 
     t.is(seqA.concatenated(""), "cd")
-    t.deepEqual(abRmv, [new Del(0, 2)])
+    t.deepEqual(abRmv, [Del.from(0, 2)])
 }
 mRemoveIncludedLeftBy.title = titled("remove-included-left-by")
 
@@ -689,7 +689,7 @@ export const mRemoveIncludedMiddleBy: GenericOpListMacro = (t, emp) => {
     const bcRmv = seqA.remove(bc.toLengthBlock())
 
     t.is(seqA.concatenated(""), "ad")
-    t.deepEqual(bcRmv, [new Del(1, 2)])
+    t.deepEqual(bcRmv, [Del.from(1, 2)])
 }
 mRemoveIncludedMiddleBy.title = titled("remove-included-middle-by")
 
@@ -701,7 +701,7 @@ export const mRemoveIncludedRightBy: GenericOpListMacro = (t, emp) => {
     const cdRmv = seqA.remove(cd.toLengthBlock())
 
     t.is(seqA.concatenated(""), "ab")
-    t.deepEqual(cdRmv, [new Del(2, 2)])
+    t.deepEqual(cdRmv, [Del.from(2, 2)])
 }
 mRemoveIncludedRightBy.title = titled("remove-included-right-by")
 
@@ -715,7 +715,7 @@ export const mRemoveIncludingLeft: GenericOpListMacro = (t, emp) => {
     const abRmv = seqB.remove(abcd.toLengthBlock())
 
     t.is(seqB.concatenated(""), "")
-    t.deepEqual(abRmv, [new Del(0, 2)])
+    t.deepEqual(abRmv, [Del.from(0, 2)])
 }
 mRemoveIncludingLeft.title = titled("remove-including-left")
 
@@ -730,7 +730,7 @@ export const mRemoveIncludingMiddle: GenericOpListMacro = (t, emp) => {
     const bcRmv = seqB.remove(abcd.toLengthBlock())
 
     t.is(seqB.concatenated(""), "")
-    t.deepEqual(bcRmv, [new Del(0, 2)])
+    t.deepEqual(bcRmv, [Del.from(0, 2)])
 }
 mRemoveIncludingMiddle.title = titled("remove-including-middle")
 
@@ -744,7 +744,7 @@ export const mRemoveIncludingRight: GenericOpListMacro = (t, emp) => {
     const cdRmv = seqB.remove(abcd.toLengthBlock())
 
     t.is(seqB.concatenated(""), "")
-    t.deepEqual(cdRmv, [new Del(0, 2)])
+    t.deepEqual(cdRmv, [Del.from(0, 2)])
 }
 mRemoveIncludingRight.title = titled("remove-including-right")
 
@@ -759,7 +759,7 @@ export const mRemoveOverlappingLeft: GenericOpListMacro = (t, emp) => {
     const bRmv = seqB.remove(bcd.toLengthBlock())
 
     t.is(seqB.concatenated(""), "a")
-    t.deepEqual(bRmv, [new Del(1, 1)])
+    t.deepEqual(bRmv, [Del.from(1, 1)])
 }
 mRemoveOverlappingLeft.title = titled("remove-overlapping-left")
 
@@ -774,7 +774,7 @@ export const mRemoveOverlappingRight: GenericOpListMacro = (t, emp) => {
     const cRmv = seqB.remove(abc.toLengthBlock())
 
     t.is(seqB.concatenated(""), "d")
-    t.deepEqual(cRmv, [new Del(0, 1)])
+    t.deepEqual(cRmv, [Del.from(0, 1)])
 }
 mRemoveOverlappingRight.title = titled("remove-overlapping-right")
 
@@ -1065,7 +1065,7 @@ export const mMergeSimple: GenericDeltaListMacro = (t, emp) => {
     t.deepEqual(seqA.concatenated(""), "abc")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
-    t.deepEqual(opB, [new Ins(0, "abc")])
+    t.deepEqual(opB, [Ins.from(0, "abc")])
 }
 mMergeSimple.title = titled("merge-simple")
 
@@ -1081,7 +1081,7 @@ export const mMergeIdempotent: GenericDeltaListMacro = (t, emp) => {
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
     t.deepEqual(opA, [])
-    t.deepEqual(opB, [new Ins(0, "abc")])
+    t.deepEqual(opB, [Ins.from(0, "abc")])
 }
 mMergeIdempotent.title = titled("merge-simple-idempotent")
 
@@ -1104,8 +1104,8 @@ export const mMerge: GenericDeltaListMacro = (t, emp) => {
     t.deepEqual(seqA.concatenated(""), "bcdeg")
     t.deepEqual(seqA.concatenated(""), seqB.concatenated(""))
     t.deepEqual(seqA.structuralHashCode(), seqB.structuralHashCode())
-    t.deepEqual(opA, [new Ins(5, "g"), new Del(0, 1)])
-    t.deepEqual(opB, [new Del(4, 1)])
+    t.deepEqual(opA, [Ins.from(5, "g"), Del.from(0, 1)])
+    t.deepEqual(opB, [Del.from(4, 1)])
 }
 mMerge.title = titled("merge")
 

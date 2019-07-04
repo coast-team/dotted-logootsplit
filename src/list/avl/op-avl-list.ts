@@ -7,12 +7,13 @@ import {
 import { Node, ValuedNode, lengthOf } from "./avl-list-node"
 import { u32, isU32 } from "../../util/number"
 import { Block, LengthBlock } from "../../core/block"
-import { Ins, Del } from "../../core/local-operation"
 import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { assert } from "../../util/assert"
 import { U32Range } from "../../core/u32-range"
 import { FromPlain, isObject } from "../../util/data-validation"
 import { Anchor } from "../../core/anchor"
+import { Ins } from "../../core/ins"
+import { Del } from "../../core/del"
 
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
@@ -101,7 +102,7 @@ export class OpAvlList<
             return ins
         } else {
             this.root = ValuedNode.leaf(delta)
-            return [new Ins(0, delta.content)]
+            return [Ins.from(0, delta.content)]
         }
     }
 

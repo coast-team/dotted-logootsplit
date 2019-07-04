@@ -9,9 +9,10 @@
 import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { Ins, Del } from "./local-operation"
 import { u32, hashCodeOf } from "../util/number"
 import { Anchor } from "./anchor"
+import { Ins } from "./ins"
+import { Del } from "./del"
 
 /**
  * List which can only be remotely updated using operations.

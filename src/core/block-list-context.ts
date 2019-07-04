@@ -3,11 +3,11 @@ import { Concat } from "./concat"
 import { Block, BlockOrdering, LengthBlock } from "./block"
 import { isU32, u32 } from "../util/number"
 import { assert } from "../util/assert"
-import { Ins, Del } from "./local-operation"
 import { BlockFactory } from "./block-factory"
 import { U32Range, RangeOrdering } from "./u32-range"
 import { Anchor } from "./anchor"
-import { Ordering } from "../util/ordering"
+import { Ins } from "./ins"
+import { Del } from "./del"
 
 /**
  * Abstraction for block insertion and block removal.
@@ -391,7 +391,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
                 this.replace(iBlock)
                 const iBlockIndex = currIndex + lSplit.length
                 this.insertSuccessor(rSplit)
-                return [new Ins(iBlockIndex, iBlock.content)]
+                return [Ins.from(iBlockIndex, iBlock.content)]
             }
             case BlockOrdering.OVERLAPPING_BEFORE:
             case BlockOrdering.OVERLAPPING_AFTER:
@@ -459,7 +459,10 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
             case BlockOrdering.PREPENDABLE:
             case BlockOrdering.BEFORE: {
                 const lRmv = this.removeLeft(dBlock, minIndex)
-                if (lRmv.length > 0 && lRmv[0].endIndex() === currIndex) {
+                if (
+                    lRmv.length > 0 &&
+                    lRmv[0].index + lRmv[0].length === currIndex
+                ) {
                     this.mergeLeft()
                 }
                 return lRmv
@@ -509,22 +512,22 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
             }
             case BlockOrdering.EQUAL: {
                 this.removeCurrentMerge()
-                return [new Del(currIndex, curr.length)]
+                return [Del.from(currIndex, curr.length)]
             }
             case BlockOrdering.INCLUDED_LEFT_BY: {
                 this.replace(curr.appendable(dBlock))
-                return [new Del(currIndex, dBlock.length)]
+                return [Del.from(currIndex, dBlock.length)]
             }
             case BlockOrdering.INCLUDED_RIGHT_BY: {
                 const replacing = curr.prependable(dBlock)
                 this.replace(replacing)
-                return [new Del(currIndex + replacing.length, dBlock.length)]
+                return [Del.from(currIndex + replacing.length, dBlock.length)]
             }
             case BlockOrdering.INCLUDED_MIDDLE_BY: {
                 const replacing = curr.prependable(dBlock)
                 this.replace(replacing)
                 this.insertSuccessor(curr.appendable(dBlock))
-                return [new Del(currIndex + replacing.length, dBlock.length)]
+                return [Del.from(currIndex + replacing.length, dBlock.length)]
             }
             case BlockOrdering.SPLITTING:
                 return [] // already removed or not already inserted
