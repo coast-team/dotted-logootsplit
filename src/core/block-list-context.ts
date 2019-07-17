@@ -426,16 +426,24 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
             return this.insertAtLeft(relIndex, items, factory)
         } else if (relIndex === currRelIndex) {
             const iBlock = factory.between(this.predecessor(), items, curr)
-            this.insert(iBlock, 0) // handle merge
+            this.replace(iBlock)
+            this.mergeLeft()
+            this.insertSuccessor(curr)
+            this.mergeRight()
             return iBlock
         } else if (relIndex < currRelEndIndex) {
             const [lSplit, rSplit] = curr.splitAt(relIndex - currRelIndex)
             const iBlock = factory.between(lSplit, items, rSplit)
-            this.insert(iBlock, 0) // handle split
+            this.replace(iBlock)
+            this.insertPredecessor(lSplit)
+            this.insertSuccessor(rSplit)
             return iBlock
         } else if (relIndex === currRelEndIndex) {
             const iBlock = factory.between(curr, items, this.successor())
-            this.insert(iBlock, 0) // handle merge
+            this.replace(iBlock)
+            this.mergeRight()
+            this.insertPredecessor(curr)
+            this.mergeLeft()
             return iBlock
         } else {
             const subRelIndex = relIndex - currRelEndIndex
