@@ -28,7 +28,8 @@
     "build": "tsc -b tsconfig.main.json tsconfig.module.json tsconfig.es2015.json tsconfig.types.json",
     "clean": "rm -rf dist/ .tested/ .nyc_output/",
     "pretest": "rm -rf .tested/test/ && tsc",
-    "test": "nyc ava",
+    "test": "ava",
+    "coverage": "nyc npm run test",
     "prerelease": "npm test && npm run build",
     "release": "standard-version --sign"
   },
@@ -60,6 +61,9 @@
     ]
   },
   "nyc": {
+    "extension": [
+      ".ts"
+    ],
     "exclude": [
       ".tested/src/*.js",
       ".tested/src/core/assert.js",
