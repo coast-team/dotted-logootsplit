@@ -20,11 +20,6 @@ export * from "./core/delta-replicated-list"
 
 export * from "./block-factory/simple-block-factory"
 
-import * as linked from "./list/linked/linked"
-export { linked }
-
-export * from "./list/avl/op-avl-list"
-import * as avl from "./list/avl/avl"
-export { avl }
+export * as avl from "./list/avl"
 
 export * from "./util/ordering"

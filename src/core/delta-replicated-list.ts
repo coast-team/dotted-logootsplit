@@ -3,7 +3,6 @@ import {
     OpReplicatedList,
     OpEditableReplicatedList,
 } from "./op-replicated-list"
-import { BlockListContext } from "./block-list-context"
 import { LengthBlock, Block } from "./block"
 import { assert } from "../util/assert"
 import { isU32, u32 } from "../util/number"
@@ -69,7 +68,7 @@ export class DeltaReplicatedList<E extends Concat<E>> {
     }
 
     get length(): u32 {
-        return BlockListContext.length
+        return this.list.length
     }
 
     reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
