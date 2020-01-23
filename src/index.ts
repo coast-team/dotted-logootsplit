@@ -25,11 +25,11 @@ export * from "./dot-pos/simple/simple-dot-pos"
 export * from "./pos/simple/simple-block-factory"
 export * from "./pos/simple/simple-pos"
 
-import * as linked from "./list/linked/linked"
-export { linked }
+export * as linked from "./list/linked/linked"
 
 export * from "./list/avl/op-avl-list"
-import * as avl from "./list/avl/avl"
-export { avl }
+export * as avl from "./list/avl/avl"
+
+export * as cowlist from "./list/cow-list/cow-list"
 
 export * from "./util/ordering"

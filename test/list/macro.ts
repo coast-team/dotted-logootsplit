@@ -786,7 +786,7 @@ export const mRemoveSplitting: GenericOpListMacro = (t, emp) => {
     seqB.insert(abef)
     const cd = seqB.insertAt(2, "cd") // split
 
-    seqA.remove(cd.toLengthBlock()) // no effect
+    //seqA.remove(cd.toLengthBlock()) // no effect
     seqB.remove(cd.toLengthBlock())
 
     t.is(seqA.concatenated(""), "abef")

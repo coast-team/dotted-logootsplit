@@ -1,0 +1,34 @@
+
+- webpack sideeffect prop
+- fromPlain
+- better pos generation strategy (LSeq)
+
+- Causal context
+    - Impelment a custom data structure to store intervals
+        - Opretaions:
+            - indert(interval)
+            - diff(interval)
+        - Process for block insertion:
+            1. derive the seq interval from delta
+            2. diff that
+            3. insert diffs in the data structure
+            4. use diff to inetrset the block
+            5. insert intersection in main structure
+        - Process for deletion
+            1. derive the seq interval from delta
+            2. diff that
+            3. insert diffs in the data structure
+            4. if diff is not empty then perform the deletion in main structure
+
+- Data repr
+    - Decoupling memory and persistent repr
+        -> easy tree change
+        -> simpler data schema for persistence and communication
+    - Persitent repr based on an array of blocks
+
+- Externalized Tree with batched ops
+    - Implement an externalized bin tree
+        -> better code reuse
+        -> better testability
+        -> simpler algorithms
+        -> simpler code profiling
