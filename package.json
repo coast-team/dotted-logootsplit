@@ -36,9 +36,6 @@
   "ava": {
     "files": [
       ".tested/test/**/*.test.js"
-    ],
-    "sources": [
-      ".tested/src/**/*.js"
     ]
   },
   "commitlint": {
@@ -56,7 +53,6 @@
   "lint-staged": {
     "*.ts": [
       "prettier --write",
-      "git add",
       "eslint"
     ]
   },
@@ -71,23 +67,23 @@
     ]
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-conventional": "^8.1.0",
-    "@types/node": "^12.6.6",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@types/node": "^13.1.8",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
     "@typescript-eslint/typescript-estree": "^1.9.0",
-    "ava": "^2.1.0",
+    "ava": "^3.0.0",
     "eslint": "^5.16.0",
     "eslint-config-conaclos": "^2.4.0",
-    "husky": "^2.4.0",
-    "lint-staged": "^8.1.7",
-    "nyc": "^14.1.1",
-    "prettier": "~1.17.1",
-    "typescript": "^3.4.5"
+    "husky": "^4.2.0",
+    "lint-staged": "^10.0.2",
+    "nyc": "^15.0.0",
+    "prettier": "~1.19.1",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "replayable-random": "=0.4.1",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   }
 }
