@@ -52,8 +52,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "prettier --write",
-      "eslint"
+      "prettier --write"
     ]
   },
   "nyc": {
@@ -70,12 +69,7 @@
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/node": "^13.1.8",
-    "@typescript-eslint/eslint-plugin": "^1.9.0",
-    "@typescript-eslint/parser": "^1.9.0",
-    "@typescript-eslint/typescript-estree": "^1.9.0",
     "ava": "^3.0.0",
-    "eslint": "^5.16.0",
-    "eslint-config-conaclos": "^2.4.0",
     "husky": "^4.2.0",
     "lint-staged": "^10.0.2",
     "nyc": "^15.0.0",
