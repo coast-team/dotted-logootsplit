@@ -80,7 +80,7 @@
     "lint-staged": "^10.0.2",
     "nyc": "^15.0.0",
     "prettier": "~1.19.1",
-    "typescript": "^3.7.5"
+    "typescript": "~3.7.5"
   },
   "dependencies": {
     "replayable-random": "=0.4.1",
