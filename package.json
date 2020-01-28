@@ -56,7 +56,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{json,ts,md,yml}": [
       "prettier --write"
     ]
   },
