@@ -35,8 +35,13 @@
   },
   "ava": {
     "files": [
-      ".tested/test/**/*.test.js"
-    ]
+      "test/**/*.test.ts"
+    ],
+    "typescript": {
+      "rewritePaths": {
+        "test/": ".tested/test/"
+      }
+    }
   },
   "commitlint": {
     "extends": [
@@ -66,10 +71,11 @@
     ]
   },
   "devDependencies": {
+    "@ava/typescript": "^1.0.0",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/node": "^13.1.8",
-    "ava": "^3.0.0",
+    "ava": "^3.1.0",
     "husky": "^4.2.0",
     "lint-staged": "^10.0.2",
     "nyc": "^15.0.0",
