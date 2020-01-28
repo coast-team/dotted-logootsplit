@@ -51,7 +51,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "ava && lint-staged",
+      "pre-commit": "ava --fail-fast && lint-staged",
       "pre-push": "npm test"
     }
   },
