@@ -251,11 +251,6 @@ export class SimplePos implements Pos<SimplePos> {
     }
 
     /** @override */
-    isBaseEqual(other: SimplePos): boolean {
-        return this.compareBase(other) === BaseOrdering.EQUAL
-    }
-
-    /** @override */
     compare(other: SimplePos): Ordering {
         if (this.depth() > other.depth()) {
             return orderingInversion[other.compare(this)]
@@ -277,7 +272,10 @@ export class SimplePos implements Pos<SimplePos> {
         }
     }
 
-    /** @override */
+    /**
+     * @param other
+     * @return Are identical?
+     */
     isEqual(other: SimplePos): boolean {
         return (
             this.replica() === other.replica() &&

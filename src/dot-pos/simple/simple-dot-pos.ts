@@ -219,11 +219,6 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
     }
 
     /** @override */
-    isBaseEqual(other: SimpleDotPos): boolean {
-        return this.compareBase(other) === BaseOrdering.EQUAL
-    }
-
-    /** @override */
     compare(other: SimpleDotPos): Ordering {
         if (this.depth() > other.depth()) {
             return orderingInversion[other.compare(this)]
@@ -245,7 +240,10 @@ export class SimpleDotPos implements DotPos<SimpleDotPos> {
         }
     }
 
-    /** @override */
+    /**
+     * @param other
+     * @return Are identical?
+     */
     isEqual(other: SimpleDotPos): boolean {
         return this.replica() === other.replica() && this.seq() === other.seq()
     }

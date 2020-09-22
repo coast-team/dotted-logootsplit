@@ -108,12 +108,6 @@ export interface Pos<P extends Pos<P>> {
     readonly compareBase: (other: P) => BaseOrdering
 
     /**
-     * @param other
-     * @return Are sharing the same base?
-     */
-    readonly isBaseEqual: (other: P) => boolean
-
-    /**
      * @example
      * a.compare(b) == Ordering.Before if a < b
      *
@@ -121,10 +115,4 @@ export interface Pos<P extends Pos<P>> {
      * @return this [Order relation] {@link other}.
      */
     readonly compare: (other: P) => Ordering
-
-    /**
-     * @param other
-     * @return Are identical?
-     */
-    readonly isEqual: (other: P) => boolean
 }
