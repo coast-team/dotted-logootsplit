@@ -104,13 +104,6 @@ test("compare", (t) => {
     t.is(pos15.compare(pos14), Ordering.AFTER)
 })
 
-test("isBaseEqual", (t) => {
-    t.true(pos0.isBaseEqual(pos0))
-
-    t.true(pos0.isBaseEqual(pos1))
-    t.true(pos1.isBaseEqual(pos0))
-})
-
 test("from-plain", (t) => {
     t.is(SimplePos.fromPlain(undefined), undefined)
     t.deepEqual(SimplePos.fromPlain(pos0), pos0)
