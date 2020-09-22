@@ -70,13 +70,6 @@ export class Anchor<P extends Pos<P>> {
     }
 
     /**
-     * Globally unique identifier of the author which generated this block.
-     */
-    replica(): ReturnType<P["replica"]> {
-        return this.ref.replica()
-    }
-
-    /**
      * @param other
      * @return this [Order relation] other
      */
