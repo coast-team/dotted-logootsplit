@@ -1,5 +1,4 @@
 import test from "ava"
-import { isU32 } from "../../src/util/number"
 import { isDel, Del } from "../../src"
 
 test("is-del", (t) => {

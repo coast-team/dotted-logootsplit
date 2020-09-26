@@ -8,25 +8,25 @@
 
 import { alea, distrib, MutRand } from "replayable-random"
 
-import { assert } from "../../util/assert"
-import { isObject, FromPlain } from "../../util/data-validation"
-import { ArrayedPos } from "./arrayed-pos"
-import { isU32, u32, U32_BOTTOM, U32_TOP } from "../../util/number"
-import { BlockFactory } from "../../core/block-factory"
-import { Concat } from "../../core/concat"
-import { Block } from "../../core/block"
-import { getDefault, prefixLength } from "../../util/uint32-array"
+import { assert } from "../util/assert"
+import { isObject, FromPlain } from "../util/data-validation"
+import { Pos } from "../core/pos"
+import { isU32, u32, U32_BOTTOM, U32_TOP } from "../util/number"
+import { BlockFactory } from "../core/block-factory"
+import { Concat } from "../core/concat"
+import { Block } from "../core/block"
+import { getDefault, prefixLength } from "../util/uint32-array"
 
 /**
  * @param p
  * @param length length of the new base
  * @return a base initialized from `p`.
  */
-const baseFrom = (p: ArrayedPos, length: u32): Uint32Array => {
+const baseFrom = (p: Pos, length: u32): Uint32Array => {
     const base = new Uint32Array(length)
     base.set(p.base.subarray(0, length))
     if (base.length > p.base.length) {
-        base[p.base.length] = p.offset
+        base[p.base.length] = p.seq
     }
     return base
 }
@@ -37,19 +37,19 @@ const POS_EXTRENUM = {
     /**
      * Lowest position.
      */
-    BOTTOM: new ArrayedPos(Uint32Array.of(U32_BOTTOM, U32_BOTTOM), U32_BOTTOM),
+    BOTTOM: new Pos(Uint32Array.of(U32_BOTTOM, U32_BOTTOM), U32_BOTTOM),
 
     /**
      * Greatest position.
      */
-    TOP: new ArrayedPos(Uint32Array.of(U32_TOP, U32_TOP), U32_TOP),
+    TOP: new Pos(Uint32Array.of(U32_TOP, U32_TOP), U32_TOP),
 } as const
 
 /**
  * The strategy of generation is to genearte random positions between two
  * defined positions.
  */
-export class DotBlockFactory extends BlockFactory<ArrayedPos> {
+export class SimpleDotBlockFactory extends BlockFactory {
     /**
      * The random generator is seeded with both globalSeed and replica.
      *
@@ -57,20 +57,20 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
      * @param globalSeed Seed for predictable random generation.
      * @return New factory with 0 as {@link DotBlockFactory#seq }
      */
-    static from(replica: u32, globalSeed: string): DotBlockFactory {
+    static from(replica: u32, globalSeed: string): SimpleDotBlockFactory {
         assert(() => isU32(replica), "replica ∈ u32")
         const seed = `${globalSeed}${replica}`
         const randState = alea.mutFrom(seed)
-        return new DotBlockFactory(replica, DEFAULT_SEQ, randState)
+        return new SimpleDotBlockFactory(replica, DEFAULT_SEQ, randState)
     }
 
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    static fromPlain(x: unknown): DotBlockFactory | undefined {
+    static fromPlain(x: unknown): SimpleDotBlockFactory | undefined {
         if (
-            isObject<DotBlockFactory>(x) &&
+            isObject<SimpleDotBlockFactory>(x) &&
             isU32(x.replica) &&
             x.replica !== U32_TOP &&
             isU32(x.seq) &&
@@ -78,7 +78,7 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
         ) {
             const mutRand = alea.mutFromPlain(x.randState)
             if (mutRand !== undefined) {
-                return new DotBlockFactory(x.replica, x.seq, mutRand)
+                return new SimpleDotBlockFactory(x.replica, x.seq, mutRand)
             }
         }
         return undefined
@@ -89,7 +89,7 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
      */
     static blockFromPlain<E extends Concat<E>>(
         g: FromPlain<E>
-    ): FromPlain<Block<ArrayedPos, E>> {
+    ): FromPlain<Block<E>> {
         return undefined as any // FIXME
     }
 
@@ -99,27 +99,19 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
      * @param randState random generator's state
      */
     private constructor(replica: u32, seq: u32, randState: MutRand) {
-        super(POS_EXTRENUM)
-        this.replica = replica
-        this.seq = seq
+        super(POS_EXTRENUM, replica, seq)
         this.randState = randState
     }
 
     // Access
-    /** @Override */
-    readonly replica: u32
-
-    /** @Override */
-    seq: u32
-
     randState: MutRand
 
     /**
      * @return Deep copy of this.
      */
-    copy(): DotBlockFactory {
+    copy(): SimpleDotBlockFactory {
         const copiedRand = alea.mutFromPlain(this.randState) as MutRand // FIXME
-        return new DotBlockFactory(this.replica, this.seq, copiedRand)
+        return new SimpleDotBlockFactory(this.replica, this.seq, copiedRand)
     }
 
     /**
@@ -130,7 +122,7 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
     increaseSeq(by: u32): void {
         assert(() => isU32(by), "by ∈ u32")
         assert(() => isU32(this.seq + by), "no overflow")
-        this.seq = this.seq + by
+        this._seq = this._seq + by
     }
 
     /**
@@ -138,14 +130,14 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
      * @param u
      * @param Can a position be appended to `l` and before `u`?
      */
-    protected isAppendable(l: ArrayedPos, u: ArrayedPos): boolean {
+    protected isAppendable(l: Pos, u: Pos): boolean {
         const lReplicaIndex = l.base.length - 1
         return (
             l !== POS_EXTRENUM.BOTTOM &&
             l.base[lReplicaIndex] === this.replica &&
             (u === POS_EXTRENUM.TOP ||
                 this.replica !== getDefault(u.base, lReplicaIndex, U32_TOP) ||
-                l.offset > getDefault(u.base, lReplicaIndex + 1, u.offset))
+                l.seq > getDefault(u.base, lReplicaIndex + 1, u.seq))
         )
     }
 
@@ -159,20 +151,15 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
 
     // Impl
     /** @override */
-    posBetween(l: ArrayedPos, length: u32, u: ArrayedPos): ArrayedPos {
-        let result
+    posBetween(l: Pos, length: u32, u: Pos): Pos {
         if (this.isAppendable(l, u)) {
-            result = l.withOffset(this.seq)
+            return l.withOffset(this.seq)
         } else {
             const lBase = l.base
             const uBase = u.base
 
             let i = prefixLength(lBase, uBase)
-            if (
-                i === lBase.length &&
-                i < uBase.length &&
-                l.offset === uBase[i]
-            ) {
+            if (i === lBase.length && i < uBase.length && l.seq === uBase[i]) {
                 // l is a prefix of u
                 i++
                 while (uBase[i] === U32_BOTTOM) {
@@ -197,9 +184,7 @@ export class DotBlockFactory extends BlockFactory<ArrayedPos> {
             )
             base[i] = priority
             base[i + 1] = this.replica
-            result = new ArrayedPos(base, this.seq)
+            return new Pos(base, this.seq)
         }
-        this.seq = this.seq + length
-        return result
     }
 }

@@ -1,15 +1,14 @@
 import test from "ava"
-
-import { BlockOrdering, Block } from "../../../src/core/block"
-import { DotBlockFactory } from "../../../src/pos/arrayed/dot-block-factory"
-import { U32_BOTTOM } from "../../../src/util/number"
-import { posOf } from "./pos.testutil"
+import { SimpleDotBlockFactory } from "../../src/index"
+import { Block, BlockOrdering } from "../../src/core/block"
+import { U32_BOTTOM } from "../../src/util/number"
+import { posOf } from "../core/pos.testutil"
 
 const seed = "dotted-logootsplit"
 
-const factoryA = DotBlockFactory.from(1, seed)
+const factoryA = SimpleDotBlockFactory.from(1, seed)
 const firstA = factoryA.from("ab")
-const factoryB = DotBlockFactory.from(2, seed)
+const factoryB = SimpleDotBlockFactory.from(2, seed)
 const firstB = factoryB.after(firstA, "rs")
 
 test("after_appendable-block", (t) => {

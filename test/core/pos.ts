@@ -1,8 +1,8 @@
 import test from "ava"
 
-import { U32_TOP } from "../../../src/util/number"
-import { BaseOrdering } from "../../../src/core/pos"
-import { Ordering } from "../../../src/util/ordering"
+import { U32_TOP } from "../../src/util/number"
+import { BaseOrdering } from "../../src"
+import { Ordering } from "../../src/util/ordering"
 import { posOf, twinPosition } from "./pos.testutil"
 
 const A = 0

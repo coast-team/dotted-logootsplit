@@ -7,8 +7,8 @@
 */
 
 import { assert } from "../util/assert"
-import { isU32, u32 } from "../util/number"
 import { isObject } from "../util/data-validation"
+import { isU32, u32 } from "../util/number"
 
 /**
  * Concatenable and sliceable types.
