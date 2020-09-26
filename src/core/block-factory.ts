@@ -7,85 +7,76 @@
 */
 
 import { assert, heavyAssert } from "../util/assert"
-import { Block, BlockOrdering, LengthBlock } from "./block"
+import { FromPlain } from "../util/data-validation"
+import { isU32, u32 } from "../util/number"
+import { Block, BlockOrdering } from "./block"
 import { Concat } from "./concat"
 import { Pos } from "./pos"
-import { u32 } from "../util/number"
-import { Anchor } from "./anchor"
-import { FromPlain } from "../util/data-validation"
 
 /**
  * Common interface for {@see BlockFactory} constructors.
  */
-export interface BlockFactoryConstructor<P extends Pos<P>> {
+export interface BlockFactoryConstructor {
     /**
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
-    readonly fromPlain: FromPlain<BlockFactory<P>>
-
-    /**
-     * @param itemsFromPlain
-     * @return function that accepts a value and attempt to build a block.
-     *  It returns the built block if it succeeds, or undefined if it fails.
-     */
-    readonly blockFromPlain: <E extends Concat<E>>(
-        itemsFromPlain: FromPlain<E>
-    ) => FromPlain<Block<P, E>>
+    readonly fromPlain: FromPlain<BlockFactory>
 }
 
 /**
  * Factory of blocks.
  * Implementations can implement different strategies of generation.
  *
- * Implementations should have at least two static function described in
+ * Implementations should have at least one static function described in
  * {@see BlockFactoryConstructor }.
  */
-export abstract class BlockFactory<P extends Pos<P>> {
+export abstract class BlockFactory {
     /**
      * @param posBounds bottom and top positions.
      */
-    protected constructor(protected readonly posBounds: { BOTTOM: P; TOP: P }) {
-        this.bottomAnchor = Anchor.from(posBounds.BOTTOM, true)
-        this.topAnchor = Anchor.from(posBounds.TOP, false)
+    constructor(replica: u32, initialSeq: u32) {
+        this.replica = replica
+        this._seq = initialSeq
     }
-
-    // Factory
-    /**
-     * Lowest Anchor. All generated block are after this anchor.
-     */
-    readonly bottomAnchor: Anchor<P>
-
-    /**
-     * Greatest Anchor. All generated block are before this anchor.
-     */
-    readonly topAnchor: Anchor<P>
 
     /**
      * Globally unique identifier of the author of the generated blocks
      * by this factory.
      */
-    abstract readonly replica: u32
+    readonly replica: u32
+
+    /**
+     * @see {@link BlockFactory#seq}
+     */
+    protected _seq: u32
 
     /**
      * Monotically increasing sequence number.
      * It is locally unique.
      * Seq use in the next generation.
      */
-    abstract readonly seq: u32
+    get seq(): u32 {
+        return this._seq
+    }
+
+    /**
+     * Increase {@link DotBlockFactory#seq } by {@link by }
+     *
+     * @param by
+     */
+    increaseSeq(by: u32): void {
+        assert(() => isU32(by), "by ∈ u32")
+        assert(() => isU32(this.seq + by), "no overflow")
+        this._seq = this._seq + by
+    }
 
     /**
      * @param items
      * @return New block with {@link items } as {@link Block#items }.
      */
-    from<E extends Concat<E>>(items: E): Block<P, E> {
-        assert(() => items.length > 0, "items.length > 0")
-        const pos = this.posBetween(
-            this.posBounds.BOTTOM,
-            items.length,
-            this.posBounds.TOP
-        )
-        return new Block(pos, items)
+    from<E extends Concat<E>>(items: E): Block<E> {
+        return this.between(undefined, items, undefined)
     }
 
     /**
@@ -94,14 +85,8 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @return New block after {@link l } with {@link items } as
      *  {@link Block#items }.
      */
-    after<E extends Concat<E>>(l: Block<P, E>, items: E): Block<P, E> {
-        assert(() => items.length > 0, "items.length > 0")
-        const pos = this.posBetween(
-            l.upperPos(),
-            items.length,
-            this.posBounds.TOP
-        )
-        return new Block(pos, items)
+    after<E extends Concat<E>>(l: Block<E>, items: E): Block<E> {
+        return this.between(l, items, undefined)
     }
 
     /**
@@ -110,14 +95,8 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @return New block before {@link u } with {@link items } as
      *  {@link Block#items }.
      */
-    before<E extends Concat<E>>(items: E, u: Block<P, E>): Block<P, E> {
-        assert(() => items.length > 0, "items.length > 0")
-        const pos = this.posBetween(
-            this.posBounds.BOTTOM,
-            items.length,
-            u.lowerPos
-        )
-        return new Block(pos, items)
+    before<E extends Concat<E>>(items: E, u: Block<E>): Block<E> {
+        return this.between(undefined, items, u)
     }
 
     /**
@@ -128,10 +107,10 @@ export abstract class BlockFactory<P extends Pos<P>> {
      *  with {@link items } as {@link Block#items }.
      */
     between<E extends Concat<E>>(
-        l: Block<P, E> | undefined,
+        l: Block<E> | undefined,
         items: E,
-        u: Block<P, E> | undefined
-    ): Block<P, E> {
+        u: Block<E> | undefined
+    ): Block<E> {
         assert(() => items.length > 0, "items.length > 0")
         heavyAssert(
             () =>
@@ -140,42 +119,13 @@ export abstract class BlockFactory<P extends Pos<P>> {
                 l.compare(u) <= BlockOrdering.PREPENDABLE,
             "l < u"
         )
-        const lPos = l !== undefined ? l.upperPos() : this.posBounds.BOTTOM
-        const uPos = u !== undefined ? u.lowerPos : this.posBounds.TOP
+        const lPos = l !== undefined ? l.upperPos() : Pos.BOTTOM
+        const uPos = u !== undefined ? u.lowerPos : Pos.TOP
         const pos = this.posBetween(lPos, items.length, uPos)
-        return new Block(pos, items)
+        const result = new Block(pos, items)
+        this._seq = this._seq + result.length
+        return result
     }
-
-    /**
-     * See {@link BlockFactory#garbageCollect }
-     *
-     * @param dBlock
-     * @return Is there stored positions in this factory?
-     */
-    canGarbageCollect(): boolean {
-        return (
-            this.garbageCollectPos !== BlockFactory.prototype.garbageCollectPos
-        )
-    }
-
-    /**
-     * Some factories can store generated positions for differents purposes.
-     * This method enables to garbage collect these positions when they
-     * are removed from the main data structure.
-     *
-     * @param dBlock
-     */
-    garbageCollect(dBlock: LengthBlock<P>): void {
-        this.garbageCollectPos(dBlock.lowerPos, dBlock.length)
-    }
-
-    /**
-     * See {@link BlockFactory#garbageCollect }
-     *
-     * @param l lower position
-     * @param length number of positions after l (including l) to remove
-     */
-    protected garbageCollectPos(l: P, length: u32): void {}
 
     // Impl
     /**
@@ -184,5 +134,5 @@ export abstract class BlockFactory<P extends Pos<P>> {
      * @param u position greater than all generated positions
      * @return Lower position of the set of int-successive generated positions.
      */
-    protected abstract posBetween(l: P, length: u32, u: P): P
+    protected abstract posBetween(l: Pos, length: u32, u: Pos): Pos
 }

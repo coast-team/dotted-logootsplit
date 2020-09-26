@@ -1,4 +1,3 @@
-import { DotPos } from "./dot-pos"
 import { Concat } from "./concat"
 import {
     OpReplicatedList,
@@ -13,10 +12,10 @@ import { Anchor } from "./anchor"
 import { Ins } from "./ins"
 import { Del } from "./del"
 
-export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
-    static from<P extends DotPos<P>, E extends Concat<E>>(
-        list: OpReplicatedList<P, E>
-    ): DeltaReplicatedList<P, E> {
+export class DeltaReplicatedList<E extends Concat<E>> {
+    static from<E extends Concat<E>>(
+        list: OpReplicatedList<E>
+    ): DeltaReplicatedList<E> {
         assert(() => list.length === 0, "list must be empty")
         return new DeltaReplicatedList(list, Object.create(null))
     }
@@ -26,9 +25,9 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends DotPos<P>, E extends Concat<E>>(
-        opFromPlain: FromPlain<OpReplicatedList<P, E>>
-    ): FromPlain<DeltaReplicatedList<P, E>> {
+    static fromPlain<E extends Concat<E>>(
+        opFromPlain: FromPlain<OpReplicatedList<E>>
+    ): FromPlain<DeltaReplicatedList<E>> {
         return (x) => {
             if (
                 isObject<{ list: unknown; versionVector: unknown }>(x) &&
@@ -52,7 +51,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         }
     }
 
-    protected readonly list: OpReplicatedList<P, E>
+    protected readonly list: OpReplicatedList<E>
 
     // Access
     /**
@@ -60,10 +59,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      */
     protected readonly versionVector: { [replica: string]: u32 | undefined }
 
-    protected constructor(
-        list: OpReplicatedList<P, E>,
-        vv: { [r: string]: u32 }
-    ) {
+    protected constructor(list: OpReplicatedList<E>, vv: { [r: string]: u32 }) {
         this.list = list
         this.versionVector = vv
     }
@@ -76,7 +72,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         return BlockListContext.length
     }
 
-    reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
+    reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
         return this.list.reduceBlock(f, prefix)
     }
 
@@ -105,10 +101,22 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
     }
 
     /**
+     * @param index index where the anchor is
+     * @param isAfter Is the anchor after `index`?
+     * @return anchor at `index`.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    anchorAt(index: u32, isAfter: boolean): Anchor {
+        assert(() => isU32(index), "index ∈ u32")
+        return this.list.anchorAt(index, isAfter)
+    }
+
+    /**
      * @param anchor
      * @return index of `anchor`.
      */
-    indexFrom(anchor: Anchor<P>): u32 {
+    indexFrom(anchor: Anchor): u32 {
         return this.list.indexFrom(anchor)
     }
 
@@ -118,7 +126,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @param delta
      * @return parts of `delta` that can be inserted.
      */
-    insertable(delta: Block<P, E>): Block<P, E>[] {
+    insertable(delta: Block<E>): Block<E>[] {
         const lastSeq = this.lastSeq(String(delta.replica()))
         const deltaSeqs = delta.seqs()
         if (deltaSeqs.lower > lastSeq) {
@@ -137,7 +145,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @param delta
      * @return parts of `delta` that was removed.
      */
-    removed(delta: Block<P, E>): LengthBlock<P>[] {
+    removed(delta: Block<E>): LengthBlock[] {
         const lastSeq = this.lastSeq(String(delta.replica()))
         const deltaSeqs = delta.seqs()
         if (deltaSeqs.lower > lastSeq) {
@@ -154,7 +162,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         })
     }
 
-    protected bumpVersion(delta: Block<P, E> | LengthBlock<P>): void {
+    protected bumpVersion(delta: Block<E> | LengthBlock): void {
         const lastSeq = this.lastSeq(String(delta.replica()))
         const deltaSeqs = delta.seqs()
         if (deltaSeqs.lower > lastSeq + 1) {
@@ -167,7 +175,7 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         }
     }
 
-    insert(delta: Block<P, E>): Ins<E>[] {
+    insert(delta: Block<E>): Ins<E>[] {
         let result: Ins<E>[] = []
         for (const d of this.insertable(delta)) {
             const ins = this.list.insert(d)
@@ -177,19 +185,15 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
         return result
     }
 
-    remove(delta: LengthBlock<P>): Del[] {
+    remove(delta: LengthBlock): Del[] {
         this.bumpVersion(delta)
         return this.list.remove(delta)
     }
 
-    quickFilter(delta: Block<P, E>): Block<P, E>[]
-    quickFilter(delta: LengthBlock<P>): LengthBlock<P>[]
-    quickFilter(
-        delta: LengthBlock<P> | Block<P, E>
-    ): (LengthBlock<P> | Block<P, E>)[]
-    quickFilter(
-        delta: LengthBlock<P> | Block<P, E>
-    ): (LengthBlock<P> | Block<P, E>)[] {
+    quickFilter(delta: Block<E>): Block<E>[]
+    quickFilter(delta: LengthBlock): LengthBlock[]
+    quickFilter(delta: LengthBlock | Block<E>): (LengthBlock | Block<E>)[]
+    quickFilter(delta: LengthBlock | Block<E>): (LengthBlock | Block<E>)[] {
         if (delta.isLengthBlock()) {
             return [delta]
         } else {
@@ -206,10 +210,10 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local operations.
      *  The n+1 -th operation depends on the n -th operation.
      */
-    applyDelta(delta: LengthBlock<P>): Del[]
-    applyDelta(delta: Block<P, E>): Ins<E>[]
-    applyDelta(delta: LengthBlock<P> | Block<P, E>): Del[] | Ins<E>[]
-    applyDelta(delta: LengthBlock<P> | Block<P, E>): Del[] | Ins<E>[] {
+    applyDelta(delta: LengthBlock): Del[]
+    applyDelta(delta: Block<E>): Ins<E>[]
+    applyDelta(delta: LengthBlock | Block<E>): Del[] | Ins<E>[]
+    applyDelta(delta: LengthBlock | Block<E>): Del[] | Ins<E>[] {
         if (delta.isLengthBlock()) {
             return this.remove(delta)
         } else {
@@ -226,22 +230,16 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local operations.
      *  The n+1 -th operation depends on the n -th operation.
      */
-    merge(other: DeltaReplicatedList<P, E>): (Ins<E> | Del)[] {
+    merge(other: DeltaReplicatedList<E>): (Ins<E> | Del)[] {
         // determine inserted blocks in `other` and missing in `this`
-        const inserted = other.reduceBlock(
-            (acc, block) => {
-                return acc.concat(this.insertable(block))
-            },
-            [] as Block<P, E>[]
-        )
+        const inserted = other.reduceBlock((acc, block) => {
+            return acc.concat(this.insertable(block))
+        }, [] as Block<E>[])
 
         // determine removed block in `other` and present in `this`
-        const removed = this.reduceBlock(
-            (acc, block) => {
-                return acc.concat(other.removed(block))
-            },
-            [] as LengthBlock<P>[]
-        )
+        const removed = this.reduceBlock((acc, block) => {
+            return acc.concat(other.removed(block))
+        }, [] as LengthBlock[])
 
         // apply raw insertions and raw removals (bypassing causal context)
         let result: (Ins<E> | Del)[] = []
@@ -268,12 +266,11 @@ export class DeltaReplicatedList<P extends DotPos<P>, E extends Concat<E>> {
 }
 
 export class DeltaEditableReplicatedList<
-    P extends DotPos<P>,
     E extends Concat<E>
-> extends DeltaReplicatedList<P, E> {
-    static from<P extends DotPos<P>, E extends Concat<E>>(
-        list: OpEditableReplicatedList<P, E>
-    ): DeltaEditableReplicatedList<P, E> {
+> extends DeltaReplicatedList<E> {
+    static from<E extends Concat<E>>(
+        list: OpEditableReplicatedList<E>
+    ): DeltaEditableReplicatedList<E> {
         assert(() => list.length === 0, "list must be empty")
         return new DeltaEditableReplicatedList(list, Object.create(null))
     }
@@ -283,9 +280,9 @@ export class DeltaEditableReplicatedList<
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends DotPos<P>, E extends Concat<E>>(
-        opFromPlain: FromPlain<OpEditableReplicatedList<P, E>>
-    ): FromPlain<DeltaEditableReplicatedList<P, E>> {
+    static fromPlain<E extends Concat<E>>(
+        opFromPlain: FromPlain<OpEditableReplicatedList<E>>
+    ): FromPlain<DeltaEditableReplicatedList<E>> {
         return (x) => {
             if (
                 isObject<{ list: unknown; versionVector: unknown }>(x) &&
@@ -309,26 +306,14 @@ export class DeltaEditableReplicatedList<
         }
     }
 
-    protected readonly list: OpEditableReplicatedList<P, E>
+    protected readonly list: OpEditableReplicatedList<E>
 
     protected constructor(
-        list: OpEditableReplicatedList<P, E>,
+        list: OpEditableReplicatedList<E>,
         vv: { [r: string]: u32 }
     ) {
         super(list, vv)
         this.list = list
-    }
-
-    /**
-     * @param index index where the anchor is
-     * @param isAfter Is the anchor after `index`?
-     * @return anchor at `index`.
-     *  The anchor is sticked to the left psoition if isAfter is false.
-     * Otherwise, it is sticked to the right psoition.
-     */
-    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
-        assert(() => isU32(index), "index ∈ u32")
-        return this.list.anchorAt(index, isAfter)
     }
 
     /**
@@ -339,7 +324,7 @@ export class DeltaEditableReplicatedList<
      * @param items elements to insert.
      * @return Delta which represents the insertion.
      */
-    insertAt(index: u32, items: E): Block<P, E> {
+    insertAt(index: u32, items: E): Block<E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => items.length > 0, "items is not empty")
 
@@ -356,7 +341,7 @@ export class DeltaEditableReplicatedList<
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt(index: u32, length: u32): LengthBlock<P>[] {
+    removeAt(index: u32, length: u32): LengthBlock[] {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
 

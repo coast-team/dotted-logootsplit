@@ -1,6 +1,6 @@
 import test from "ava"
-import { SimpleDotBlockFactory, avl, SimpleDotPos } from "../../../src"
-import { ValuedNode, Node } from "../../../src/list/avl/avl-list-node"
+import { SimpleDotBlockFactory } from "../../../src"
+import { ValuedNode } from "../../../src/list/avl/avl-list-node"
 
 const DEFAULT_SEED = "dotted-logootsplit"
 

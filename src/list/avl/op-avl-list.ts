@@ -1,4 +1,3 @@
-import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import {
     OpReplicatedList,
@@ -18,32 +17,30 @@ import { Del } from "../../core/del"
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
  */
-export class OpAvlList<
-    P extends Pos<P>,
-    E extends Concat<E>
-> extends OpReplicatedList<P, E> {
+export class OpAvlList<E extends Concat<E>> extends OpReplicatedList<E> {
     /**
      * @param v empty value of type E
      * @return new empty list.
      */
-    static empty<P extends Pos<P>, E extends Concat<E>>(): OpAvlList<P, E> {
+    static empty<E extends Concat<E>>(): OpAvlList<E> {
         return new OpAvlList(undefined)
     }
 
     /**
-     * @param f
+     * @param blockFromPlain
      * @param itemsFromPlain
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        f: BlockFactoryConstructor<P>,
+    static fromPlain<E extends Concat<E>>(
+        f: BlockFactoryConstructor,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<OpReplicatedList<P, E>> {
+    ): FromPlain<OpReplicatedList<E>> {
         return (x: unknown) => {
             if (isObject<{ root: unknown }>(x)) {
-                const blockFromPlain = f.blockFromPlain(itemsFromPlain)
-                const root = ValuedNode.fromPlain(blockFromPlain)(x.root)
+                const root = ValuedNode.fromPlain(
+                    Block.fromPlain(itemsFromPlain)
+                )(x.root)
                 return new OpAvlList(root)
             }
             return undefined
@@ -53,12 +50,12 @@ export class OpAvlList<
     /**
      * AVL root.
      */
-    protected root: Node<P, E>
+    protected root: Node<E>
 
     /**
      * @param root {@see EditableOpAvlList#root }
      */
-    protected constructor(root: Node<P, E>) {
+    protected constructor(root: Node<E>) {
         super()
         this.root = root
     }
@@ -69,7 +66,20 @@ export class OpAvlList<
     }
 
     /** @Override */
-    indexFrom(anchor: Anchor<P>): u32 {
+    anchorAt(index: u32, isAfter: boolean): Anchor {
+        assert(() => isU32(index), "index ∈ u32")
+
+        if (this.root !== undefined) {
+            return this.root.anchorAt(index, isAfter)
+        } else if (isAfter) {
+            return Anchor.TOP
+        } else {
+            return Anchor.BOTTOM
+        }
+    }
+
+    /** @Override */
+    indexFrom(anchor: Anchor): u32 {
         if (this.root !== undefined) {
             return this.root.indexFrom(anchor, 0)
         } else {
@@ -78,7 +88,7 @@ export class OpAvlList<
     }
 
     /** @Override */
-    reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
+    reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
         if (this.root !== undefined) {
             return this.root.reduceBlock(f, prefix)
         }
@@ -86,7 +96,7 @@ export class OpAvlList<
     }
 
     /** @Override */
-    insertable(delta: Block<P, E>): Block<P, E>[] {
+    insertable(delta: Block<E>): Block<E>[] {
         if (this.root !== undefined) {
             return this.root.insertable(delta)
         }
@@ -95,7 +105,7 @@ export class OpAvlList<
 
     // Modification
     /** @Override */
-    insert(delta: Block<P, E>): Ins<E>[] {
+    insert(delta: Block<E>): Ins<E>[] {
         if (this.root !== undefined) {
             const ins = this.root.insert(delta, 0)
             this.root = this.root.balance()
@@ -107,7 +117,7 @@ export class OpAvlList<
     }
 
     /** @Override */
-    remove(delta: LengthBlock<P>): Del[] {
+    remove(delta: LengthBlock): Del[] {
         if (this.root !== undefined) {
             const rmv = this.root.remove(delta, 0)
             this.root = this.root.updated()
@@ -120,17 +130,17 @@ export class OpAvlList<
 /**
  * An {@see EditableOpReplicatedList } that uses an AVL tree.
  */
-export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
-    extends OpAvlList<P, E>
-    implements OpEditableReplicatedList<P, E> {
+export class EditableOpAvlList<E extends Concat<E>>
+    extends OpAvlList<E>
+    implements OpEditableReplicatedList<E> {
     /**
      * @param factory factory of blocks
      * @param v empty value of type E (only used for type inference)
      * @return new empty list.
      */
-    static emptyWith<P extends Pos<P>, E extends Concat<E>>(
-        factory: BlockFactory<P>
-    ): EditableOpAvlList<P, E> {
+    static emptyWith<E extends Concat<E>>(
+        factory: BlockFactory
+    ): EditableOpAvlList<E> {
         return new EditableOpAvlList(undefined, factory)
     }
 
@@ -141,15 +151,15 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        f: BlockFactoryConstructor<P>,
+    static fromPlain<E extends Concat<E>>(
+        f: BlockFactoryConstructor,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<OpEditableReplicatedList<P, E>> {
+    ): FromPlain<OpEditableReplicatedList<E>> {
         return (x: unknown) => {
             if (isObject<{ root: unknown; factory: unknown }>(x)) {
                 const factory = f.fromPlain(x.factory)
                 if (factory !== undefined) {
-                    const blockFromPlain = f.blockFromPlain(itemsFromPlain)
+                    const blockFromPlain = Block.fromPlain(itemsFromPlain)
                     const root = ValuedNode.fromPlain(blockFromPlain)(x.root)
                     return new EditableOpAvlList(root, factory)
                 }
@@ -161,38 +171,24 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     /**
      * factory of blocks.
      */
-    protected readonly factory: BlockFactory<P>
+    protected readonly factory: BlockFactory
 
     /**
      * @param root {@see EditableOpAvlList#root }
      * @param factory {@see EditableOpAvlList#factory }
      */
-    protected constructor(root: Node<P, E>, factory: BlockFactory<P>) {
+    protected constructor(root: Node<E>, factory: BlockFactory) {
         super(root)
         this.factory = factory
     }
 
     /** @Override */
-    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
-        assert(() => isU32(index), "index ∈ u32")
-
-        if (this.root !== undefined) {
-            return this.root.anchorAt(index, isAfter, this.factory)
-        } else if (isAfter) {
-            return this.factory.topAnchor
-        } else {
-            return this.factory.bottomAnchor
-        }
-    }
-
-    /** @Override */
-    remove(delta: LengthBlock<P>): Del[] {
-        this.factory.garbageCollect(delta)
+    remove(delta: LengthBlock): Del[] {
         return super.remove(delta)
     }
 
     /** @Override */
-    insertAt(index: u32, items: E): Block<P, E> {
+    insertAt(index: u32, items: E): Block<E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => index <= this.length, "valid index")
         assert(() => items.length > 0, "items is not empty")
@@ -209,7 +205,7 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
     }
 
     /** @Override */
-    removeAt(index: u32, length: u32): LengthBlock<P>[] {
+    removeAt(index: u32, length: u32): LengthBlock[] {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => index < this.length, "valid index")
         assert(() => isU32(length), "length ∈ u32")
@@ -219,11 +215,6 @@ export class EditableOpAvlList<P extends Pos<P>, E extends Concat<E>>
             const indexRange = U32Range.fromLength(index, length)
             const rmv = this.root.removeAt(indexRange, 0)
             this.root = this.root.updated()
-            if (this.factory.canGarbageCollect()) {
-                for (const dBlock of rmv) {
-                    this.factory.garbageCollect(dBlock)
-                }
-            }
             return rmv
         }
         return []

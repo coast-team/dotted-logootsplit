@@ -1,6 +1,5 @@
 import { u32, i32 } from "../../util/number"
 import { Block, LengthBlock, BlockOrdering } from "../../core/block"
-import { Pos } from "../../core/pos"
 import { Concat } from "../../core/concat"
 import { U32Range } from "../../core/u32-range"
 import { heavyAssert } from "../../util/assert"
@@ -11,33 +10,24 @@ import { Anchor } from "../../core/anchor"
 import { Ins } from "../../core/ins"
 import { Del } from "../../core/del"
 
-export type Node<P extends Pos<P>, E extends Concat<E>> =
-    | ValuedNode<P, E>
-    | undefined
+export type Node<E extends Concat<E>> = ValuedNode<E> | undefined
 
-export function lengthOf<P extends Pos<P>, E extends Concat<E>>(
-    node: Node<P, E>
-): u32 {
+export function lengthOf<E extends Concat<E>>(node: Node<E>): u32 {
     if (node !== undefined) {
         return node.length
     }
     return 0
 }
 
-function rankOf<P extends Pos<P>, E extends Concat<E>>(node: Node<P, E>): u32 {
+function rankOf<E extends Concat<E>>(node: Node<E>): u32 {
     if (node !== undefined) {
         return node.rank
     }
     return 0
 }
 
-export class ValuedNode<
-    P extends Pos<P>,
-    E extends Concat<E>
-> extends BlockListContext<P, E> {
-    static leaf<P extends Pos<P>, E extends Concat<E>>(
-        block: Block<P, E>
-    ): ValuedNode<P, E> {
+export class ValuedNode<E extends Concat<E>> extends BlockListContext<E> {
+    static leaf<E extends Concat<E>>(block: Block<E>): ValuedNode<E> {
         return new ValuedNode(undefined, block, undefined)
     }
 
@@ -46,11 +36,11 @@ export class ValuedNode<
      * @return function that accepts a value and returns a Node from
      *  the value, or undefined if the value is mal-formed
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        blockFromPlain: FromPlain<Block<P, E>>
-    ): FromPlain<ValuedNode<P, E>> {
+    static fromPlain<E extends Concat<E>>(
+        blockFromPlain: FromPlain<Block<E>>
+    ): FromPlain<ValuedNode<E>> {
         return (x: unknown) => {
-            if (isObject<ValuedNode<P, E>>(x)) {
+            if (isObject<ValuedNode<E>>(x)) {
                 const left = ValuedNode.fromPlain(blockFromPlain)(x.left)
                 const right = ValuedNode.fromPlain(blockFromPlain)(x.right)
                 const block = blockFromPlain(x.block)
@@ -62,9 +52,9 @@ export class ValuedNode<
         }
     }
 
-    readonly left: Node<P, E>
+    readonly left: Node<E>
 
-    readonly block: Block<P, E>
+    readonly block: Block<E>
 
     protected isSelfRemoved: boolean
 
@@ -72,9 +62,9 @@ export class ValuedNode<
 
     rank: u32
 
-    readonly right: Node<P, E>
+    readonly right: Node<E>
 
-    protected constructor(l: Node<P, E>, block: Block<P, E>, r: Node<P, E>) {
+    protected constructor(l: Node<E>, block: Block<E>, r: Node<E>) {
         super()
         this.left = l
         this.block = block
@@ -86,18 +76,18 @@ export class ValuedNode<
     }
 
     // Basic changes
-    setLeft(l: Node<P, E>): void {
-        ;(this as { left: Node<P, E> }).left = l
+    setLeft(l: Node<E>): void {
+        ;(this as { left: Node<E> }).left = l
         this.update()
     }
 
-    replace(block: Block<P, E>): void {
-        ;(this as { block: Block<P, E> }).block = block
+    replace(block: Block<E>): void {
+        ;(this as { block: Block<E> }).block = block
         this.update()
     }
 
-    setRight(r: Node<P, E>): void {
-        ;(this as { right: Node<P, E> }).right = r
+    setRight(r: Node<E>): void {
+        ;(this as { right: Node<E> }).right = r
         this.update()
     }
 
@@ -117,38 +107,38 @@ export class ValuedNode<
         return -2 < balanceFactor && balanceFactor < 2
     }
 
-    isRightUnbalanced(): this is this & { right: ValuedNode<P, E> } {
+    isRightUnbalanced(): this is this & { right: ValuedNode<E> } {
         return this.balanceFactor() >= 2
     }
 
-    isRightOriented(): this is this & { right: ValuedNode<P, E> } {
+    isRightOriented(): this is this & { right: ValuedNode<E> } {
         return this.balanceFactor() === 1
     }
 
-    isLeftOriented(): this is this & { left: ValuedNode<P, E> } {
+    isLeftOriented(): this is this & { left: ValuedNode<E> } {
         return this.balanceFactor() <= -2
     }
 
-    isSlighlyLeftUnbalanced(): this is this & { left: ValuedNode<P, E> } {
+    isSlighlyLeftUnbalanced(): this is this & { left: ValuedNode<E> } {
         return this.balanceFactor() === -1
     }
 
-    rotateLeft(this: this & { right: ValuedNode<P, E> }): ValuedNode<P, E> {
+    rotateLeft(this: this & { right: ValuedNode<E> }): ValuedNode<E> {
         const r = this.right
         this.setRight(r.left)
         r.setLeft(this)
         return r
     }
 
-    rotateRight(this: this & { left: ValuedNode<P, E> }): ValuedNode<P, E> {
+    rotateRight(this: this & { left: ValuedNode<E> }): ValuedNode<E> {
         const l = this.left
         this.setLeft(l.right)
         l.setRight(this)
         return l
     }
 
-    balance(): ValuedNode<P, E> {
-        let self: ValuedNode<P, E> = this
+    balance(): ValuedNode<E> {
+        let self: ValuedNode<E> = this
         while (self.isRightUnbalanced()) {
             if (self.right.isSlighlyLeftUnbalanced()) {
                 self.setRight(self.right.rotateRight())
@@ -165,7 +155,7 @@ export class ValuedNode<
     }
 
     // Self removal
-    updated(): Node<P, E> {
+    updated(): Node<E> {
         if (this.isSelfRemoved) {
             return undefined
         }
@@ -173,7 +163,7 @@ export class ValuedNode<
     }
 
     // Traversal
-    reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
+    reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
         let leftPrefix = prefix
         if (this.left !== undefined) {
             leftPrefix = this.left.reduceBlock(f, prefix)
@@ -186,7 +176,7 @@ export class ValuedNode<
     }
 
     // Impl
-    current(): Block<P, E> {
+    current(): Block<E> {
         return this.block
     }
 
@@ -194,35 +184,35 @@ export class ValuedNode<
         return lengthOf(this.left)
     }
 
-    min(): Block<P, E> {
+    min(): Block<E> {
         if (this.left !== undefined) {
             return this.left.min() // tail recursion
         }
         return this.block
     }
 
-    max(): Block<P, E> {
+    max(): Block<E> {
         if (this.right !== undefined) {
             return this.right.max() // tail recursion
         }
         return this.block
     }
 
-    predecessor(): Block<P, E> | undefined {
+    predecessor(): Block<E> | undefined {
         if (this.left !== undefined) {
             return this.left.max()
         }
         return undefined
     }
 
-    successor(): Block<P, E> | undefined {
+    successor(): Block<E> | undefined {
         if (this.right !== undefined) {
             return this.right.min()
         }
         return undefined
     }
 
-    insertMin(iBlock: Block<P, E>): ValuedNode<P, E> {
+    insertMin(iBlock: Block<E>): ValuedNode<E> {
         if (this.left !== undefined) {
             this.setLeft(this.left.insertMin(iBlock))
         } else {
@@ -235,7 +225,7 @@ export class ValuedNode<
         return this.balance()
     }
 
-    insertMax(iBlock: Block<P, E>): ValuedNode<P, E> {
+    insertMax(iBlock: Block<E>): ValuedNode<E> {
         if (this.right !== undefined) {
             this.setRight(this.right.insertMax(iBlock))
         } else {
@@ -250,7 +240,7 @@ export class ValuedNode<
 
     // Anchor
     /** @Override */
-    indexFromLeft(anchor: Anchor<P>, minIndex: u32): u32 {
+    indexFromLeft(anchor: Anchor, minIndex: u32): u32 {
         if (this.left !== undefined) {
             return this.left.indexFrom(anchor, minIndex)
         }
@@ -258,7 +248,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    indexFromRight(anchor: Anchor<P>, minIndex: u32): u32 {
+    indexFromRight(anchor: Anchor, minIndex: u32): u32 {
         if (this.right !== undefined) {
             return this.right.indexFrom(anchor, minIndex)
         }
@@ -266,27 +256,19 @@ export class ValuedNode<
     }
 
     /** @Override */
-    anchorAtLeft(
-        relIndex: u32,
-        isAfter: boolean,
-        f: BlockFactory<P>
-    ): Anchor<P> {
+    anchorAtLeft(relIndex: u32, isAfter: boolean): Anchor {
         if (this.left !== undefined) {
-            return this.left.anchorAt(relIndex, isAfter, f)
+            return this.left.anchorAt(relIndex, isAfter)
         }
-        return f.bottomAnchor
+        return Anchor.BOTTOM
     }
 
     /** @Override */
-    anchorAtRight(
-        relIndex: u32,
-        isAfter: boolean,
-        f: BlockFactory<P>
-    ): Anchor<P> {
+    anchorAtRight(relIndex: u32, isAfter: boolean): Anchor {
         if (this.right !== undefined) {
-            return this.right.anchorAt(relIndex, isAfter, f)
+            return this.right.anchorAt(relIndex, isAfter)
         } else if (isAfter) {
-            return f.topAnchor
+            return Anchor.TOP
         } else {
             return this.block.upperAnchor()
         }
@@ -294,7 +276,7 @@ export class ValuedNode<
 
     // Insertion
     /** @Override */
-    insertableLeft(iBlock: Block<P, E>): Block<P, E>[] {
+    insertableLeft(iBlock: Block<E>): Block<E>[] {
         if (this.left !== undefined) {
             return this.left.insertable(iBlock)
         }
@@ -302,7 +284,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertableRight(iBlock: Block<P, E>): Block<P, E>[] {
+    insertableRight(iBlock: Block<E>): Block<E>[] {
         if (this.right !== undefined) {
             return this.right.insertable(iBlock)
         }
@@ -310,7 +292,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertPredecessor(iBlock: Block<P, E>): void {
+    insertPredecessor(iBlock: Block<E>): void {
         if (this.left !== undefined) {
             this.setLeft(this.left.insertMax(iBlock))
         } else {
@@ -320,7 +302,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertSuccessor(iBlock: Block<P, E>): void {
+    insertSuccessor(iBlock: Block<E>): void {
         if (this.right !== undefined) {
             this.setRight(this.right.insertMin(iBlock))
         } else {
@@ -330,7 +312,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertLeft(iBlock: Block<P, E>, minIndex: u32): Ins<E>[] {
+    insertLeft(iBlock: Block<E>, minIndex: u32): Ins<E>[] {
         let ins
         if (this.left !== undefined) {
             ins = this.left.insert(iBlock, minIndex)
@@ -344,7 +326,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertRight(iBlock: Block<P, E>, minIndex: u32): Ins<E>[] {
+    insertRight(iBlock: Block<E>, minIndex: u32): Ins<E>[] {
         let ins
         if (this.right !== undefined) {
             ins = this.right.insert(iBlock, minIndex)
@@ -359,7 +341,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertAtLeft(idx: u32, items: E, f: BlockFactory<P>): Block<P, E> {
+    insertAtLeft(idx: u32, items: E, f: BlockFactory): Block<E> {
         let ins
         if (this.left !== undefined) {
             ins = this.left.insertAt(idx, items, f)
@@ -373,7 +355,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    insertAtRight(idx: u32, items: E, f: BlockFactory<P>): Block<P, E> {
+    insertAtRight(idx: u32, items: E, f: BlockFactory): Block<E> {
         let ins
         if (this.right !== undefined) {
             ins = this.right.insertAt(idx, items, f)
@@ -392,7 +374,7 @@ export class ValuedNode<
         this.isSelfRemoved = true
     }
 
-    removeMin(): Node<P, E> {
+    removeMin(): Node<E> {
         if (this.left !== undefined) {
             this.setLeft(this.left.removeMin())
             return this.balance()
@@ -400,7 +382,7 @@ export class ValuedNode<
         return this.right
     }
 
-    removeMax(): Node<P, E> {
+    removeMax(): Node<E> {
         if (this.right !== undefined) {
             this.setRight(this.right.removeMax())
             return this.balance()
@@ -425,7 +407,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    removeLeft(dBlock: LengthBlock<P>, minIndex: u32): Del[] {
+    removeLeft(dBlock: LengthBlock, minIndex: u32): Del[] {
         if (this.left !== undefined) {
             const rmv = this.left.remove(dBlock, minIndex)
             this.setLeft(this.left.updated())
@@ -436,7 +418,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    removeRight(dBlock: LengthBlock<P>, minIndex: u32): Del[] {
+    removeRight(dBlock: LengthBlock, minIndex: u32): Del[] {
         if (this.right !== undefined) {
             const rmv = this.right.remove(dBlock, minIndex)
             this.setRight(this.right.updated())
@@ -447,7 +429,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    removeAtLeft(dRange: U32Range, minIndex: u32): LengthBlock<P>[] {
+    removeAtLeft(dRange: U32Range, minIndex: u32): LengthBlock[] {
         if (this.left !== undefined) {
             const rmv = this.left.removeAt(dRange, minIndex)
             this.setLeft(this.left.updated())
@@ -458,7 +440,7 @@ export class ValuedNode<
     }
 
     /** @Override */
-    removeAtRight(dRange: U32Range, minIndex: u32): LengthBlock<P>[] {
+    removeAtRight(dRange: U32Range, minIndex: u32): LengthBlock[] {
         if (this.right !== undefined) {
             const rmv = this.right.removeAt(dRange, minIndex)
             this.setRight(this.right.updated())

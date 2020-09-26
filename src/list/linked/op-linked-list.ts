@@ -10,7 +10,6 @@ import { assert } from "../../util/assert"
 import { Block, LengthBlock } from "../../core/block"
 import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
-import { Pos } from "../../core/pos"
 import { isU32, u32 } from "../../util/number"
 import { Sentinel } from "./linked-list-cell"
 import {
@@ -25,16 +24,13 @@ import { Del } from "../../core/del"
 /**
  * An {@see OpReplicatedList } that uses an AVL tree.
  */
-export class OpLinkedList<
-    P extends Pos<P>,
-    E extends Concat<E>
-> extends OpReplicatedList<P, E> {
+export class OpLinkedList<E extends Concat<E>> extends OpReplicatedList<E> {
     /**
      * @param v empty value of type E
      * @return new empty list.
      */
-    static empty<P extends Pos<P>, E extends Concat<E>>(): OpLinkedList<P, E> {
-        return new OpLinkedList(new Sentinel<P, E>(), 0)
+    static empty<E extends Concat<E>>(): OpLinkedList<E> {
+        return new OpLinkedList(new Sentinel<E>(), 0)
     }
 
     /**
@@ -43,16 +39,16 @@ export class OpLinkedList<
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        f: BlockFactoryConstructor<P>,
+    static fromPlain<E extends Concat<E>>(
+        f: BlockFactoryConstructor,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<OpReplicatedList<P, E>> {
+    ): FromPlain<OpReplicatedList<E>> {
         return (x: unknown) => {
             if (
                 isObject<{ root: unknown; length: u32 }>(x) &&
                 isU32(x.length)
             ) {
-                const blockFromPlain = f.blockFromPlain(itemsFromPlain)
+                const blockFromPlain = Block.fromPlain(itemsFromPlain)
                 const root = Sentinel.fromPlain(blockFromPlain)(x.root)
                 if (root !== undefined) {
                     return new OpLinkedList(root, x.length)
@@ -65,7 +61,7 @@ export class OpLinkedList<
     /**
      * Chain entry.
      */
-    protected readonly root: Sentinel<P, E>
+    protected readonly root: Sentinel<E>
 
     /** @Override */
     length: u32
@@ -73,14 +69,14 @@ export class OpLinkedList<
     /**
      * New empty list.
      */
-    protected constructor(root: Sentinel<P, E>, length: u32) {
+    protected constructor(root: Sentinel<E>, length: u32) {
         super()
         this.root = root
         this.length = length
     }
 
     /** @Override */
-    reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
+    reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
         if (this.root !== undefined) {
             return this.root.reduceBlock(f, prefix)
         }
@@ -88,18 +84,24 @@ export class OpLinkedList<
     }
 
     /** @Override */
-    indexFrom(anchor: Anchor<P>): u32 {
+    anchorAt(index: u32, isAfter: boolean): Anchor {
+        assert(() => isU32(index), "index ∈ u32")
+        return this.root.anchorAt(index, isAfter)
+    }
+
+    /** @Override */
+    indexFrom(anchor: Anchor): u32 {
         return this.root.indexFrom(anchor, 0)
     }
 
     /** @Override */
-    insertable(delta: Block<P, E>): Block<P, E>[] {
+    insertable(delta: Block<E>): Block<E>[] {
         return this.root.insertable(delta)
     }
 
     // Modification
     /** @Override */
-    insert(block: Block<P, E>): Ins<E>[] {
+    insert(block: Block<E>): Ins<E>[] {
         const result = this.root.insert(block, 0)
         this.length = result.reduce(
             (acc, v) => acc + v.content.length,
@@ -109,7 +111,7 @@ export class OpLinkedList<
     }
 
     /** @Override */
-    remove(block: LengthBlock<P>): Del[] {
+    remove(block: LengthBlock): Del[] {
         const result = this.root.remove(block, 0)
         this.length = result.reduce((acc, v) => acc - v.length, this.length)
         return result
@@ -119,25 +121,25 @@ export class OpLinkedList<
 /**
  * An {@see EditableOpReplicatedList } that uses an AVL tree.
  */
-export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
-    extends OpLinkedList<P, E>
-    implements OpEditableReplicatedList<P, E> {
+export class EditableOpLinkedList<E extends Concat<E>>
+    extends OpLinkedList<E>
+    implements OpEditableReplicatedList<E> {
     /**
      * @param f
      * @param itemsFromPlain
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        f: BlockFactoryConstructor<P>,
+    static fromPlain<E extends Concat<E>>(
+        f: BlockFactoryConstructor,
         itemsFromPlain: FromPlain<E>
-    ): FromPlain<OpEditableReplicatedList<P, E>> {
+    ): FromPlain<OpEditableReplicatedList<E>> {
         return (x: unknown) => {
             if (
                 isObject<{ root: unknown; factory: unknown; length: u32 }>(x) &&
                 isU32(x.length)
             ) {
-                const blockFromPlain = f.blockFromPlain(itemsFromPlain)
+                const blockFromPlain = Block.fromPlain(itemsFromPlain)
                 const factory = f.fromPlain(x.factory)
                 const root = Sentinel.fromPlain(blockFromPlain)(x.root)
                 if (root !== undefined && factory !== undefined) {
@@ -153,44 +155,37 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
      * @param v empty value of type E (only used for type inference)
      * @return new empty list.
      */
-    static emptyWith<P extends Pos<P>, E extends Concat<E>>(
-        factory: BlockFactory<P>
-    ): EditableOpLinkedList<P, E> {
-        return new EditableOpLinkedList(new Sentinel<P, E>(), 0, factory)
+    static emptyWith<E extends Concat<E>>(
+        factory: BlockFactory
+    ): EditableOpLinkedList<E> {
+        return new EditableOpLinkedList(new Sentinel<E>(), 0, factory)
     }
 
     /**
      * factory of blocks.
      */
-    protected readonly factory: BlockFactory<P>
+    protected readonly factory: BlockFactory
 
     /**
      * @param factory strategy of block generation.
      */
     protected constructor(
-        root: Sentinel<P, E>,
+        root: Sentinel<E>,
         length: u32,
-        factory: BlockFactory<P>
+        factory: BlockFactory
     ) {
         super(root, length)
         this.factory = factory
     }
 
     /** @Override */
-    anchorAt(index: u32, isAfter: boolean): Anchor<P> {
-        assert(() => isU32(index), "index ∈ u32")
-        return this.root.anchorAt(index, isAfter, this.factory)
-    }
-
-    /** @Override */
-    remove(delta: LengthBlock<P>): Del[] {
-        this.factory.garbageCollect(delta)
+    remove(delta: LengthBlock): Del[] {
         return super.remove(delta)
     }
 
     // Modification
     /** @Override */
-    insertAt(index: u32, items: E): Block<P, E> {
+    insertAt(index: u32, items: E): Block<E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => index <= this.length, "valid index")
         assert(() => items.length > 0, "items is not empty")
@@ -201,18 +196,12 @@ export class EditableOpLinkedList<P extends Pos<P>, E extends Concat<E>>
     }
 
     /** @Override */
-    removeAt(index: u32, length: u32): LengthBlock<P>[] {
+    removeAt(index: u32, length: u32): LengthBlock[] {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => index + length <= this.length, "valid end index")
 
         this.length = this.length - length
-        const rmv = this.root.removeAt(index, length)
-        if (this.factory.canGarbageCollect()) {
-            for (const dBlock of rmv) {
-                this.factory.garbageCollect(dBlock)
-            }
-        }
-        return rmv
+        return this.root.removeAt(index, length)
     }
 }

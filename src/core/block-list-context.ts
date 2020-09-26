@@ -1,4 +1,3 @@
-import { Pos } from "./pos"
 import { Concat } from "./concat"
 import { Block, BlockOrdering, LengthBlock } from "./block"
 import { isU32, u32 } from "../util/number"
@@ -21,11 +20,11 @@ import { Del } from "./del"
  * left "sub-list" [A, C]. C is compared with A then C or C then A, and is
  * finally inserted between A and C.
  */
-export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
+export abstract class BlockListContext<E extends Concat<E>> {
     /**
      * Current block
      */
-    abstract current(): Block<P, E>
+    abstract current(): Block<E>
 
     /**
      * Starting index of the current block in the current sub-list
@@ -35,38 +34,38 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
     /**
      * @return predecessor of the current block, if any
      */
-    abstract predecessor(): Block<P, E> | undefined
+    abstract predecessor(): Block<E> | undefined
 
     /**
      * @return successor of the current block, if any
      */
-    abstract successor(): Block<P, E> | undefined
+    abstract successor(): Block<E> | undefined
 
     /**
      * Make `iBlock` the predecessor of the current block.
      * @param iBlock
      */
-    abstract insertPredecessor(iBlock: Block<P, E>): void
+    abstract insertPredecessor(iBlock: Block<E>): void
 
     /**
      * Make `iBlock` the successor of the current block.
      * @param iBlock
      */
-    abstract insertSuccessor(iBlock: Block<P, E>): void
+    abstract insertSuccessor(iBlock: Block<E>): void
 
     /**
      * @param anchor
      * @param minIndex minimal index in the current left sub-list.
      * @return index of `anchor`.
      */
-    abstract indexFromLeft(anchor: Anchor<P>, minIndex: u32): u32
+    abstract indexFromLeft(anchor: Anchor, minIndex: u32): u32
 
     /**
      * @param anchor
      * @param minIndex minimal index in the current right sub-list.
      * @return index of `anchor`.
      */
-    abstract indexFromRight(anchor: Anchor<P>, minIndex: u32): u32
+    abstract indexFromRight(anchor: Anchor, minIndex: u32): u32
 
     /**
      * @param relIndex relative index where the anchor is
@@ -76,11 +75,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      *  The anchor is sticked to the left psoition if isAfter is false.
      * Otherwise, it is sticked to the right psoition.
      */
-    abstract anchorAtLeft(
-        relIndex: u32,
-        isAfter: boolean,
-        f: BlockFactory<P>
-    ): Anchor<P>
+    abstract anchorAtLeft(relIndex: u32, isAfter: boolean): Anchor
 
     /**
      * @param relIndex relative index where the anchor is
@@ -90,23 +85,19 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      *  The anchor is sticked to the left psoition if isAfter is false.
      * Otherwise, it is sticked to the right psoition.
      */
-    abstract anchorAtRight(
-        relIndex: u32,
-        isAfter: boolean,
-        f: BlockFactory<P>
-    ): Anchor<P>
+    abstract anchorAtRight(relIndex: u32, isAfter: boolean): Anchor
 
     /**
      * @param iBlock
      * @return segments of `iBlock` that can be inserted in the left sub-list.
      */
-    abstract insertableLeft(iBlock: Block<P, E>): Block<P, E>[]
+    abstract insertableLeft(iBlock: Block<E>): Block<E>[]
 
     /**
      * @param iBlock
      * @return segments of `iBlock` that can be inserted in the right sub-list.
      */
-    abstract insertableRight(iBlock: Block<P, E>): Block<P, E>[]
+    abstract insertableRight(iBlock: Block<E>): Block<E>[]
 
     /**
      * @param iBlock block to insert.
@@ -116,7 +107,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    abstract insertLeft(iBlock: Block<P, E>, minIndex: u32): Ins<E>[]
+    abstract insertLeft(iBlock: Block<E>, minIndex: u32): Ins<E>[]
 
     /**
      * @param iBlock block to insert.
@@ -127,7 +118,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    abstract insertRight(iBlock: Block<P, E>, minIndex: u32): Ins<E>[]
+    abstract insertRight(iBlock: Block<E>, minIndex: u32): Ins<E>[]
 
     /**
      * @param relIndex relative index
@@ -137,7 +128,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return block generated with `factory` that contains `items` as content,
      *  and was inserted at `relIndex` in the left sub-list.
      */
-    abstract insertAtLeft(idx: u32, items: E, f: BlockFactory<P>): Block<P, E>
+    abstract insertAtLeft(idx: u32, items: E, f: BlockFactory): Block<E>
 
     /**
      * @param relIndex relative index
@@ -148,13 +139,13 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return block generated with `factory` that contains `items` as content,
      *  and was inserted at `relIndex` in the current sub-list.
      */
-    abstract insertAtRight(idx: u32, items: E, f: BlockFactory<P>): Block<P, E>
+    abstract insertAtRight(idx: u32, items: E, f: BlockFactory): Block<E>
 
     /**
      * Replace the current block with `current`
      * @param block
      */
-    abstract replace(block: Block<P, E>): void
+    abstract replace(block: Block<E>): void
 
     /**
      * Remove the current sub-list
@@ -179,7 +170,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    abstract removeLeft(dBlock: LengthBlock<P>, minIndex: u32): Del[]
+    abstract removeLeft(dBlock: LengthBlock, minIndex: u32): Del[]
 
     /**
      * @param dBlock block to remove.
@@ -190,21 +181,21 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    abstract removeRight(dBlock: LengthBlock<P>, minIndex: u32): Del[]
+    abstract removeRight(dBlock: LengthBlock, minIndex: u32): Del[]
 
     /**
      * @param dRange range of indexes to remove
      * @param minIndex minimal index in the current sub-list.
      * @return segments of removed block in the left sub-list
      */
-    abstract removeAtLeft(dRange: U32Range, minIndex: u32): LengthBlock<P>[]
+    abstract removeAtLeft(dRange: U32Range, minIndex: u32): LengthBlock[]
 
     /**
      * @param dRange range of indexes to remove
      * @param minIndex minimal index in the current sub-list.
      * @return segments of removed block in the right sub-list
      */
-    abstract removeAtRight(dRange: U32Range, minIndex: u32): LengthBlock<P>[]
+    abstract removeAtRight(dRange: U32Range, minIndex: u32): LengthBlock[]
 
     /**
      * Attempt to merge the current block with its predecessor.
@@ -262,7 +253,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @param minIndex minimal index in the current sub-list.
      * @return index of `anchor`.
      */
-    indexFrom(anchor: Anchor<P>, minIndex: u32): u32 {
+    indexFrom(anchor: Anchor, minIndex: u32): u32 {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
         const curr = this.current()
@@ -287,19 +278,19 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      *  The anchor is sticked to the left psoition if isAfter is false.
      * Otherwise, it is sticked to the right psoition.
      */
-    anchorAt(relIndex: u32, isAfter: boolean, f: BlockFactory<P>): Anchor<P> {
+    anchorAt(relIndex: u32, isAfter: boolean): Anchor {
         assert(() => isU32(relIndex), "relIndex ∈ u32")
 
         const curr = this.current()
         const currRelIndex = this.currentRelativeIndex()
         const currRelEndIndex = currRelIndex + curr.length
         if (relIndex < currRelIndex) {
-            return this.anchorAtLeft(relIndex, isAfter, f)
+            return this.anchorAtLeft(relIndex, isAfter)
         } else if (relIndex === currRelIndex) {
             if (isAfter) {
                 return curr.lowerAnchor()
             } else {
-                return this.anchorAtLeft(relIndex, isAfter, f)
+                return this.anchorAtLeft(relIndex, isAfter)
             }
         } else if (relIndex < currRelEndIndex) {
             return curr.anchor(relIndex - currRelIndex, !isAfter)
@@ -307,7 +298,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
             return curr.upperAnchor()
         } else {
             const subRelIndex = relIndex - currRelEndIndex
-            return this.anchorAtRight(subRelIndex, isAfter, f)
+            return this.anchorAtRight(subRelIndex, isAfter)
         }
     }
 
@@ -316,7 +307,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return segments of `iBlock` that can be inserted in the current
      *  sub-list.
      */
-    insertable(iBlock: Block<P, E>): Block<P, E>[] {
+    insertable(iBlock: Block<E>): Block<E>[] {
         const curr = this.current()
         switch (iBlock.compare(curr)) {
             case BlockOrdering.PREPENDABLE:
@@ -358,7 +349,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert(iBlock: Block<P, E>, minIndex: u32): Ins<E>[] {
+    insert(iBlock: Block<E>, minIndex: u32): Ins<E>[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
         const curr = this.current()
@@ -415,7 +406,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return block generated with `factory` that contains `items` as content,
      *  and was inserted at `relIndex` in the current sub-list.
      */
-    insertAt(relIndex: u32, items: E, factory: BlockFactory<P>): Block<P, E> {
+    insertAt(relIndex: u32, items: E, factory: BlockFactory): Block<E> {
         assert(() => isU32(relIndex), "index ∈ u32")
         assert(() => items.length > 0, "items.length > 0")
 
@@ -457,7 +448,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove(dBlock: LengthBlock<P>, minIndex: u32): Del[] {
+    remove(dBlock: LengthBlock, minIndex: u32): Del[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
         const curr = this.current()
@@ -547,7 +538,7 @@ export abstract class BlockListContext<P extends Pos<P>, E extends Concat<E>> {
      * @param minIndex minimal index in the current sub-list.
      * @return segments of removed block
      */
-    removeAt(dRange: U32Range, minIndex: u32): LengthBlock<P>[] {
+    removeAt(dRange: U32Range, minIndex: u32): LengthBlock[] {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
         const curr = this.current()

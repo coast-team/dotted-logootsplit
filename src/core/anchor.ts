@@ -1,3 +1,4 @@
+import { assert } from "../util/assert"
 /*
     Copyright (C) 2018  Victorien Elvinger
 
@@ -6,50 +7,40 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+import { isObject } from "../util/data-validation"
+import { compareBoolean, lexCompareOrdering, Ordering } from "../util/ordering"
 import { Pos } from "./pos"
-import { Ordering, lexCompareOrdering, compareBoolean } from "../util/ordering"
-import { FromPlain, isObject } from "../util/data-validation"
-import { u32 } from "../util/number"
 
 /**
- * An anchor can be used to model the cursor of a participant in a
- * repliacted list.
+ * An anchor can model the cursor of a participant in a replicated list.
  */
-export class Anchor<P extends Pos<P>> {
+export class Anchor {
     /**
-     * @example
-     * Anchor(p, false) is just before p
-     * Anchor(p, true) is just after p
-     * There does not exist a position between Anchor(p) and p
-     *
-     * @param ref position to which this anchor is relative to
-     * @param isAfter is the anchor after `ref`?
+     * Lowest anchor.
+     * All anchors are greater or equal to this anchor.
      */
-    static from<P extends Pos<P>>(ref: P, isAfter: boolean): Anchor<P> {
-        return new Anchor(ref, isAfter)
-    }
+    static BOTTOM = new Anchor(Pos.BOTTOM, true)
 
-    static fromPlain<P extends Pos<P>>(
-        posFromPlain: FromPlain<P>
-    ): FromPlain<Anchor<P>> {
-        return (x) => {
-            if (
-                isObject<{ ref: unknown; isAfter: boolean }>(x) &&
-                typeof x.isAfter === "boolean"
-            ) {
-                const ref = posFromPlain(x.ref)
-                if (ref !== undefined) {
-                    return Anchor.from(ref, x.isAfter)
-                }
+    /**
+     * Greatest anchor.
+     * All anchors are lower or equal to this anchor.
+     */
+    static TOP = new Anchor(Pos.TOP, false)
+
+    static fromPlain(x: unknown): Anchor | undefined {
+        if (isObject<Anchor>(x) && typeof x.isAfter === "boolean") {
+            const ref = Pos.fromPlain(x.ref)
+            if (ref !== undefined) {
+                return new Anchor(ref, x.isAfter)
             }
-            return undefined
         }
+        return undefined
     }
 
     /**
      * Position to which this anchor is relative to
      */
-    readonly ref: P
+    readonly ref: Pos
 
     /**
      * Is the anchor after {@link Anchor#ref}?
@@ -59,21 +50,30 @@ export class Anchor<P extends Pos<P>> {
     /**
      * @example
      * Anchor(p) is just before p
+     * Anchor(p, true) is just after p
      * There not exists another position between Anchor(p) and p
      *
      * @param ref position to which this anchor is relative to
      * @param isAfter is the anchor after `ref`?
      */
-    protected constructor(ref: P, isAfter: boolean) {
+    constructor(ref: Pos, isAfter: boolean) {
         this.ref = ref
         this.isAfter = isAfter
+        assert(
+            () => Anchor.BOTTOM?.compare(this) !== Ordering.AFTER,
+            "BOTTOM <= this"
+        )
+        assert(
+            () => Anchor.TOP?.compare(this) !== Ordering.BEFORE,
+            "this <= TOP"
+        )
     }
 
     /**
      * @param other
      * @return this [Order relation] other
      */
-    compare(other: Anchor<P>): Ordering {
+    compare(other: Anchor): Ordering {
         return lexCompareOrdering(
             this.ref.compare(other.ref),
             compareBoolean(other.isAfter, this.isAfter)
@@ -87,7 +87,7 @@ export class Anchor<P extends Pos<P>> {
      * @param pos
      * @return Is before or after {@link pos}?
      */
-    compareWith(pos: P): Ordering.BEFORE | Ordering.AFTER {
+    compareWith(pos: Pos): Ordering.BEFORE | Ordering.AFTER {
         const rel = this.ref.compare(pos)
         if (rel !== Ordering.EQUAL) {
             return rel

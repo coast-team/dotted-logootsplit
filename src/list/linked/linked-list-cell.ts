@@ -10,23 +10,22 @@ import { assert, heavyAssert } from "../../util/assert"
 import { Block, LengthBlock, BlockOrdering } from "../../core/block"
 import { BlockFactory } from "../../core/block-factory"
 import { Concat } from "../../core/concat"
-import { Pos } from "../../core/pos"
 import { isU32, u32 } from "../../util/number"
 import { FromPlain, isObject } from "../../util/data-validation"
 import { Anchor } from "../../core/anchor"
 import { Ins } from "../../core/ins"
 import { Del } from "../../core/del"
 
-export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
+export abstract class Linkable<E extends Concat<E>> {
     /**
      * Next cell
      */
-    right?: Cell<P, E>
+    right?: Cell<E>
 
     /**
      * @param right Next cell.
      */
-    constructor(right?: Cell<P, E>) {
+    constructor(right?: Cell<E>) {
         this.right = right
     }
 
@@ -39,7 +38,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @return accumulated value by reducing blocks from left to right
      *  in the list.
      */
-    reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U {
+    reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
         if (this.right === undefined) {
             return prefix
         } else {
@@ -53,7 +52,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @param minIndex minimal index in the current sub-list.
      * @return index of `anchor`.
      */
-    indexFrom(anchor: Anchor<P>, minIndex: u32): u32 {
+    indexFrom(anchor: Anchor, minIndex: u32): u32 {
         assert(() => isU32(minIndex), "minIndex ∈ u32")
 
         if (this.right !== undefined) {
@@ -75,25 +74,25 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      *  The anchor is sticked to the left psoition if isAfter is false.
      * Otherwise, it is sticked to the right psoition.
      */
-    anchorAt(index: u32, isAfter: boolean, f: BlockFactory<P>): Anchor<P> {
+    anchorAt(index: u32, isAfter: boolean): Anchor {
         assert(() => isU32(index), "index ∈ u32")
 
         if (this.right !== undefined) {
             const rBlock = this.right.block
 
             if (index >= rBlock.length) {
-                return this.right.anchorAt(index - rBlock.length, isAfter, f)
+                return this.right.anchorAt(index - rBlock.length, isAfter)
             } else if (index !== 0 || isAfter) {
                 return rBlock.anchor(index, !isAfter)
             }
         } else if (isAfter) {
-            return f.topAnchor
+            return Anchor.TOP
         }
 
         if (this instanceof Cell) {
             return this.block.upperAnchor()
         } else {
-            return f.bottomAnchor
+            return Anchor.BOTTOM
         }
     }
 
@@ -102,7 +101,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @return segments of `iBlock` that can be inserted in the current
      *  sub-list.
      */
-    insertable(iBlock: Block<P, E>): Block<P, E>[] {
+    insertable(iBlock: Block<E>): Block<E>[] {
         if (this.right === undefined) {
             return [iBlock]
         } else {
@@ -152,7 +151,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @param rblock block to insert.
      * @return inserted cell with {@link rblock } as content.
      */
-    protected insertRight(rblock: Block<P, E>): Cell<P, E> {
+    protected insertRight(rblock: Block<E>): Cell<E> {
         this.right = new Cell(rblock, this.right)
         return this.right
     }
@@ -166,7 +165,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @return Performed modifications in terms of local insertions.
      *  The n+1 -th insertion depends on the effect of the n -th insertion.
      */
-    insert(iBlock: Block<P, E>, index: u32): Ins<E>[] {
+    insert(iBlock: Block<E>, index: u32): Ins<E>[] {
         assert(() => isU32(index), "index ∈ u32")
 
         if (this.right === undefined) {
@@ -238,11 +237,11 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @param factory strategy of block generation.
      * @return Delta which represents the insertion.
      */
-    insertAt(index: u32, items: E, factory: BlockFactory<P>): Block<P, E> {
+    insertAt(index: u32, items: E, factory: BlockFactory): Block<E> {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => items.length > 0, "items.length > 0")
 
-        let iBlock: Block<P, E>
+        let iBlock: Block<E>
 
         if (this.right === undefined) {
             if (this instanceof Cell) {
@@ -277,9 +276,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 const [lSplit, rSplit] = rBlock.splitAt(index)
                 iBlock = factory.between(lSplit, items, rSplit)
                 this.right = this.right.right // remove right
-                this.insertRight(lSplit)
-                    .insertRight(iBlock)
-                    .insertRight(rSplit)
+                this.insertRight(lSplit).insertRight(iBlock).insertRight(rSplit)
             }
         }
         return iBlock
@@ -293,7 +290,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt(index: u32, length: u32): LengthBlock<P>[] {
+    removeAt(index: u32, length: u32): LengthBlock[] {
         assert(() => isU32(index), "index ∈ u32")
         assert(() => isU32(length), "length ∈ u32")
         assert(() => length > 0, "length > 0")
@@ -339,13 +336,13 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
 
     /**
      * [Mutation]
-     * Remove {@link dBlock }.
+     * Remove {@link dBlock }.s
      * @param dBlock block to remove.
      * @param index index of the current block in the chain.
      * @return Performed modifications in terms of local deletions.
      *  The n+1 -th deletion depends on the n -th deletion.
      */
-    remove(dBlock: LengthBlock<P> | Block<P, E>, index: u32): Del[] {
+    remove(dBlock: LengthBlock | Block<E>, index: u32): Del[] {
         assert(() => isU32(index), "index ∈ u32")
 
         if (this.right !== undefined) {
@@ -399,8 +396,8 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 case BlockOrdering.OVERLAPPING_BEFORE: {
                     const removed = rBlock.intersection(dBlock)
                     const remaining = rBlock.prependable(dBlock)
-                    //const [remaining, ] = rBlock.remove(block) as [undefined, Block<P, E>]
-                    //remaining = remaining as Block<P, E>
+                    //const [remaining, ] = rBlock.remove(block) as [undefined, Block<E>]
+                    //remaining = remaining as Block<E>
                     this.right = this.right.right
                     this.insertRight(remaining)
                     this.remove(dBlock, index + remaining.length)
@@ -409,7 +406,7 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
                 case BlockOrdering.OVERLAPPING_AFTER: {
                     const removed = rBlock.intersection(dBlock)
                     const remaining = rBlock.appendable(dBlock)
-                    //const [, remaining] = rBlock.remove(block) as [undefined, Block<P, E>]
+                    //const [, remaining] = rBlock.remove(block) as [undefined, Block<E>]
                     this.right = this.right.right
                     this.insertRight(remaining)
                     return [Del.from(index, removed.length)]
@@ -426,21 +423,18 @@ export abstract class Linkable<P extends Pos<P>, E extends Concat<E>> {
     }
 }
 
-export class Sentinel<P extends Pos<P>, E extends Concat<E>> extends Linkable<
-    P,
-    E
-> {
+export class Sentinel<E extends Concat<E>> extends Linkable<E> {
     /**
      * @param blockFromPlain
      * @return function that accepts a value and returns a Sentinel from
      *  the value, or undefined if the value is mal-formed
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        blockFromPlain: FromPlain<Block<P, E>>
-    ): FromPlain<Sentinel<P, E>> {
+    static fromPlain<E extends Concat<E>>(
+        blockFromPlain: FromPlain<Block<E>>
+    ): FromPlain<Sentinel<E>> {
         return (x) => {
-            if (isObject<Linkable<P, E>>(x)) {
-                let right: Cell<P, E> | undefined
+            if (isObject<Linkable<E>>(x)) {
+                let right: Cell<E> | undefined
                 if (x.right !== undefined) {
                     right = Cell.fromPlain(blockFromPlain)(x.right)
                     if (right === undefined) {
@@ -454,22 +448,19 @@ export class Sentinel<P extends Pos<P>, E extends Concat<E>> extends Linkable<
     }
 }
 
-export class Cell<P extends Pos<P>, E extends Concat<E>> extends Linkable<
-    P,
-    E
-> {
+export class Cell<E extends Concat<E>> extends Linkable<E> {
     /**
      * @param blockFromPlain
      * @return function that accepts a value and returns a Cell from
      *  the value, or undefined if the value is mal-formed
      */
-    static fromPlain<P extends Pos<P>, E extends Concat<E>>(
-        blockFromPlain: FromPlain<Block<P, E>>
-    ): FromPlain<Cell<P, E>> {
+    static fromPlain<E extends Concat<E>>(
+        blockFromPlain: FromPlain<Block<E>>
+    ): FromPlain<Cell<E>> {
         return (x) => {
-            if (isObject<Cell<P, E>>(x)) {
+            if (isObject<Cell<E>>(x)) {
                 const block = blockFromPlain(x.block)
-                let right: Cell<P, E> | undefined
+                let right: Cell<E> | undefined
                 if (x.right !== undefined) {
                     right = Cell.fromPlain(blockFromPlain)(x.right)
                     if (right === undefined) {
@@ -488,7 +479,7 @@ export class Cell<P extends Pos<P>, E extends Concat<E>> extends Linkable<
      * @param block {@link Cell#block }
      * @param right {@link Linkable#right }
      */
-    constructor(block: Block<P, E>, right: Cell<P, E> | undefined) {
+    constructor(block: Block<E>, right: Cell<E> | undefined) {
         heavyAssert(
             () =>
                 right === undefined ||
@@ -502,5 +493,5 @@ export class Cell<P extends Pos<P>, E extends Concat<E>> extends Linkable<
     /**
      * Block attached to this cell.
      */
-    readonly block: Block<P, E>
+    readonly block: Block<E>
 }

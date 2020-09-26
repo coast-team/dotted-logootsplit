@@ -1,13 +1,23 @@
 /*
-    Copyright (C) 2018  Victorien Elvinger
+    Copyright (C) 2020  Victorien Elvinger
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { u32 } from "../util/number"
-import { Ordering } from "../util/ordering"
+import { assert, heavyAssert } from "../util/assert"
+import {
+    absoluteSubstraction,
+    compareU32,
+    hashCodeOf,
+    isU32,
+    u32,
+    U32_BOTTOM,
+    U32_TOP,
+} from "../util/number"
+import { Ordering, orderingInversion } from "../util/ordering"
+import { getDefault, prefixLength } from "../util/uint32-array"
 
 /**
  * Possible relation between two position bases.
@@ -20,18 +30,11 @@ export const enum BaseOrdering {
     AFTER = 2,
 }
 
-/**
- * Inversion of BaseOrdering.
- */
-export const baseOrderingInversion = {
-    [BaseOrdering.BEFORE]: BaseOrdering.AFTER,
-    [BaseOrdering.PREFIXING]: BaseOrdering.PREFIXED_BY,
-    [BaseOrdering.EQUAL]: BaseOrdering.EQUAL,
-    [BaseOrdering.PREFIXED_BY]: BaseOrdering.PREFIXING,
-    [BaseOrdering.AFTER]: BaseOrdering.BEFORE,
-} as const
+const EMPTY_BASE = new Uint32Array(0)
 
 /**
+ * @final this class cannot be extended
+ *
  * The set of positions is a dense totally ordered set.
  * The dot (replica, seq) uniquely identifies the position.
  *
@@ -57,19 +60,85 @@ export const baseOrderingInversion = {
  *
  * In documentation p.intSuccessor(n) can be shorten by p+n.
  */
-export interface Pos<P extends Pos<P>> {
+export class Pos {
+    /**
+     * Lowest position.
+     * All positions are greater or equal to this position.
+     */
+    static BOTTOM = new Pos(EMPTY_BASE, U32_BOTTOM)
+
+    /**
+     * Greatest position.
+     * All positions are lower or equal to this position.
+     */
+    static TOP = new Pos(EMPTY_BASE, U32_TOP)
+
+    /**
+     * @param x candidate
+     * @return object from `x', or undefined if `x' is not valid.
+     */
+    static fromPlain(x: unknown): Pos | undefined {
+        if (Array.isArray(x) && x.every(isU32)) {
+            const vs = Uint32Array.from(x)
+            const baseLen = vs.length - 1
+            const base = vs.subarray(0, baseLen)
+            const offset = vs[baseLen]
+            return new Pos(base, offset)
+        }
+        return undefined
+    }
+
+    readonly base: Uint32Array
+
+    /**
+     * When was generated this position.
+     *
+     * For convenience seq must be strictly positive.
+     * This enables to use `0` as default value in causal contexts.
+     */
+    readonly seq: u32
+
+    /**
+     * @note you should never create a position on your own.
+     *  Use a block factory instead.
+     * @param base {@link ArrayedPos#base }
+     */
+    constructor(base: Uint32Array, offset: u32) {
+        assert(() => isU32(offset), "offset ∈ u32")
+        this.base = base
+        this.seq = offset
+        assert(() => Pos.TOP?.compare(this) !== Ordering.BEFORE, "this <= TOP")
+    }
+
     // Derivation
+    /**
+     * @param offset The offset of the new position
+     * @return Position with the same base, but with a different offset
+     */
+    withOffset(offset: u32): Pos {
+        assert(() => isU32(offset), "offset ∈ u32")
+        return new Pos(this.base, offset)
+    }
+
     /**
      * @param n 0-based index.
      * @return {@link n } -th integer successor of this.
      */
-    readonly intSucc: (n: u32) => P
+    intSucc(n: u32): Pos {
+        assert(() => isU32(n), "n ∈ u32")
+        assert(() => this.hasIntSucc(n), "this has a n-th successor")
+        return this.withOffset(this.seq + n)
+    }
 
+    // Access
     // Access
     /**
      * Globally unique identifier of the author which generated this position.
      */
-    readonly replica: () => ReturnType<P["replica"]>
+    replica(): u32 {
+        const base = this.base
+        return base[base.length - 1]
+    }
 
     /**
      * @example
@@ -83,12 +152,37 @@ export interface Pos<P extends Pos<P>> {
      * @return Integer distance from this to {@link other } and
      *  order between this and {@link other }.
      */
-    readonly intDistance: (other: P) => readonly [u32, Ordering]
+    intDistance(other: Pos): readonly [u32, Ordering] {
+        if (this.base.length > other.base.length) {
+            const [dist, order] = other.intDistance(this)
+            return [dist, orderingInversion[order]]
+        } else {
+            heavyAssert(
+                () =>
+                    ((cmp) =>
+                        cmp === BaseOrdering.PREFIXING ||
+                        cmp === BaseOrdering.EQUAL)(this.compareBase(other)),
+                "this prefix or is equal to other"
+            )
+
+            const otherIntermediateOffset =
+                other.base.length > this.base.length
+                    ? other.base[this.base.length]
+                    : other.seq
+            const offset = this.seq
+            return [
+                absoluteSubstraction(offset, otherIntermediateOffset),
+                compareU32(offset, otherIntermediateOffset),
+            ]
+        }
+    }
 
     /**
      * Non-cryptographic way to approximate object identity.
      */
-    readonly hashCode: () => u32
+    hashCode(): u32 {
+        return (((hashCodeOf(this.base) * 17) >>> 0) + this.seq) >>> 0
+    }
 
     // Status
     /**
@@ -99,13 +193,37 @@ export interface Pos<P extends Pos<P>> {
      * @param n 0-based index.
      * @return is there a {@link n } -th integer successor?
      */
-    readonly hasIntSucc: (n: u32) => boolean
+    hasIntSucc(n: u32): boolean {
+        assert(() => isU32(n), "n ∈ u32")
+        return isU32(this.seq + n)
+    }
 
     /**
      * @param other
      * @return base of this [Order relation] base of {@link other }.
      */
-    readonly compareBase: (other: P) => BaseOrdering
+    compareBase(other: Pos): BaseOrdering {
+        const base = this.base
+        const baseLen = base.length
+        const oBase = other.base
+        const oBaseLen = oBase.length
+        const i = prefixLength(base, oBase)
+        if (i < baseLen && i < oBaseLen) {
+            if (base[i] < oBase[i]) {
+                return BaseOrdering.BEFORE
+            } else {
+                return BaseOrdering.AFTER
+            }
+        } else {
+            if (baseLen === oBaseLen) {
+                return BaseOrdering.EQUAL
+            } else if (baseLen < oBaseLen) {
+                return BaseOrdering.PREFIXING
+            } else {
+                return BaseOrdering.PREFIXED_BY
+            }
+        }
+    }
 
     /**
      * @example
@@ -114,5 +232,21 @@ export interface Pos<P extends Pos<P>> {
      * @param other
      * @return this [Order relation] {@link other}.
      */
-    readonly compare: (other: P) => Ordering
+    compare(other: Pos): Ordering {
+        const base = this.base
+        const oBase = other.base
+        const i = prefixLength(base, oBase)
+        const v1 = getDefault(base, i, this.seq)
+        const v2 = getDefault(oBase, i, other.seq)
+        const cmp = compareU32(v1, v2)
+        return cmp === Ordering.EQUAL
+            ? compareU32(base.length, oBase.length)
+            : cmp
+    }
+
+    protected toJSON(): readonly u32[] {
+        const repr = Array.from(this.base)
+        repr.push(this.seq)
+        return repr
+    }
 }

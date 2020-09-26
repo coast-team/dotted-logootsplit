@@ -5,7 +5,6 @@ import {
     mInsertAtRight,
     mInsertAtLeft,
     mInsertAtSplit,
-    OpListMacros,
     mInsertSingle,
     mInsertAppend,
     mInsertPrepend,
@@ -70,18 +69,16 @@ import {
     mMerge,
     mMergeSimple,
     mMergeIdempotent,
-    DeltaListMacros,
     mAnchor,
     mTopBottomAnchor,
     mAnchorOutOfBound,
 } from "../macro"
 import {
-    SimpleDotBlockFactory,
-    SimpleDotPos,
     DeltaEditableReplicatedList,
+    SimpleDotBlockFactory,
 } from "../../../src"
 import { OpEditableReplicatedList } from "../../../src/core/op-replicated-list"
-import { avl } from "../../../src/"
+import { avl } from "../../../src"
 
 const DEFAULT_SEED = "dotted-logootsplit"
 
@@ -90,7 +87,7 @@ const ID = "mut-avl"
 function emptyOpSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): OpEditableReplicatedList<SimpleDotPos, string> {
+): OpEditableReplicatedList<string> {
     const factory = SimpleDotBlockFactory.from(replica, seed)
     return avl.opEditableList(factory, "")
 }
@@ -98,11 +95,11 @@ function emptyOpSeq(
 function emptyODeltaSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): DeltaEditableReplicatedList<SimpleDotPos, string> {
+): DeltaEditableReplicatedList<string> {
     return DeltaEditableReplicatedList.from(emptyOpSeq(replica, seed))
 }
 
-test([mEmpty] as OpListMacros<SimpleDotPos>, emptyOpSeq, ID)
+test([mEmpty], emptyOpSeq, ID)
 
 test(
     [
@@ -111,7 +108,7 @@ test(
         mInsertAtBoth,
         mInsertAtSplit,
         mInsertAtMultiple,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -136,7 +133,7 @@ test(
         mInsertConcurrent,
         mInsertConcurrentAppend,
         mInsertConcurrentPrepend,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -156,7 +153,7 @@ test(
         mRemoveAtIncludingMiddle,
         mRemoveAtIncludingRight,
         mRemoveAtMultiple,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -176,7 +173,7 @@ test(
         mRemoveSplitting,
         mRemoveSplittedBy,
         mRemoveAfterBeforeMerge,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -194,18 +191,12 @@ test(
         mInsertertableSplitting,
         mInsertertableAfterBefore,
         mInsertertableAppednable,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
 
-test(
-    [mTopBottomAnchor, mAnchorOutOfBound, mAnchor] as OpListMacros<
-        SimpleDotPos
-    >,
-    emptyOpSeq,
-    ID
-)
+test([mTopBottomAnchor, mAnchorOutOfBound, mAnchor], emptyOpSeq, ID)
 
 test(
     [
@@ -213,16 +204,12 @@ test(
         mApplyDeltaPartRemoveInsert,
         mApplyDeltaRemoveInsert,
         mApplyDeltaTwice,
-    ] as DeltaListMacros<SimpleDotPos>,
+    ],
     emptyODeltaSeq,
     ID
 )
 
-test(
-    [mMergeSimple, mMergeIdempotent, mMerge] as DeltaListMacros<SimpleDotPos>,
-    emptyODeltaSeq,
-    ID
-)
+test([mMergeSimple, mMergeIdempotent, mMerge], emptyODeltaSeq, ID)
 
 test("from-plain_op-editable", (t) => {
     const seq = emptyOpSeq(0)
@@ -231,15 +218,14 @@ test("from-plain_op-editable", (t) => {
 
     const plain = JSON.parse(JSON.stringify(seq))
     t.deepEqual(
-        avl.opEditableListFromPlain(
-            SimpleDotBlockFactory,
-            (x: unknown): string | undefined => {
-                if (typeof x === "string") {
-                    return x
-                }
-                return undefined
+        avl.opEditableListFromPlain(SimpleDotBlockFactory, (x: unknown):
+            | string
+            | undefined => {
+            if (typeof x === "string") {
+                return x
             }
-        )(plain),
+            return undefined
+        })(plain),
         seq
     )
 })
@@ -251,15 +237,14 @@ test("from-plain_delta-editable", (t) => {
 
     const plain = JSON.parse(JSON.stringify(seq))
     t.deepEqual(
-        avl.deltaEditableListFromPlain(
-            SimpleDotBlockFactory,
-            (x: unknown): string | undefined => {
-                if (typeof x === "string") {
-                    return x
-                }
-                return undefined
+        avl.deltaEditableListFromPlain(SimpleDotBlockFactory, (x: unknown):
+            | string
+            | undefined => {
+            if (typeof x === "string") {
+                return x
             }
-        )(plain),
+            return undefined
+        })(plain),
         seq
     )
 })

@@ -5,7 +5,6 @@ import {
     mInsertAtRight,
     mInsertAtLeft,
     mInsertAtSplit,
-    OpListMacros,
     mInsertSingle,
     mInsertAppend,
     mInsertPrepend,
@@ -76,12 +75,11 @@ import {
     mTopBottomAnchor,
 } from "../macro"
 import {
-    SimpleDotBlockFactory,
-    SimpleDotPos,
     DeltaEditableReplicatedList,
+    SimpleDotBlockFactory,
 } from "../../../src"
 import { OpEditableReplicatedList } from "../../../src/core/op-replicated-list"
-import { linked } from "../../../src/"
+import { linked } from "../../../src"
 
 const DEFAULT_SEED = "dotted-logootsplit"
 
@@ -90,7 +88,7 @@ const ID = "linked"
 function emptyOpSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): OpEditableReplicatedList<SimpleDotPos, string> {
+): OpEditableReplicatedList<string> {
     const factory = SimpleDotBlockFactory.from(replica, seed)
     return linked.OpEditableList(factory, "")
 }
@@ -98,11 +96,11 @@ function emptyOpSeq(
 function emptyODeltaSeq(
     replica: number,
     seed: string = DEFAULT_SEED
-): DeltaEditableReplicatedList<SimpleDotPos, string> {
+): DeltaEditableReplicatedList<string> {
     return DeltaEditableReplicatedList.from(emptyOpSeq(replica, seed))
 }
 
-test([mEmpty] as OpListMacros<SimpleDotPos>, emptyOpSeq, ID)
+test([mEmpty], emptyOpSeq, ID)
 
 test(
     [
@@ -111,7 +109,7 @@ test(
         mInsertAtBoth,
         mInsertAtSplit,
         mInsertAtMultiple,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -136,7 +134,7 @@ test(
         mInsertConcurrent,
         mInsertConcurrentAppend,
         mInsertConcurrentPrepend,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -156,7 +154,7 @@ test(
         mRemoveAtIncludingMiddle,
         mRemoveAtIncludingRight,
         mRemoveAtMultiple,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -176,7 +174,7 @@ test(
         mRemoveSplitting,
         mRemoveSplittedBy,
         mRemoveAfterBeforeMerge,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
@@ -194,18 +192,12 @@ test(
         mInsertertableSplitting,
         mInsertertableAfterBefore,
         mInsertertableAppednable,
-    ] as OpListMacros<SimpleDotPos>,
+    ],
     emptyOpSeq,
     ID
 )
 
-test(
-    [mTopBottomAnchor, mAnchorOutOfBound, mAnchor] as OpListMacros<
-        SimpleDotPos
-    >,
-    emptyOpSeq,
-    ID
-)
+test([mTopBottomAnchor, mAnchorOutOfBound, mAnchor], emptyOpSeq, ID)
 
 test(
     [
@@ -213,13 +205,13 @@ test(
         mApplyDeltaPartRemoveInsert,
         mApplyDeltaRemoveInsert,
         mApplyDeltaTwice,
-    ] as DeltaListMacros<SimpleDotPos>,
+    ] as DeltaListMacros,
     emptyODeltaSeq,
     ID
 )
 
 test(
-    [mMergeSimple, mMergeIdempotent, mMerge] as DeltaListMacros<SimpleDotPos>,
+    [mMergeSimple, mMergeIdempotent, mMerge] as DeltaListMacros,
     emptyODeltaSeq,
     ID
 )

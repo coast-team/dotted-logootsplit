@@ -8,7 +8,6 @@
 
 import { Block, LengthBlock } from "./block"
 import { Concat } from "./concat"
-import { Pos } from "./pos"
 import { u32, hashCodeOf } from "../util/number"
 import { Anchor } from "./anchor"
 import { Ins } from "./ins"
@@ -19,7 +18,7 @@ import { Del } from "./del"
  * An operation must be delivered exactly once.
  * An insertion must be delivered before a removal that depends on.
  */
-export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
+export abstract class OpReplicatedList<E extends Concat<E>> {
     // Access
     /**
      * Number of inserted items.
@@ -34,7 +33,7 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      * @return accumulated value by reducing blocks from left to right
      *  in the list.
      */
-    abstract reduceBlock<U>(f: (acc: U, b: Block<P, E>) => U, prefix: U): U
+    abstract reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U
 
     /**
      * @param prefix
@@ -56,17 +55,26 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
     }
 
     /**
+     * @param index index where the anchor is
+     * @param isAfter Is the anchor after `index`?
+     * @return anchor at `index`.
+     *  The anchor is sticked to the left psoition if isAfter is false.
+     * Otherwise, it is sticked to the right psoition.
+     */
+    abstract anchorAt(index: u32, isAfter: boolean): Anchor
+
+    /**
      * @param anchor
      * @return index of `anchor`.
      */
-    abstract indexFrom(anchor: Anchor<P>): u32
+    abstract indexFrom(anchor: Anchor): u32
 
     /**
      * @param delta operation of insertion insertion
      * @return operations of insertion that can be played such that an
      *  insertion is not played a second time.
      */
-    abstract insertable(delta: Block<P, E>): Block<P, E>[]
+    abstract insertable(delta: Block<E>): Block<E>[]
 
     // Modification
     /**
@@ -79,7 +87,7 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      *  The n+1 -th operation depends on the n -th operation.
      *  Thus local operations must be played from left to right.
      */
-    abstract insert(delta: Block<P, E>): Ins<E>[]
+    abstract insert(delta: Block<E>): Ins<E>[]
 
     /**
      * [Mutation]
@@ -90,10 +98,10 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      *
      * @param delta operation of deletion.
      * @return Performed modifications in terms of local operations.
-     *  The n+1 -th operation depends on the n -th operation.
+     *  The n+1 -th operation depends on the n -th operation.s
      *  Thus local operations must be played from left to right.
      */
-    abstract remove(delta: LengthBlock<P>): Del[]
+    abstract remove(delta: LengthBlock): Del[]
 
     /**
      * [Mutation]
@@ -105,10 +113,10 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
      *  The n+1 -th operation depends on the n -th operation.
      *  Thus local operations must be played from left to right.
      */
-    applyOp(delta: Block<P, E>): Ins<E>[]
-    applyOp(delta: LengthBlock<P>): Del[]
-    applyOp(delta: LengthBlock<P> | Block<P, E>): Del[] | Ins<E>[]
-    applyOp(delta: LengthBlock<P> | Block<P, E>): Del[] | Ins<E>[] {
+    applyOp(delta: Block<E>): Ins<E>[]
+    applyOp(delta: LengthBlock): Del[]
+    applyOp(delta: LengthBlock | Block<E>): Del[] | Ins<E>[]
+    applyOp(delta: LengthBlock | Block<E>): Del[] | Ins<E>[] {
         if (delta.isLengthBlock()) {
             return this.remove(delta)
         } else {
@@ -122,19 +130,8 @@ export abstract class OpReplicatedList<P extends Pos<P>, E extends Concat<E>> {
  * An operation must be delivered exactly once.
  * An insertion must be delivered before a removal that depends on.
  */
-export interface OpEditableReplicatedList<
-    P extends Pos<P>,
-    E extends Concat<E>
-> extends OpReplicatedList<P, E> {
-    /**
-     * @param index index where the anchor is
-     * @param isAfter Is the anchor after `index`?
-     * @return anchor at `index`.
-     *  The anchor is sticked to the left psoition if isAfter is false.
-     * Otherwise, it is sticked to the right psoition.
-     */
-    anchorAt(index: u32, isAfter: boolean): Anchor<P>
-
+export interface OpEditableReplicatedList<E extends Concat<E>>
+    extends OpReplicatedList<E> {
     /**
      * [Mutation]
      * Insert {@link items } at {@link index}.
@@ -143,7 +140,7 @@ export interface OpEditableReplicatedList<
      * @param items elements to insert.
      * @return Delta which represents the insertion.
      */
-    insertAt(index: u32, items: E): Block<P, E>
+    insertAt(index: u32, items: E): Block<E>
 
     /**
      * [Mutation]
@@ -153,5 +150,5 @@ export interface OpEditableReplicatedList<
      * @param length Number of elements to remove.
      * @return Delta which represents the deletion.
      */
-    removeAt(index: u32, length: u32): LengthBlock<P>[]
+    removeAt(index: u32, length: u32): LengthBlock[]
 }

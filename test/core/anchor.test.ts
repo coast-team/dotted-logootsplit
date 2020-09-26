@@ -1,20 +1,15 @@
-import { SimpleDotPos } from "../../src/dot-pos/simple/simple-dot-pos"
-import { SimpleDotPosPart } from "../../src/dot-pos/simple/simple-dot-pos-part"
 import test from "ava"
 import { Anchor, Ordering } from "../../src"
+import { posOf } from "./pos.testutil"
 
-const part1 = SimpleDotPosPart.from(1, 0, 1)
-const part2 = SimpleDotPosPart.from(1, 0, 2)
-const part3 = SimpleDotPosPart.from(1, 0, 3)
+const pos1 = posOf(1, 0, 1)
+const pos13 = posOf(1, 0, 1, 1, 0, 3)
+const pos2 = posOf(1, 0, 2)
 
-const pos1 = SimpleDotPos.from([part1])
-const pos13 = SimpleDotPos.from([part1, part3])
-const pos2 = SimpleDotPos.from([part2])
-
-const anchor1after = Anchor.from(pos1, true)
-const anchor13before = Anchor.from(pos13, false)
-const anchor13after = Anchor.from(pos13, true)
-const anchor2before = Anchor.from(pos2, false)
+const anchor1after = new Anchor(pos1, true)
+const anchor13before = new Anchor(pos13, false)
+const anchor13after = new Anchor(pos13, true)
+const anchor2before = new Anchor(pos2, false)
 
 test("compare", (t) => {
     t.is(anchor1after.compare(anchor13before), Ordering.BEFORE)
@@ -30,13 +25,11 @@ test("compare-with", (t) => {
 })
 
 test("from-plain", (t) => {
-    t.is(Anchor.fromPlain(SimpleDotPos.fromPlain)(undefined), undefined)
-    t.is(Anchor.fromPlain(SimpleDotPos.fromPlain)(null), undefined)
-    t.is(Anchor.fromPlain(SimpleDotPos.fromPlain)({}), undefined)
-    t.is(Anchor.fromPlain(SimpleDotPos.fromPlain)([]), undefined)
+    t.is(Anchor.fromPlain(undefined), undefined)
+    t.is(Anchor.fromPlain(null), undefined)
+    t.is(Anchor.fromPlain({}), undefined)
+    t.is(Anchor.fromPlain([]), undefined)
 
-    t.deepEqual(
-        Anchor.fromPlain(SimpleDotPos.fromPlain)(anchor13before),
-        anchor13before
-    )
+    const plain = JSON.parse(JSON.stringify(anchor13before))
+    t.deepEqual(Anchor.fromPlain(plain), anchor13before)
 })

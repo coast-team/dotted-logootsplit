@@ -2,51 +2,30 @@ import { ExecutionContext, Macro } from "ava"
 import { Pos, Ins, Del, Ordering } from "../../src"
 import { OpEditableReplicatedList } from "../../src/core/op-replicated-list"
 import { DeltaEditableReplicatedList } from "../../src/core/delta-replicated-list"
-import { DotPos } from "../../src/core/dot-pos"
 
-export interface OpListFactory<P extends Pos<P>> {
-    (replica: number, seed?: string): OpEditableReplicatedList<P, string>
+export interface OpListFactory {
+    (replica: number, seed?: string): OpEditableReplicatedList<string>
 }
 
 export interface GenericOpListMacro {
-    <P extends Pos<P>>(
-        t: ExecutionContext,
-        emp: OpListFactory<P>,
-        id: string
-    ): void
+    (t: ExecutionContext, emp: OpListFactory, id: string): void
 
     title: (title: string | undefined, _: unknown, id: string) => string
 }
 
-export type OpListMacro<P extends Pos<P>> = Macro<[OpListFactory<P>, string]>
-
-export type OpListMacros<P extends Pos<P>> = [
-    OpListMacro<P>,
-    ...OpListMacro<P>[]
-]
-
-export interface DeltaListFactory<P extends DotPos<P>> {
-    (replica: number, seed?: string): DeltaEditableReplicatedList<P, string>
+export interface DeltaListFactory {
+    (replica: number, seed?: string): DeltaEditableReplicatedList<string>
 }
 
 export interface GenericDeltaListMacro {
-    <P extends DotPos<P>>(
-        t: ExecutionContext,
-        emp: DeltaListFactory<P>,
-        id: string
-    ): void
+    (t: ExecutionContext, emp: DeltaListFactory, id: string): void
 
     title: (title: string | undefined, _: unknown, id: string) => string
 }
 
-export type DeltaListMacro<P extends DotPos<P>> = Macro<
-    [DeltaListFactory<P>, string]
->
+export type DeltaListMacro = Macro<[DeltaListFactory, string]>
 
-export type DeltaListMacros<P extends DotPos<P>> = [
-    DeltaListMacro<P>,
-    ...DeltaListMacro<P>[]
-]
+export type DeltaListMacros = [DeltaListMacro, ...DeltaListMacro[]]
 
 const titled = (defaultTitle: string) => (
     title = defaultTitle,
