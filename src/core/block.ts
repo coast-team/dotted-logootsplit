@@ -23,43 +23,59 @@ import { RangeOrdering, U32Range } from "./u32-range.js"
  * @example
  * [0, 2] |⊂ 1[_, _]
  */
-export const enum BlockOrdering {
+export type BlockOrdering =
+    | 0
+    | 1
+    | 2
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | 11
+    | 12
+    | 13
+    | 14
+export const BlockOrdering = {
     // TODO: add "AfterVirtualBlock" & "BeforeVirtualBlock" (with better names)?
-    BEFORE = -7, // <
-    PREPENDABLE = -6, // <:
-    SPLITTED_BY = -5, // |⊂
-    OVERLAPPING_BEFORE = -4, // <∩
-    INCLUDED_LEFT_BY = -3, // +⊂
-    INCLUDED_MIDDLE_BY = -2, // ⊂
-    INCLUDED_RIGHT_BY = -1, // -⊂
-    EQUAL = 0, // =
-    INCLUDING_LEFT = 1, // ⊃-
-    INCLUDING_MIDDLE = 2, // ⊃
-    INCLUDING_RIGHT = 3, // ⊃+
-    OVERLAPPING_AFTER = 4, // >∩
-    SPLITTING = 5, // ⊃|
-    APPENDABLE = 6, // :>
-    AFTER = 7, // >
-}
+    BEFORE: 0, // <
+    PREPENDABLE: 1, // <:
+    SPLITTED_BY: 2, // |⊂
+    OVERLAPPING_BEFORE: 3, // <∩
+    INCLUDED_LEFT_BY: 4, // +⊂
+    INCLUDED_MIDDLE_BY: 5, // ⊂
+    INCLUDED_RIGHT_BY: 6, // -⊂
+    EQUAL: 7, //:
+    INCLUDING_LEFT: 8, // ⊃-
+    INCLUDING_MIDDLE: 9, // ⊃
+    INCLUDING_RIGHT: 10, // ⊃+
+    OVERLAPPING_AFTER: 11, // >∩
+    SPLITTING: 12, // ⊃|
+    APPENDABLE: 13, // :>
+    AFTER: 14, // >
+} as const
 
 /**
  * Map IntervalOrdering to BlockOrdering.
  */
-const rangeOrderingAsBlockOrdering = {
-    [RangeOrdering.BEFORE]: BlockOrdering.BEFORE,
-    [RangeOrdering.PREPENDABLE]: BlockOrdering.PREPENDABLE,
-    [RangeOrdering.OVERLAPPING_BEFORE]: BlockOrdering.OVERLAPPING_BEFORE,
-    [RangeOrdering.INCLUDING_LEFT]: BlockOrdering.INCLUDING_LEFT,
-    [RangeOrdering.INCLUDING_MIDDLE]: BlockOrdering.INCLUDING_MIDDLE,
-    [RangeOrdering.INCLUDING_RIGHT]: BlockOrdering.INCLUDING_RIGHT,
-    [RangeOrdering.EQUAL]: BlockOrdering.EQUAL,
-    [RangeOrdering.INCLUDED_LEFT_BY]: BlockOrdering.INCLUDED_LEFT_BY,
-    [RangeOrdering.INCLUDED_MIDDLE_BY]: BlockOrdering.INCLUDED_MIDDLE_BY,
-    [RangeOrdering.INCLUDED_RIGHT_BY]: BlockOrdering.INCLUDED_RIGHT_BY,
-    [RangeOrdering.OVERLAPPING_AFTER]: BlockOrdering.OVERLAPPING_AFTER,
-    [RangeOrdering.APPENDABLE]: BlockOrdering.APPENDABLE,
-    [RangeOrdering.AFTER]: BlockOrdering.AFTER,
-} as const
+const rangeOrderingAsBlockOrdering = [
+    BlockOrdering.BEFORE,
+    BlockOrdering.PREPENDABLE,
+    BlockOrdering.OVERLAPPING_BEFORE,
+    BlockOrdering.INCLUDED_LEFT_BY,
+    BlockOrdering.INCLUDED_MIDDLE_BY,
+    BlockOrdering.INCLUDED_RIGHT_BY,
+    BlockOrdering.EQUAL,
+    BlockOrdering.INCLUDING_LEFT,
+    BlockOrdering.INCLUDING_MIDDLE,
+    BlockOrdering.INCLUDING_RIGHT,
+    BlockOrdering.OVERLAPPING_AFTER,
+    BlockOrdering.APPENDABLE,
+    BlockOrdering.AFTER,
+] as const
 
 /**
  * A {@see Block} or a {@see LengthBlock}.

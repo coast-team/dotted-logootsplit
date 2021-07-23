@@ -6,7 +6,6 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "./assert.js"
 import type { Ordering } from "./ordering.js"
 
 export type u32 = number
@@ -27,7 +26,8 @@ export const isU32 = (n: unknown): n is u32 =>
  * @param n2
  * @return Order relation between {@link n1} and {@link n2}.
  */
-export const compareU32 = (n1: u32, n2: u32): Ordering => Math.sign(n1 - n2)
+export const compareU32 = (n1: u32, n2: u32): Ordering =>
+    Math.sign(n1 - n2) as -1 | 0 | 1
 
 /**
  * @param values

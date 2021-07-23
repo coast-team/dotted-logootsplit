@@ -23,21 +23,22 @@ import { isU32 } from "../util/number.js"
  * [2, 3] +⊂ [0, 3]
  * [0, 2] = [0, 2]
  */
-export const enum RangeOrdering {
-    BEFORE = -6, // <
-    PREPENDABLE = -5, // <:
-    OVERLAPPING_BEFORE = -4, // <∩
-    INCLUDED_LEFT_BY = -3, // -⊂
-    INCLUDED_MIDDLE_BY = -2, // ⊂
-    INCLUDED_RIGHT_BY = -1, // +⊂
-    EQUAL = 0, // =
-    INCLUDING_LEFT = 1, // ⊃-
-    INCLUDING_MIDDLE = 2, // ⊃
-    INCLUDING_RIGHT = 3, // ⊃+
-    OVERLAPPING_AFTER = 4, // >∩
-    APPENDABLE = 5, // :>
-    AFTER = 6, // >
-}
+export type RangeOrdering = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+export const RangeOrdering = {
+    BEFORE: 0, // <
+    PREPENDABLE: 1, // <:
+    OVERLAPPING_BEFORE: 2, // <∩
+    INCLUDED_LEFT_BY: 3, // -⊂
+    INCLUDED_MIDDLE_BY: 4, // ⊂
+    INCLUDED_RIGHT_BY: 5, // +⊂
+    EQUAL: 6, // :
+    INCLUDING_LEFT: 7, // ⊃-
+    INCLUDING_MIDDLE: 8, // ⊃
+    INCLUDING_RIGHT: 9, // ⊃+
+    OVERLAPPING_AFTER: 10, // >∩
+    APPENDABLE: 11, // :>
+    AFTER: 12, // >
+} as const
 
 /**
  * Interval of u32.

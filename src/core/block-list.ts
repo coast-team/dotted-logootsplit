@@ -377,6 +377,19 @@ export class EditableBlockList<E extends Concat<E>>
         return new EditableBlockList(MutList.from(blocks), factory)
     }
 
+    static fromLengthyIterableWith<E extends Concat<E>>(
+        blocks: {
+            readonly length: number
+            [Symbol.iterator](): Iterator<Block<E>>
+        },
+        factory: BlockFactory
+    ): EditableBlockList<E> {
+        return new EditableBlockList(
+            MutList.fromIterable(blocks, blocks.length),
+            factory
+        )
+    }
+
     static override fromPlain<E extends Concat<E>>(
         f: BlockFactoryConstructor,
         itemFromPlain: FromPlain<E>

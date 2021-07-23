@@ -9,11 +9,17 @@
 /**
  * Possible relation between two elements in a totally ordered set.
  */
-export const enum Ordering {
-    BEFORE = -1, // <
-    EQUAL = 0, // =
-    AFTER = 1, // >
+export type Ordering = -1 | 0 | 1
+export declare namespace Ordering {
+    export type BEFORE = -1
+    export type EQUAL = 0
+    export type AFTER = 1
 }
+export const Ordering = {
+    BEFORE: -1, // <
+    EQUAL: 0, // =
+    AFTER: 1, // >
+} as const
 
 /**
  * Inversion of Ordering.
@@ -21,11 +27,9 @@ export const enum Ordering {
  * @example
  * orderingInversion[Ordering.BEFORE] === Ordering.AFTER
  */
-export const orderingInversion = {
-    [Ordering.BEFORE]: Ordering.AFTER,
-    [Ordering.EQUAL]: Ordering.EQUAL,
-    [Ordering.AFTER]: Ordering.BEFORE,
-} as const
+export function reversed(order: Ordering): Ordering {
+    return (-order | 0) as Ordering
+}
 
 /**
  * compareBoolean(false, true) === Ordering.EQUAL

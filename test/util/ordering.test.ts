@@ -3,10 +3,14 @@ import test from "ava"
 import {
     lexCompareOrdering,
     Ordering,
-    orderingInversion,
+    reversed,
 } from "../../src/util/ordering.js"
 
-const ORDERING_VALUES = [Ordering.BEFORE, Ordering.EQUAL, Ordering.AFTER]
+const ORDERING_VALUES = [
+    Ordering.BEFORE,
+    Ordering.EQUAL,
+    Ordering.AFTER,
+] as const
 
 test("lexCompareOrdering_neutral-element", (t) => {
     for (const o of ORDERING_VALUES) {
@@ -24,7 +28,7 @@ test("lexCompareOrdering_lex-priority", (t) => {
 test("orderingInversion", (t) => {
     const len = ORDERING_VALUES.length
     for (let i = 0; i < len; i++) {
-        const evaluated = orderingInversion[ORDERING_VALUES[i]]
+        const evaluated = reversed(ORDERING_VALUES[i])
         const expected = ORDERING_VALUES[len - 1 - i]
         t.is(evaluated, expected)
     }

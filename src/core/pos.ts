@@ -16,19 +16,20 @@ import {
     U32_BOTTOM,
     U32_TOP,
 } from "../util/number.js"
-import { Ordering, orderingInversion } from "../util/ordering.js"
+import { Ordering, reversed } from "../util/ordering.js"
 import { getDefault, prefixLength } from "../util/uint32-array.js"
 
 /**
  * Possible relation between two position bases.
  */
-export const enum BaseOrdering {
-    BEFORE = -2,
-    PREFIXING = -1,
-    EQUAL = 0,
-    PREFIXED_BY = 1,
-    AFTER = 2,
-}
+export type BaseOrdering = 0 | 1 | 2 | 3 | 4
+export const BaseOrdering = {
+    BEFORE: 0,
+    PREFIXING: 1,
+    EQUAL: 2,
+    PREFIXED_BY: 3,
+    AFTER: 4,
+} as const
 
 const EMPTY_BASE = new Uint32Array(0)
 
@@ -155,7 +156,7 @@ export class Pos {
     intDistance(other: Pos): readonly [u32, Ordering] {
         if (this.base.length > other.base.length) {
             const [dist, order] = other.intDistance(this)
-            return [dist, orderingInversion[order]]
+            return [dist, reversed(order)]
         } else {
             heavyAssert(
                 () =>
