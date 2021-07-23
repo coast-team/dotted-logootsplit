@@ -69,27 +69,28 @@ import {
     mMerge,
     mMergeSimple,
     mMergeIdempotent,
+    DeltaListMacros,
     mAnchor,
     mTopBottomAnchor,
     mAnchorOutOfBound,
-} from "../macro"
+} from "./macro.js"
 import {
     DeltaEditableReplicatedList,
     SimpleDotBlockFactory,
-} from "../../../src"
-import { OpEditableReplicatedList } from "../../../src/core/op-replicated-list"
-import { avl } from "../../../src"
+} from "../../src/index.js"
+import type { OpEditableReplicatedList } from "../../src/core/op-replicated-list.js"
+import { opEditableList } from "../../src/list/avl.js"
 
 const DEFAULT_SEED = "dotted-logootsplit"
 
-const ID = "mut-avl"
+const ID = "cow-list"
 
 function emptyOpSeq(
     replica: number,
     seed: string = DEFAULT_SEED
 ): OpEditableReplicatedList<string> {
     const factory = SimpleDotBlockFactory.from(replica, seed)
-    return avl.opEditableList(factory, "")
+    return opEditableList(factory, "")
 }
 
 function emptyODeltaSeq(
@@ -210,41 +211,3 @@ test(
 )
 
 test([mMergeSimple, mMergeIdempotent, mMerge], emptyODeltaSeq, ID)
-
-test("from-plain_op-editable", (t) => {
-    const seq = emptyOpSeq(0)
-    seq.insertAt(0, "ac")
-    seq.insertAt(1, "b")
-
-    const plain = JSON.parse(JSON.stringify(seq))
-    t.deepEqual(
-        avl.opEditableListFromPlain(SimpleDotBlockFactory, (x: unknown):
-            | string
-            | undefined => {
-            if (typeof x === "string") {
-                return x
-            }
-            return undefined
-        })(plain),
-        seq
-    )
-})
-
-test("from-plain_delta-editable", (t) => {
-    const seq = emptyODeltaSeq(0)
-    seq.insertAt(0, "ac")
-    seq.insertAt(1, "b")
-
-    const plain = JSON.parse(JSON.stringify(seq))
-    t.deepEqual(
-        avl.deltaEditableListFromPlain(SimpleDotBlockFactory, (x: unknown):
-            | string
-            | undefined => {
-            if (typeof x === "string") {
-                return x
-            }
-            return undefined
-        })(plain),
-        seq
-    )
-})

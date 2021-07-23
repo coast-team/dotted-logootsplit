@@ -83,6 +83,7 @@
     "typescript": "~4.3.5"
   },
   "dependencies": {
+    "cow-list": "2.1.0",
     "replayable-random": "=0.4.1",
     "tslib": "^2.0.1"
   }

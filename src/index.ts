@@ -20,8 +20,6 @@ export * from "./core/delta-replicated-list.js"
 
 export * from "./block-factory/simple-block-factory.js"
 
-export * from "./list/avl/op-avl-list"
-import * as avl from "./list/avl/avl"
-export { avl }
+export * as avl from "./list/avl.js"
 
 export * from "./util/ordering.js"

@@ -6,23 +6,28 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { Pos } from "../../core/pos"
-import { Concat } from "../../core/concat"
-import {
+import type { Concat } from "../core/concat.js"
+import type {
     OpReplicatedList,
     OpEditableReplicatedList,
-} from "../../core/op-replicated-list"
-import { OpLinkedList, EditableOpLinkedList } from "./op-linked-list"
-import { BlockFactory, BlockFactoryConstructor } from "../../core/block-factory"
-import { assert } from "../../util/assert"
+} from "../core/op-replicated-list.js"
+import { BlockList, EditableBlockList } from "../core/block-list.js"
+import type {
+    BlockFactory,
+    BlockFactoryConstructor,
+} from "../core/block-factory.js"
+import { assert } from "../util/assert.js"
 import {
     DeltaReplicatedList,
     DeltaEditableReplicatedList,
-} from "../../core/delta-replicated-list"
-import { FromPlain } from "../../util/data-validation"
+} from "../core/delta-replicated-list.js"
+import type { FromPlain } from "../util/data-validation.js"
 
+/**
+ * @return operation-based empty AVL list that cannot be locally modified
+ */
 export function opList<E extends Concat<E>>(): OpReplicatedList<E> {
-    return OpLinkedList.empty<E>()
+    return BlockList.empty<E>()
 }
 
 /**
@@ -31,19 +36,19 @@ export function opList<E extends Concat<E>>(): OpReplicatedList<E> {
  * @param x candidate
  * @return operation-based AVL list from `x`, or undefined if `x` is mal-formed
  */
-export const opListFromPlain = OpLinkedList.fromPlain
+export const opListFromPlain = BlockList.fromPlain
 
 /**
- * @param factory block factory
+ *  @param factory block factory
  * @param v empty value (used for type inference)
- * @return operation-based empty linked list that cannot be locally modified
+ * @return operation-based empty AVL list that can be locally modified
  */
-export function OpEditableList<E extends Concat<E>>(
+export function opEditableList<E extends Concat<E>>(
     factory: BlockFactory,
     v: E
 ): OpEditableReplicatedList<E> {
     assert(() => v.length === 0, "v must be empty")
-    return EditableOpLinkedList.emptyWith<E>(factory)
+    return EditableBlockList.emptyWith<E>(factory)
 }
 
 /**
@@ -52,10 +57,10 @@ export function OpEditableList<E extends Concat<E>>(
  * @return function that accepts a value and attempt to build a list.
  *  It returns the built list if it succeeds, or undefined if it fails.
  */
-export const opEditableListFromPlain = EditableOpLinkedList.fromPlain
+export const opEditableListFromPlain = EditableBlockList.fromPlain
 
 /**
- * @return operation-based empty linked list that can be locally modified
+ * @return delta-based empty AVL list that cannot be locally modified
  */
 export function deltaList<E extends Concat<E>>(): DeltaReplicatedList<E> {
     return DeltaReplicatedList.from(opList())
@@ -71,20 +76,20 @@ export function deltaListFromPlain<E extends Concat<E>>(
     f: BlockFactoryConstructor,
     itemsFromPlain: FromPlain<E>
 ): FromPlain<DeltaReplicatedList<E>> {
-    return DeltaReplicatedList.fromPlain(opListFromPlain(f, itemsFromPlain))
+    return DeltaReplicatedList.fromPlain(BlockList.fromPlain(f, itemsFromPlain))
 }
 
 /**
  * @param factory block factory
  * @param v empty value (used for type inference)
- * @return delta-based empty linked list that can be locally modified
+ * @return delta-based empty AVL list that can be locally modified
  */
 export function deltaEditableList<E extends Concat<E>>(
     factory: BlockFactory,
     v: E
 ): DeltaEditableReplicatedList<E> {
     assert(() => v.length === 0, "v must be empty")
-    return DeltaEditableReplicatedList.from(OpEditableList(factory, v))
+    return DeltaEditableReplicatedList.from(opEditableList(factory, v))
 }
 
 /**
@@ -98,6 +103,6 @@ export function deltaEditableListFromPlain<E extends Concat<E>>(
     itemsFromPlain: FromPlain<E>
 ): FromPlain<DeltaEditableReplicatedList<E>> {
     return DeltaEditableReplicatedList.fromPlain(
-        opEditableListFromPlain(f, itemsFromPlain)
+        EditableBlockList.fromPlain(f, itemsFromPlain)
     )
 }
