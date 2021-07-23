@@ -27,7 +27,7 @@ Coming soon...
 [1]<a id="ref-1"> Luc André, Stéphane Martin, Gérald Oster, Claudia-Lavinia
 Ignat. **Supporting Adaptable Granularity of Changes for Massive-scale
 Collaborative Editing**. In _Proceedings of the international conference on
-collaborative computing: networking, applications and worksharing -
+collaborative computing: networking, applications and work sharing -
 CollaborateCom 2013_. IEEE Computer Society, october 2013, pages 50–59.
 [hal-00903813](https://hal.inria.fr/hal-00903813/)
 
@@ -94,9 +94,8 @@ console.log(stateA.concatenated(""))
 -   [x] causal delta-based sync
 -   [ ] Out-of-order delta-based sync (WIP)
 -   [x] state-based sync (state merging)
--   [ ] Anchors (a participant cursor is an anchor)
--   [ ] LSeq-like positions and generation strategies
--   [ ] Simpler balanced tree implementation
+-   [x] Anchors (a participant cursor is an anchor)
+-   [x] Simpler balanced tree implementation
 
 [crdt]: https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type
 [travis-image]: https://travis-ci.org/coast-team/dotted-logootsplit.svg
