@@ -6,18 +6,18 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "../util/assert"
+import { assert, heavyAssert } from "../util/assert.js"
+import type { u32 } from "../util/number.js"
 import {
     absoluteSubstraction,
     compareU32,
     hashCodeOf,
     isU32,
-    u32,
     U32_BOTTOM,
     U32_TOP,
-} from "../util/number"
-import { Ordering, orderingInversion } from "../util/ordering"
-import { getDefault, prefixLength } from "../util/uint32-array"
+} from "../util/number.js"
+import { Ordering, orderingInversion } from "../util/ordering.js"
+import { getDefault, prefixLength } from "../util/uint32-array.js"
 
 /**
  * Possible relation between two position bases.

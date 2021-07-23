@@ -1,9 +1,9 @@
 import test from "ava"
 
-import { U32_TOP } from "../../src/util/number"
-import { BaseOrdering } from "../../src"
-import { Ordering } from "../../src/util/ordering"
-import { posOf, twinPosition } from "./pos.testutil"
+import { U32_TOP } from "../../src/util/number.js"
+import { BaseOrdering } from "../../src/index.js"
+import { Ordering } from "../../src/util/ordering.js"
+import { posOf, twinPosition } from "./pos.testutil.js"
 
 const A = 0
 const pos1_ = posOf(1, A, 1)

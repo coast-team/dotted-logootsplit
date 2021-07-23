@@ -6,12 +6,13 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { Block, LengthBlock } from "./block"
-import { Concat } from "./concat"
-import { u32, hashCodeOf } from "../util/number"
-import { Anchor } from "./anchor"
-import { Ins } from "./ins"
-import { Del } from "./del"
+import type { u32 } from "../util/number.js"
+import { hashCodeOf } from "../util/number.js"
+import type { Anchor } from "./anchor.js"
+import type { Block, LengthBlock } from "./block.js"
+import type { Concat } from "./concat.js"
+import type { Del } from "./del.js"
+import type { Ins } from "./ins.js"
 
 /**
  * List which can only be remotely updated using operations.

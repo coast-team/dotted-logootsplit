@@ -1,7 +1,7 @@
-import { Concat } from "../../src/core/concat"
-import { Block } from "../../src/core/block"
-import { Pos } from "../../src/core/pos"
-import { u32 } from "../../src/util/number"
+import type { Concat } from "../../src/core/concat.js"
+import { Block } from "../../src/core/block.js"
+import { Pos } from "../../src/core/pos.js"
+import type { u32 } from "../../src/util/number.js"
 
 export const posOf = (...xs: u32[]): Pos =>
     new Pos(Uint32Array.from(xs.slice(0, -1)), xs[xs.length - 1])

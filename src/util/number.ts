@@ -6,8 +6,8 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "./assert"
-import { Ordering } from "./ordering"
+import { assert } from "./assert.js"
+import type { Ordering } from "./ordering.js"
 
 export type u32 = number
 export type i32 = number

@@ -1,7 +1,12 @@
 import test from "ava"
 
-import { U32_BOTTOM, U32_TOP, isU32, compareU32 } from "../../src/util/number"
-import { Ordering } from "../../src/util/ordering"
+import {
+    U32_BOTTOM,
+    U32_TOP,
+    isU32,
+    compareU32,
+} from "../../src/util/number.js"
+import { Ordering } from "../../src/util/ordering.js"
 
 test("safe-integers-are-not-uint32", (t) => {
     t.false(isU32(Number.MIN_SAFE_INTEGER))

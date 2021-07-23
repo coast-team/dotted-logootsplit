@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { avl, SimpleDotBlockFactory } from "../src/"
+import { avl, SimpleDotBlockFactory } from "../src/index.js"
 
 const seed = "dotted-logootsplit"
 

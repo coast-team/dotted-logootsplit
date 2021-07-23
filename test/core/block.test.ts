@@ -1,6 +1,6 @@
 import test from "ava"
-import { Block, BlockOrdering } from "../../src"
-import { posOf, twinBlock } from "./pos.testutil"
+import { Block, BlockOrdering } from "../../src/index.js"
+import { posOf, twinBlock } from "./pos.testutil.js"
 
 const pos1 = posOf(1, 1, 1, 1, 0, 1)
 const pos10 = posOf(1, 1, 1, 1, 0, 1, 1, 0, 3)

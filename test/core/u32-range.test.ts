@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { RangeOrdering, U32Range } from "../../src/core/u32-range"
+import { RangeOrdering, U32Range } from "../../src/core/u32-range.js"
 
 function twiInterval(ref: U32Range): U32Range {
     return U32Range.fromLength(ref.lower, ref.length)

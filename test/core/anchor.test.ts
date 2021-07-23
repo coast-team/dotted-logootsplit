@@ -1,6 +1,6 @@
 import test from "ava"
-import { Anchor, Ordering } from "../../src"
-import { posOf } from "./pos.testutil"
+import { Anchor, Ordering } from "../../src/index.js"
+import { posOf } from "./pos.testutil.js"
 
 const pos1 = posOf(1, 0, 1)
 const pos13 = posOf(1, 0, 1, 1, 0, 3)

@@ -7,12 +7,13 @@
 */
 
 import { alea, distrib, MutRand } from "replayable-random"
-import { BlockFactory } from "../core/block-factory"
-import { Pos } from "../core/pos"
-import { assert } from "../util/assert"
-import { isObject } from "../util/data-validation"
-import { isU32, u32, U32_BOTTOM, U32_TOP } from "../util/number"
-import { getDefault, prefixLength } from "../util/uint32-array"
+import { BlockFactory } from "../core/block-factory.js"
+import { Pos } from "../core/pos.js"
+import { assert } from "../util/assert.js"
+import { isObject } from "../util/data-validation.js"
+import type { u32 } from "../util/number.js"
+import { isU32, U32_BOTTOM, U32_TOP } from "../util/number.js"
+import { getDefault, prefixLength } from "../util/uint32-array.js"
 
 /**
  * @param p
@@ -53,6 +54,12 @@ export class SimpleDotBlockFactory extends BlockFactory {
      * @param x candidate
      * @return object from `x', or undefined if `x' is not valid.
      */
+    static fromPlain(x: {
+        replica: u32
+        seq: u32
+        randState: any
+    }): SimpleDotBlockFactory
+    static fromPlain(x: unknown): SimpleDotBlockFactory | undefined
     static fromPlain(x: unknown): SimpleDotBlockFactory | undefined {
         if (
             isObject<SimpleDotBlockFactory>(x) &&

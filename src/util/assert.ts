@@ -6,7 +6,7 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { flags } from "../flags"
+import { flags } from "../flags.js"
 
 export type Lazy<T> = () => T
 

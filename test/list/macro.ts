@@ -1,7 +1,7 @@
-import { ExecutionContext, Macro } from "ava"
-import { Pos, Ins, Del, Ordering } from "../../src"
-import { OpEditableReplicatedList } from "../../src/core/op-replicated-list"
-import { DeltaEditableReplicatedList } from "../../src/core/delta-replicated-list"
+import type { ExecutionContext, Macro } from "ava"
+import { Pos, Ins, Del, Ordering } from "../../src/index.js"
+import type { OpEditableReplicatedList } from "../../src/core/op-replicated-list.js"
+import type { DeltaEditableReplicatedList } from "../../src/core/delta-replicated-list.js"
 
 export interface OpListFactory {
     (replica: number, seed?: string): OpEditableReplicatedList<string>

@@ -1,6 +1,6 @@
 import test from "ava"
-import { Ins, isIns } from "../../src"
-import { isU32 } from "../../src/util/number"
+import { Ins, isIns } from "../../src/index.js"
+import { isU32 } from "../../src/util/number.js"
 
 test("is-ins", (t) => {
     t.false(isIns(isU32)(undefined))

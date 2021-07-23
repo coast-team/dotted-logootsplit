@@ -1,5 +1,5 @@
 import test from "ava"
-import { isDel, Del } from "../../src"
+import { isDel, Del } from "../../src/index.js"
 
 test("is-del", (t) => {
     t.false(isDel(undefined))

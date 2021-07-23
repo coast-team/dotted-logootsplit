@@ -4,7 +4,7 @@ import {
     lexCompareOrdering,
     Ordering,
     orderingInversion,
-} from "../../src/util/ordering"
+} from "../../src/util/ordering.js"
 
 const ORDERING_VALUES = [Ordering.BEFORE, Ordering.EQUAL, Ordering.AFTER]
 

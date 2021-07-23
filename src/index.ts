@@ -6,25 +6,22 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-export { flags } from "./flags"
+export { flags } from "./flags.js"
 
-export * from "./core/anchor"
-export * from "./core/block"
-export * from "./core/block-factory"
-export * from "./core/concat"
-export * from "./core/u32-range"
-export * from "./core/ins"
-export * from "./core/del"
-export * from "./core/pos"
-export * from "./core/delta-replicated-list"
+export * from "./core/anchor.js"
+export * from "./core/block.js"
+export * from "./core/block-factory.js"
+export * from "./core/concat.js"
+export * from "./core/u32-range.js"
+export * from "./core/ins.js"
+export * from "./core/del.js"
+export * from "./core/pos.js"
+export * from "./core/delta-replicated-list.js"
 
-export * from "./block-factory/simple-block-factory"
-
-import * as linked from "./list/linked/linked"
-export { linked }
+export * from "./block-factory/simple-block-factory.js"
 
 export * from "./list/avl/op-avl-list"
 import * as avl from "./list/avl/avl"
 export { avl }
 
-export * from "./util/ordering"
+export * from "./util/ordering.js"

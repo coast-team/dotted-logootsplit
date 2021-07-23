@@ -1,4 +1,4 @@
-import { u32 } from "./number"
+import type { u32 } from "./number.js"
 
 /**
  * @param a

@@ -1,6 +1,6 @@
 import test from "ava"
 
-import { ConcatLength } from "../../src"
+import { ConcatLength } from "../../src/index.js"
 
 const length0 = new ConcatLength(0)
 const length1 = new ConcatLength(1)

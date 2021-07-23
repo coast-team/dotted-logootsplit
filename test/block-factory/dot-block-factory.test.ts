@@ -1,8 +1,8 @@
 import test from "ava"
-import { SimpleDotBlockFactory } from "../../src/index"
-import { Block, BlockOrdering } from "../../src/core/block"
-import { U32_BOTTOM } from "../../src/util/number"
-import { posOf } from "../core/pos.testutil"
+import { SimpleDotBlockFactory } from "../../src/index.js"
+import { Block, BlockOrdering } from "../../src/core/block.js"
+import { U32_BOTTOM } from "../../src/util/number.js"
+import { posOf } from "../core/pos.testutil.js"
 
 const seed = "dotted-logootsplit"
 

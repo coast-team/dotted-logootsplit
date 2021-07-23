@@ -1,4 +1,4 @@
-import { assert } from "../util/assert"
+import { assert } from "../util/assert.js"
 /*
     Copyright (C) 2018  Victorien Elvinger
 
@@ -7,9 +7,13 @@ import { assert } from "../util/assert"
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { isObject } from "../util/data-validation"
-import { compareBoolean, lexCompareOrdering, Ordering } from "../util/ordering"
-import { Pos } from "./pos"
+import { isObject } from "../util/data-validation.js"
+import {
+    compareBoolean,
+    lexCompareOrdering,
+    Ordering,
+} from "../util/ordering.js"
+import { Pos } from "./pos.js"
 
 /**
  * An anchor can model the cursor of a participant in a replicated list.

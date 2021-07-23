@@ -6,9 +6,10 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert } from "../util/assert"
-import { isU32, u32 } from "../util/number"
-import { isObject } from "../util/data-validation"
+import { assert } from "../util/assert.js"
+import { isObject } from "../util/data-validation.js"
+import type { u32 } from "../util/number.js"
+import { isU32 } from "../util/number.js"
 
 const TYPE = "INS"
 

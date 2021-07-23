@@ -6,14 +6,15 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { assert, heavyAssert } from "../util/assert"
-import { FromPlain, isObject } from "../util/data-validation"
-import { hashCodeOf, isU32, u32 } from "../util/number"
-import { Ordering } from "../util/ordering"
-import { Anchor } from "./anchor"
-import { Concat, ConcatLength } from "./concat"
-import { BaseOrdering, Pos } from "./pos"
-import { RangeOrdering, U32Range } from "./u32-range"
+import { assert, heavyAssert } from "../util/assert.js"
+import { FromPlain, isObject } from "../util/data-validation.js"
+import type { u32 } from "../util/number.js"
+import { hashCodeOf, isU32 } from "../util/number.js"
+import { Ordering } from "../util/ordering.js"
+import { Anchor } from "./anchor.js"
+import { Concat, ConcatLength } from "./concat.js"
+import { BaseOrdering, Pos } from "./pos.js"
+import { RangeOrdering, U32Range } from "./u32-range.js"
 
 /**
  * Possible relation between two blocks.

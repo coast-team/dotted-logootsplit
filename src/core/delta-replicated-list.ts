@@ -1,16 +1,15 @@
-import { Concat } from "./concat"
-import {
+import type { Concat } from "./concat.js"
+import type {
     OpReplicatedList,
     OpEditableReplicatedList,
-} from "./op-replicated-list"
-import { BlockListContext } from "./block-list-context"
-import { LengthBlock, Block } from "./block"
-import { assert } from "../util/assert"
-import { isU32, u32 } from "../util/number"
-import { FromPlain, isObject } from "../util/data-validation"
-import { Anchor } from "./anchor"
-import { Ins } from "./ins"
-import { Del } from "./del"
+} from "./op-replicated-list.js"
+import type { LengthBlock, Block } from "./block.js"
+import { assert } from "../util/assert.js"
+import { isU32, u32 } from "../util/number.js"
+import { FromPlain, isObject } from "../util/data-validation.js"
+import type { Anchor } from "./anchor.js"
+import type { Ins } from "./ins.js"
+import type { Del } from "./del.js"
 
 export class DeltaReplicatedList<E extends Concat<E>> {
     static from<E extends Concat<E>>(
@@ -69,7 +68,7 @@ export class DeltaReplicatedList<E extends Concat<E>> {
     }
 
     get length(): u32 {
-        return BlockListContext.length
+        return this.list.length
     }
 
     reduceBlock<U>(f: (acc: U, b: Block<E>) => U, prefix: U): U {
@@ -268,7 +267,7 @@ export class DeltaReplicatedList<E extends Concat<E>> {
 export class DeltaEditableReplicatedList<
     E extends Concat<E>
 > extends DeltaReplicatedList<E> {
-    static from<E extends Concat<E>>(
+    static override from<E extends Concat<E>>(
         list: OpEditableReplicatedList<E>
     ): DeltaEditableReplicatedList<E> {
         assert(() => list.length === 0, "list must be empty")
@@ -280,7 +279,7 @@ export class DeltaEditableReplicatedList<
      * @return function that accepts a value and attempt to build a list.
      *  It returns the built list if it succeeds, or undefined if it fails.
      */
-    static fromPlain<E extends Concat<E>>(
+    static override fromPlain<E extends Concat<E>>(
         opFromPlain: FromPlain<OpEditableReplicatedList<E>>
     ): FromPlain<DeltaEditableReplicatedList<E>> {
         return (x) => {
@@ -306,7 +305,7 @@ export class DeltaEditableReplicatedList<
         }
     }
 
-    protected readonly list: OpEditableReplicatedList<E>
+    protected override readonly list: OpEditableReplicatedList<E>
 
     protected constructor(
         list: OpEditableReplicatedList<E>,
