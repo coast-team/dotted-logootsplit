@@ -59,8 +59,8 @@ export abstract class OpReplicatedList<E extends Concat<E>> {
      * @param index index where the anchor is
      * @param isAfter Is the anchor after `index`?
      * @return anchor at `index`.
-     *  The anchor is sticked to the left psoition if isAfter is false.
-     * Otherwise, it is sticked to the right psoition.
+     *  The anchor is sticked to the left position if isAfter is false.
+     * Otherwise, it is sticked to the right position.
      */
     abstract anchorAt(index: u32, isAfter: boolean): Anchor
 
@@ -83,7 +83,7 @@ export abstract class OpReplicatedList<E extends Concat<E>> {
      * Insert {@link delta } in the list.
      * An insertion must be played exactly once.
      *
-     * @param delta opertaion of insertion.
+     * @param delta operation of insertion.
      * @return Performed modifications in terms of local operations.
      *  The n+1 -th operation depends on the n -th operation.
      *  Thus local operations must be played from left to right.
@@ -95,7 +95,8 @@ export abstract class OpReplicatedList<E extends Concat<E>> {
      * Remove {@link delta } from the list.
      * This operation is idempotent. You can play several times the same
      * deletion.
-     * Note that a deltion should be played after the insertions of the elemnts.
+     * Note that a deletion should be played after the insertions of the
+     * elements.
      *
      * @param delta operation of deletion.
      * @return Performed modifications in terms of local operations.

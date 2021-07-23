@@ -9,7 +9,7 @@
 import { assert, heavyAssert } from "../util/assert.js"
 import type { u32 } from "../util/number.js"
 import {
-    absoluteSubstraction,
+    absoluteSubtraction,
     compareU32,
     hashCodeOf,
     isU32,
@@ -38,7 +38,7 @@ const EMPTY_BASE = new Uint32Array(0)
  * The set of positions is a dense totally ordered set.
  * The dot (replica, seq) uniquely identifies the position.
  *
- * A position can be represented as a lexcigraphic ordered list of hexadecimal.
+ * A position can be represented as a lexicographic ordered list of hexadecimal.
  * The list without the last element is called the base of the position.
  * For instance:
  * p = [1, e, 3]
@@ -171,7 +171,7 @@ export class Pos {
                     : other.seq
             const offset = this.seq
             return [
-                absoluteSubstraction(offset, otherIntermediateOffset),
+                absoluteSubtraction(offset, otherIntermediateOffset),
                 compareU32(offset, otherIntermediateOffset),
             ]
         }

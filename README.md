@@ -42,7 +42,7 @@ Distributed Computing, Volume 111, January 2018, Pages 162-173.
 npm install dotted-logootsplit
 ```
 
-The following example craetes two replicas and uses delta-based synchornozations.
+The following example creates two replicas and uses delta-based synchronizations.
 
 ```ts
 import { avl, SimpleDotBlockFactory } from "dotted-logootsplit"

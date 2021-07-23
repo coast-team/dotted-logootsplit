@@ -169,9 +169,9 @@ export class OpEditableList<E extends Concat<E>> extends OpList<E> {
                 case RangeOrdering.INCLUDED_LEFT_BY:
                 case RangeOrdering.OVERLAPPING_BEFORE: {
                     const splitIndex = dRange.upper() + 1 - currRange.lower
-                    const [lSplit, rSPlit] = curr.splitAt(splitIndex)
+                    const [lSplit, rSplit] = curr.splitAt(splitIndex)
                     result.push(lSplit.toLengthBlock())
-                    listOps.push(sub(it.index, rSPlit))
+                    listOps.push(sub(it.index, rSplit))
                     it.complete()
                     break
                 }

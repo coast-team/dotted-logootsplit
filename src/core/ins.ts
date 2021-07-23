@@ -46,7 +46,7 @@ export const Ins = { TYPE, from } as const
 
 /**
  * @curried
- * @param f guard to test the content's tyoe
+ * @param f guard to test the content's type
  * @param x
  * @return Is `x` an Ins operation?
  */

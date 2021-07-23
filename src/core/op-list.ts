@@ -5,12 +5,12 @@ import { assert } from "../util/assert.js"
 import { fromArray, isObject } from "../util/data-validation.js"
 import { hashCodeOf, isU32, u32 } from "../util/number.js"
 import { Anchor } from "./anchor.js"
-import { BaseBlockk, Block, BlockOrdering } from "./block.js"
+import { BaseBlock, Block, BlockOrdering } from "./block.js"
 import type { Concat } from "./concat.js"
 import type { Pos } from "./pos.js"
 
 export const posFinder = <E extends Concat<E>>(pos: Pos) => (
-    b: BaseBlockk
+    b: BaseBlock
 ): Ordering => {
     if (pos.compare(b.lowerPos) === Ordering.AFTER) {
         return Ordering.AFTER
@@ -20,7 +20,7 @@ export const posFinder = <E extends Concat<E>>(pos: Pos) => (
 }
 
 export const summaryFinder = (sIndex: u32) => (
-    v: BaseBlockk,
+    v: BaseBlock,
     summary: u32
 ): Ordering => {
     if (sIndex <= summary) {

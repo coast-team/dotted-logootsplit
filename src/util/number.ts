@@ -41,6 +41,6 @@ export const hashCodeOf = (values: readonly u32[] | Uint32Array): u32 => {
     return acc
 }
 
-export const absoluteSubstraction = (a: u32, b: u32): u32 => {
+export const absoluteSubtraction = (a: u32, b: u32): u32 => {
     return a < b ? b - a : a - b
 }

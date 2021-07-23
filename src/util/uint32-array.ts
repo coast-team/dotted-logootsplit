@@ -16,7 +16,7 @@ export const getDefault = (a: Uint32Array, i: u32, defaultVal: u32): u32 =>
  *
  * @param a
  * @param b
- * @return length of the common prefix beween `a` and `b`
+ * @return length of the common prefix between `a` and `b`
  */
 export const prefixLength = (a: Uint32Array, b: Uint32Array): u32 => {
     if (a === b) {

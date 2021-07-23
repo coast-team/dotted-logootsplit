@@ -82,8 +82,8 @@ export class DeltaList<E extends Concat<E>> {
      * @param index index where the anchor is
      * @param isAfter Is the anchor after `index`?
      * @return anchor at `index`.
-     *  The anchor is sticked to the left psoition if isAfter is false.
-     * Otherwise, it is sticked to the right psoition.
+     *  The anchor is sticked to the left position if isAfter is false.
+     * Otherwise, it is sticked to the right position.
      */
     anchorAt(index: u32, isAfter: boolean): Anchor {
         return this.list.anchorAt(index, isAfter)

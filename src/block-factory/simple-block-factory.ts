@@ -32,7 +32,7 @@ const baseFrom = (p: Pos, length: u32): Uint32Array => {
 const DEFAULT_SEQ = 1
 
 /**
- * The strategy of generation is to genearte random positions between two
+ * The strategy of generation is to generate random positions between two
  * defined positions.
  */
 export class SimpleDotBlockFactory extends BlockFactory {

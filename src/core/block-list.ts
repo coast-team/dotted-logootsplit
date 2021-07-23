@@ -12,7 +12,7 @@ import { fromArray, FromPlain, isObject } from "../util/data-validation.js"
 import { isU32, u32 } from "../util/number.js"
 import { Ordering } from "../util/ordering.js"
 import type { BlockFactory, BlockFactoryConstructor } from "./block-factory.js"
-import { BaseBlockk, Block, BlockOrdering, LengthBlock } from "./block.js"
+import { BaseBlock, Block, BlockOrdering, LengthBlock } from "./block.js"
 import type { Concat } from "./concat.js"
 import { Del } from "./del.js"
 import { Ins } from "./ins.js"
@@ -23,7 +23,7 @@ import {
 import type { Pos } from "./pos.js"
 import { RangeOrdering, U32Range } from "./u32-range.js"
 
-const posFinder = <E extends Concat<E>>(pos: Pos) => (b: BaseBlockk) => {
+const posFinder = <E extends Concat<E>>(pos: Pos) => (b: BaseBlock) => {
     if (pos.compare(b.lowerPos) === Ordering.AFTER) {
         return Ordering.AFTER
     } else {
@@ -32,7 +32,7 @@ const posFinder = <E extends Concat<E>>(pos: Pos) => (b: BaseBlockk) => {
 }
 
 export const summaryFinder = (sIndex: u32) => (
-    v: BaseBlockk,
+    v: BaseBlock,
     summary: u32
 ): Ordering => {
     if (sIndex <= summary) {
@@ -504,9 +504,9 @@ export class EditableBlockList<E extends Concat<E>>
                 case RangeOrdering.INCLUDED_LEFT_BY:
                 case RangeOrdering.OVERLAPPING_BEFORE: {
                     const splitIndex = dRange.upper() + 1 - currRange.lower
-                    const [lSplit, rSPlit] = curr.splitAt(splitIndex)
+                    const [lSplit, rSplit] = curr.splitAt(splitIndex)
                     result.push(lSplit.toLengthBlock())
-                    listOps.push(sub(it.index, rSPlit))
+                    listOps.push(sub(it.index, rSplit))
                     it.complete()
                     break
                 }
